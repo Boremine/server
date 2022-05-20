@@ -5,14 +5,17 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 import slowDown from 'express-slow-down'
 
+import { error_handler } from './responses/error/error-handler'
+
 
 import morgan from 'morgan'
 import dotenv from 'dotenv'
 dotenv.config()
 
+import { global_sanitize } from './utils/Sanitize/middleware/global_sanitize'
+import userInfoRoute from './features/UserInfo/routes'
 
 
-console.log(process.env.NODE_ENV)
 export const app: Application = express()
 
 if (process.env.NODE_ENV == 'development') {
@@ -28,7 +31,6 @@ const speedLimiter = slowDown({
 
 app.use(express.json())
 app.use(helmet())
-// app.use(useragent.express())
 // app.set('trust proxy', 1)
 app.use(cors({
     origin: process.env.CLIENT_DOMAIN,
@@ -44,7 +46,12 @@ mongoose.connect(`${process.env.DATABASE}`)
     .catch(err => console.log(`Failed to connect to database: ${err.message}`))
 
 
+app.use(global_sanitize)
 
+app.use('/auth', userInfoRoute)
+
+
+app.use(error_handler)
 
 
 if (process.env.NODE_ENV !== 'test') {
