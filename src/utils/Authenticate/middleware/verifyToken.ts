@@ -13,11 +13,12 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     
     jwt.verify(access_token, secret, (err: VerifyErrors | null, decoded: any) => {
         if (err) return next(HandleError.Forbidden('Access Token Expired'))
-        
-        req.body = {
+
+        res.locals = {
             user_id: decoded.user_id,
-            username: decoded.username,
+            username: decoded.username
         }
+
 
     })
     

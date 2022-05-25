@@ -2,7 +2,7 @@ import { Router } from 'express'
 const router: Router = Router()
 
 import {
-    userInfo as userInfo_CONTROLLER
+    getAuth as getAuth_CONTROLLER,
 } from './controller'
 
 import {
@@ -12,7 +12,8 @@ import {
 
 
 
-router.get('/', authenticate, userInfo_CONTROLLER)
+router.get('/', authenticate, getAuth_CONTROLLER)
+
 
 
 export default router
