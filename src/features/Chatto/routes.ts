@@ -16,11 +16,11 @@ import {
 
 
 import {
-    authenticate 
-} from '../../utils/Authenticate/middleware/verifyToken'
+    authorize 
+} from '../../utils/Authorize/middleware/verifyToken'
 
 
-router.post('/post', authenticate, sendMessage_SANITIZE, sendMessage_VALIDATOR, sendMessage_CONTROLLER)
+router.post('/post', authorize, sendMessage_SANITIZE, sendMessage_VALIDATOR, sendMessage_CONTROLLER)
 
 
 export default router

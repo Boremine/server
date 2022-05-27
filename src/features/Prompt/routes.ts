@@ -8,11 +8,11 @@ import {
 
 
 import {
-    authenticate 
-} from '../../utils/Authenticate/middleware/verifyToken'
+    authorize 
+} from '../../utils/Authorize/middleware/verifyToken'
 
 
-router.post('/post', authenticate, postPrompt_CONTROLLER)
+router.post('/post', authorize, postPrompt_CONTROLLER)
 router.get('/latest', lastestPrompt_CONTROLLER)
 
 

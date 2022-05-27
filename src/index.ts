@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import slowDown from 'express-slow-down'
+import useragent from 'express-useragent'
 
 import socketIO from 'socket.io'
 import http from 'http'
@@ -19,10 +20,15 @@ dotenv.config()
 
 import { global_sanitize } from './utils/Sanitize/middleware/global_sanitize'
 
-import authRoute from './features/Authenticate/routes'
+import authInfoRoute from './features/AuthInfo/routes'
 import profileRoute from './features/Profile/routes'
 import chattoRoute from './features/Chatto/routes'
 import promptRoute from './features/Prompt/routes'
+
+import signupRoute from './features/Signup/routes'
+import loginRoute from './features/Login/routes'
+import verificationRoute from './features/Verification/routes'
+import refreshRoute from './features/Refresh/routes'
 
 export const app: Application = express()
 const server = http.createServer(app)
@@ -45,6 +51,7 @@ const speedLimiter = slowDown({
 
 app.use(express.json())
 app.use(helmet())
+app.use(useragent.express())
 // app.set('trust proxy', 1)
 app.use(cors({
     origin: process.env.CLIENT_DOMAIN,
@@ -70,9 +77,15 @@ app.set('socketio', io)
 app.use(global_sanitize)
 
 app.use('/profile', profileRoute)
-app.use('/auth', authRoute)
+app.use('/authInfo', authInfoRoute)
 app.use('/chatto', chattoRoute)
 app.use('/prompt', promptRoute)
+
+
+app.use('/signup', signupRoute)
+app.use('/login', loginRoute)
+app.use('/verification', verificationRoute)
+app.use('/refresh', refreshRoute)
 
 app.use(error_handler)
 
@@ -107,5 +120,5 @@ io.on('connection', (socket) => {
 
 
 if (process.env.NODE_ENV !== 'test') {
-    server.listen(3002, () => console.log(`server running on port ${3002}`))
+    server.listen(3001, () => console.log(`server running on port ${3001}`))
 }

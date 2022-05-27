@@ -24,6 +24,10 @@ export class HandleError {
         return new HandleError(500, "Something wen't wrong, try again later.")
     }
 
+    static Unauthorized(msg:object |string){
+        return new HandleError(401, msg)
+    }
+
     static Forbidden(msg:object | string){
         return new HandleError(403, msg)
     }

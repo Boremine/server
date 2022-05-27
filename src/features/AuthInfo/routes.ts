@@ -6,13 +6,12 @@ import {
 } from './controller'
 
 import {
-    authenticate 
-} from '../../utils/Authenticate/middleware/verifyToken'
+    authorize 
+} from '../../utils/Authorize/middleware/verifyToken'
 
 
 
-
-router.get('/', authenticate, getAuth_CONTROLLER)
+router.get('/', authorize, getAuth_CONTROLLER)
 
 
 

@@ -36,40 +36,40 @@ export const latestPrompt = async (req: Request, res: Response, next: NextFuncti
 
 export const promptDisplay = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
 
-    let prompt = await Prompt.findOne().populate('user_id', 'username').select('text')
+    // let prompt = await Prompt.findOne().populate('user_id', 'username').select('text')
 
-    if (!prompt) {
-        console.log('hello')
-        setTimeout(() => {
-            promptDisplay(io)
-        }, 10000)
-        return
+    // if (!prompt) {
+    //     console.log('hello')
+    //     setTimeout(() => {
+    //         promptDisplay(io)
+    //     }, 10000)
+    //     return
 
-    }
-
-
-    let promptEmit = {
-        username: prompt?.user_id.username,
-        text: prompt?.text
-    }
-
-    console.log(promptEmit)
-    io.emit('prompt', promptEmit)
-
-    let timer = 10
+    // }
 
 
-    let interval = setInterval(async() => {
-        console.log(timer)
-        io.emit('timer', timer)
-        timer--
-        if (timer == -1) {
-            clearInterval(interval)
-            await prompt?.delete()
-            promptDisplay(io)
-            return
-        }
-    }, 1000);
+    // let promptEmit = {
+    //     username: prompt?.user_id.username,
+    //     text: prompt?.text
+    // }
+
+    // console.log(promptEmit)
+    // io.emit('prompt', promptEmit)
+
+    // let timer = 10
+
+
+    // let interval = setInterval(async() => {
+    //     console.log(timer)
+    //     io.emit('timer', timer)
+    //     timer--
+    //     if (timer == -1) {
+    //         clearInterval(interval)
+    //         await prompt?.delete()
+    //         promptDisplay(io)
+    //         return
+    //     }
+    // }, 1000);
 
     // while (timer > 0) {
     //     io.emit('timer', timer)

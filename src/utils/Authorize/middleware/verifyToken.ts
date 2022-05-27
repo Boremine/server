@@ -4,7 +4,7 @@ import jwt, {  VerifyErrors } from 'jsonwebtoken'
 import { HandleError } from '../../../responses/error/HandleError'
 
 
-export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
+export const authorize = async (req: Request, res: Response, next: NextFunction) => {
 
     const { access_token } = req.signedCookies
     const secret: string = String(process.env.ACCESS_TOKEN_SECRET)

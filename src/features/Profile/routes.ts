@@ -7,14 +7,14 @@ import {
 } from './controller'
 
 import {
-    authenticate 
-} from '../../utils/Authenticate/middleware/verifyToken'
+    authorize 
+} from '../../utils/Authorize/middleware/verifyToken'
 
 
 
 
-// router.post('/add', authenticate, profileAdd_CONTROLLER)
-router.get('/get', authenticate, profileGet_CONTROLLER)
+// router.post('/add', authorize, profileAdd_CONTROLLER)
+router.get('/get', authorize, profileGet_CONTROLLER)
 
 
 export default router
