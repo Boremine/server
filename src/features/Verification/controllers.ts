@@ -23,7 +23,7 @@ export const verificationValidate = async (req: Request, res: Response, next: Ne
 export const verificationGenerate_G = async (res: Response, body: Object, type: string) => {
     const path: string = crypto.randomBytes(40).toString('hex')
 
-    const code: string = crypto.randomBytes(30).toString('hex')
+    const code: string = crypto.randomBytes(4).toString('hex')
     const codeHashed: string = crypto.createHash('sha256').update(code).digest('hex')
 
     let NewVerification = new Verification({

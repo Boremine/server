@@ -89,15 +89,15 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
     const tokenOwner: Token | boolean = validUserAgent(req.useragent, user.logs)
     if (!tokenOwner) return next(HandleError.Unauthorized('Invalid Refresh Token 1'))
    
-    if (tokenOwner.token !== tokenSender) {
-        switch (checkForHistory(tokenOwner.history, tokenSender)) {
-            case 'inHistory':
-                await RefreshToken.findByIdAndDelete(tokenOwner._id)
-                return next(HandleError.Unauthorized('Invalid Refresh Token 2'))
-            case 'notInHistory':
-                return next(HandleError.Unauthorized('Invalid Refresh Token 3'))   
-        }
-    }
+    // if (tokenOwner.token !== tokenSender) {
+    //     switch (checkForHistory(tokenOwner.history, tokenSender)) {
+    //         case 'inHistory':
+    //             await RefreshToken.findByIdAndDelete(tokenOwner._id)
+    //             return next(HandleError.Unauthorized('Invalid Refresh Token 2'))
+    //         case 'notInHistory':
+    //             return next(HandleError.Unauthorized('Invalid Refresh Token 3'))   
+    //     }
+    // }
 
     let payload = {
         username: username, 

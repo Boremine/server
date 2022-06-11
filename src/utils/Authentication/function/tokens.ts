@@ -26,7 +26,7 @@ export const generateRefreshToken = (payload: Payload) => {
 export const setAccessToken = (res: Response, token: string) => {
     res.cookie('access_token', token, {
         httpOnly: true,
-        secure: true,
+        // secure: true,
         signed: true,
         domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : '.boremine.com',
         sameSite: 'strict',
@@ -37,7 +37,7 @@ export const setAccessToken = (res: Response, token: string) => {
 export const setRefreshToken = (res: Response, token: string) => {
     res.cookie('refresh_token', token, {
         httpOnly: true,
-        secure: true,
+        // secure: true,
         signed: true,
         domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : '.boremine.com',
         sameSite: 'strict',

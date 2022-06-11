@@ -9,7 +9,8 @@ interface Body {
 export const sendMessage = (req: Request, res: Response, next: NextFunction) => {
     const body:Body = req.body
 
-    if(!body.message) next(HandleError.NotAcceptable('Message is required'))
+    if(!body.message) return next(HandleError.NotAcceptable('Message is required'))
+    if (body.message.length > 200) return next(HandleError.NotAcceptable('Message must be less than 200 characteres long'))
     
 
     next()

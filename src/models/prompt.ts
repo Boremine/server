@@ -3,6 +3,7 @@ import {Schema, model} from 'mongoose'
 interface Prompt {
     text:string
     user_id:Schema.Types.ObjectId | any
+    color:string
 }
 
 const PromptSchema = new Schema<Prompt>({
@@ -15,6 +16,10 @@ const PromptSchema = new Schema<Prompt>({
         ref: 'User',
         required: true,
         index: true
+    },
+    color: {
+        type:String,
+        required:true
     }
 
 }, { timestamps: true })

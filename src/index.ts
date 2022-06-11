@@ -1,15 +1,20 @@
 import express, { Application, Request } from 'express'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
+import cookie from 'cookie'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import slowDown from 'express-slow-down'
 import useragent from 'express-useragent'
+import jwt, { VerifyErrors } from 'jsonwebtoken'
 
 import socketIO from 'socket.io'
 import http from 'http'
 
-import { promptDisplay } from './features/Prompt/controllers'
+import { displayPrompt } from './features/Prompt/controllers'
+import { displayChatto } from './features/Chatto/controllers'
+
+import { validateConnections } from './utils/Socket/function/validateConnection'
 
 import { error_handler } from './responses/error/error-handler'
 
@@ -32,10 +37,11 @@ import refreshRoute from './features/Refresh/routes'
 
 export const app: Application = express()
 const server = http.createServer(app)
-const io = new socketIO.Server(server, {
-    cors:{
-        origin: process.env.CLIENT_DOMAIN
-    }
+export const io = new socketIO.Server(server, {
+    cors: {
+        origin: process.env.CLIENT_DOMAIN,
+        credentials: true
+    },
 })
 
 if (process.env.NODE_ENV == 'development') {
@@ -52,9 +58,10 @@ const speedLimiter = slowDown({
 app.use(express.json())
 app.use(helmet())
 app.use(useragent.express())
-// app.set('trust proxy', 1)
+app.set('trust proxy', 1)
 app.use(cors({
     origin: process.env.CLIENT_DOMAIN,
+    exposedHeaders: 'RateLimit-Reset',
     credentials: true,
 }))
 
@@ -66,9 +73,6 @@ app.use(speedLimiter)
 mongoose.connect(`${process.env.DATABASE}`)
     .then(() => console.log(`Database connected! ${process.env.DATABASE}`))
     .catch(err => console.log(`Failed to connect to database: ${err.message}`))
-
-
-
 
 
 
@@ -90,31 +94,52 @@ app.use('/refresh', refreshRoute)
 app.use(error_handler)
 
 
+displayChatto(io)
+displayPrompt(io)
 
-promptDisplay(io)
+validateConnections(io)
 
-io.on('connection', (socket) => {
-    console.log('user connected')
 
-    socket.on('disconnect', () => {
-        console.log('user disconnected')
-        socket.removeAllListeners()
-    })
-})
-// Prompt.findOne()
+
+
+// interface Connection{
+//     socket_id:string
+//     user_id:string
+// }
+
+
+// export let authorizeConnections:Array<Connection> = []
 
 
 // io.on('connection', (socket) => {
-//     console.log('user connected')
+//     console.log('user connected', socket.id)
+//     let allCookies
+//     if(socket.handshake.headers.cookie) {
 
-    
+//         allCookies = cookie.parse(socket.handshake.headers.cookie)
+//         const signedCookie = cookieParser.signedCookie(allCookies.refresh_token, String(process.env.COOKIE_PARSER_SECRET))
+//         const secret: string = String(process.env.REFRESH_TOKEN_SECRET)
+//         if(signedCookie) jwt.verify(signedCookie, secret, (err: VerifyErrors | null, decoded: any) => {
+//             if (err) return 
 
-    
+
+//             if(authorizeConnections.filter(e => e.user_id === decoded.user_id).length == 0) {
+//                 authorizeConnections.push({socket_id: socket.id, user_id: decoded.user_id})
+//             }
+//         })
+
+//     }
+
+
 //     socket.on('disconnect', () => {
+//         authorizeConnections = authorizeConnections.filter(e => e.socket_id !== socket.id)
+
 //         console.log('user disconnected')
 //         socket.removeAllListeners()
 //     })
 // })
+
+
 
 
 

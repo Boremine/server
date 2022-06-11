@@ -16,7 +16,7 @@ export const verificationValidate = async (req: Request, res: Response, next: Ne
 
 
 export const verificationConfirm = async (req: Request, res: Response, next: NextFunction) => {
-    const code: string = req.body.code
+    const code: string = req.body.code.toLowerCase()
     const path: string = req.params.path
     
     let verification = await Verification.findOneAndUpdate({ path }, { $inc: { tries: -1 } }, { new: true })

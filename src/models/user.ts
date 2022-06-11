@@ -7,7 +7,9 @@ interface User {
     password: string,
     logs:Array<any>
     chatties:Array<any>,
-    prompt:Schema.Types.ObjectId
+    mural:Array<any>
+    prompt_id:Schema.Types.ObjectId
+    color:string
 }
 
 const UserSchema = new Schema<User>({
@@ -39,6 +41,10 @@ const UserSchema = new Schema<User>({
         required: true,
         maxlength: 256
     },
+    color:{
+        type:String,
+        required:true
+    },
     logs:[{
         type:Schema.Types.ObjectId,
         ref: 'Log'
@@ -47,7 +53,11 @@ const UserSchema = new Schema<User>({
         type:Schema.Types.ObjectId,
         ref:'Chatto'
     }],
-    prompt:{
+    mural:[{
+        type:Schema.Types.ObjectId,
+        ref: 'Mural'
+    }],
+    prompt_id:{
         type: Schema.Types.ObjectId,
         ref:'Prompt'
     }

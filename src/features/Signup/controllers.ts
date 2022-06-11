@@ -13,7 +13,7 @@ import { addLog } from '../../utils/Logs/functions/addLog'
 import { newAuthentication } from '../../utils/Authentication/function/newAuthentication'
 // import { newAuthentication } from '../../utils/middlewares/newAuthentication'
 
-
+let userColors:Array<string> = ['#fcba03', '#158eeb', '#1520eb', '#8415eb', '#d915eb', '#eb15b2', '#eb1579', '#eb152e', '#eb7c15', '#ebab15', '#d2eb15', '#72eb15', '#15eb15']
 
 
 interface Body {
@@ -45,7 +45,8 @@ export const signupVerified = async (req: Request, res: Response, next: NextFunc
         username: username,
         usernameDisplay: username,
         email: email,
-        password: password
+        password: password,
+        color: userColors[Math.floor(Math.random()*userColors.length)]
     })
     await NewUser.save(async (err, user_created) => {
         if (err) return next(HandleError.Internal(err))

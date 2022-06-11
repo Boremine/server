@@ -2,11 +2,14 @@ import { Router } from 'express'
 const router: Router = Router()
 import rateLimit from 'express-rate-limit'
 
+
+
 const limiter = rateLimit({
-	windowMs: 40000,
-	max: 30,
+	windowMs: 60000,
+	max: 10,
 	standardHeaders: true,
 	message: 'To many requests, wait a moment',
+	// keyGenerator: (request, response) => response.locals.user_id
 })
 
 import { compareLogs } from '../../utils/Logs/middleware/compareLogs'

@@ -1,3 +1,5 @@
+import { Response } from "express";
+
 export class HandleError {
     code:number;
     message: object | string
