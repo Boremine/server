@@ -1,18 +1,15 @@
 import { Router } from 'express'
-const router: Router = Router()
 
 import {
-    getAuth as getAuth_CONTROLLER,
+    getAuth as getAuth_CONTROLLER
 } from './controller'
 
 import {
-    authorize 
+    authorize
 } from '../../utils/Authorize/middleware/verifyToken'
 
-
+const router: Router = Router()
 
 router.get('/', authorize, getAuth_CONTROLLER)
-
-
 
 export default router

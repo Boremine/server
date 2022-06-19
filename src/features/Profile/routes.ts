@@ -1,5 +1,4 @@
 import { Router } from 'express'
-const router: Router = Router()
 
 import {
     // profileAdd as profileAdd_CONTROLLER,
@@ -7,14 +6,12 @@ import {
 } from './controller'
 
 import {
-    authorize 
+    authorize
 } from '../../utils/Authorize/middleware/verifyToken'
 
-
-
+const router: Router = Router()
 
 // router.post('/add', authorize, profileAdd_CONTROLLER)
 router.get('/get', authorize, profileGet_CONTROLLER)
-
 
 export default router

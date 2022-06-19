@@ -1,25 +1,27 @@
 import { Request, Response, NextFunction } from 'express'
 
 interface PostBody {
-    text:string
+    text: string
+    title: string
 }
 
 export const postPrompt = (req: Request, res: Response, next: NextFunction) => {
-    const body:PostBody = req.body
+    const body: PostBody = req.body
 
-    !body.text ? body.text = '' : null
-    
+    body.text = body.text ? String(body.text) : ''
+    body.title = body.title ? String(body.title) : ''
+
     next()
 }
 
 interface VoteBody {
-    option:string
+    option: string
 }
 
 export const votePrompt = (req: Request, res: Response, next: NextFunction) => {
-    const body:VoteBody = req.body
+    const body: VoteBody = req.body
 
-    !body.option ? body.option = '' : null
-    
+    body.option = body.option ? String(body.option) : ''
+
     next()
 }

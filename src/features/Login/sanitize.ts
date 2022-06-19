@@ -1,15 +1,15 @@
 import { Request, Response, NextFunction } from 'express'
 
-interface Login{
+interface TryBody{
     email:string,
     password:string
 }
 
 export const loginTry = (req: Request, res: Response, next: NextFunction) => {
-    const body:Login = req.body
-    
-    !body.email ? body.email = '':null
-    !body.password ? body.password = '':null
+    const body:TryBody = req.body
+
+    body.email = body.email ? String(body.email) : ''
+    body.password = body.password ? String(body.password) : ''
 
     next()
 }

@@ -1,14 +1,12 @@
 import { Request, Response, NextFunction } from 'express'
-import { HandleSuccess } from '../../responses/success/HandleSuccess'
 import socketIO from 'socket.io'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 
 import User from '../../models/user'
 import Chatto from '../../models/chatto'
 
-import { currentPrompt, state } from '../Prompt/controllers'
+import { state } from '../Prompt/controllers'
 import { HandleError } from '../../responses/error/HandleError'
-
 
 interface ChattoBlock {
     message: string
@@ -19,24 +17,21 @@ interface ChattoBlock {
 export let currentChattoes: Array<string> = []
 let chattoBlock: Array<ChattoBlock> = []
 
-interface Body {
+interface SendBody {
     message: string
 }
 
-export const clearChattoes = () => currentChattoes = []
-
+export const clearChattoes = () => { currentChattoes = [] }
 
 export const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
-    
-    const body: Body = req.body
+    const body: SendBody = req.body
     const { user_id, username } = res.locals
 
-    const io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> = req.app.get('socketio')
-
+    // const io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> = req.app.get('socketio')
 
     const NewChatto = new Chatto({
         user_id,
-        message: body.message,
+        message: body.message
     })
 
     NewChatto.save()
@@ -48,17 +43,10 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
 
     if (state !== 'wait') currentChattoes.push(NewChatto._id.toString())
 
-
-    // currentChattoes.push()
     chattoBlock.push({ message: body.message, username, color: user.color })
-    // io.emit('chatto', {message: body.message, username})
-
-
-
 
     res.sendStatus(200)
 }
-
 
 export const displayChatto = (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
     setInterval(() => {

@@ -1,15 +1,21 @@
-import {Schema, model} from 'mongoose'
+import { Schema, model } from 'mongoose'
 
 interface Prompt {
-    text:string
-    user_id:Schema.Types.ObjectId | any
-    color:string
+    title: string
+    text: string
+    user_id: Schema.Types.ObjectId | any
+    color: string
 }
 
 const PromptSchema = new Schema<Prompt>({
-    text:{
-        type:String,
-        required:true
+    title: {
+        type: String,
+        required: true,
+        maxlength: 500
+    },
+    text: {
+        type: String,
+        maxlength: 2000
     },
     user_id: {
         type: Schema.Types.ObjectId,
@@ -18,13 +24,10 @@ const PromptSchema = new Schema<Prompt>({
         index: true
     },
     color: {
-        type:String,
-        required:true
+        type: String,
+        required: true
     }
 
 }, { timestamps: true })
-
-
-
 
 export default model('Prompt', PromptSchema)

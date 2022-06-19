@@ -1,20 +1,17 @@
 import { Request, Response, NextFunction } from 'express'
 
-
-interface Signup {
+interface RequestBody {
     username: string,
     email: string,
     password: string,
 }
 
 export const signupRequest = (req: Request, res: Response, next: NextFunction) => {
-    const body: Signup = req.body
+    const body:RequestBody = req.body
 
-    !body.username ? body.username = '' : null
-    !body.email ? body.email = '' : null
-    !body.password ? body.password = '' : null
-    
+    body.username = body.username ? String(body.username) : ''
+    body.email = body.email ? String(body.email) : ''
+    body.password = body.password ? String(body.password) : ''
 
     next()
 }
-

@@ -9,16 +9,9 @@ import { newAuthentication } from '../../utils/Authentication/function/newAuthen
 import { addLog } from '../../utils/Logs/functions/addLog'
 import { HandleError } from '../../responses/error/HandleError'
 
-
-
-
-
 export const verificationValidate = async (req: Request, res: Response, next: NextFunction) => {
     HandleSuccess.Ok(res, 'Path valid')
 }
-
-
-
 
 export const verificationGenerate_G = async (res: Response, body: Object, type: string) => {
     const path: string = crypto.randomBytes(40).toString('hex')
@@ -26,7 +19,7 @@ export const verificationGenerate_G = async (res: Response, body: Object, type: 
     const code: string = crypto.randomBytes(4).toString('hex')
     const codeHashed: string = crypto.createHash('sha256').update(code).digest('hex')
 
-    let NewVerification = new Verification({
+    const NewVerification = new Verification({
         path,
         codeHashed,
         type,
@@ -35,16 +28,12 @@ export const verificationGenerate_G = async (res: Response, body: Object, type: 
 
     await NewVerification.save()
 
-
-    if (process.env.NODE_ENV == 'test') return HandleSuccess.MovedPermanently(res, { path, code })
+    if (process.env.NODE_ENV === 'test') return HandleSuccess.MovedPermanently(res, { path, code })
     else {
         console.log(code)
         HandleSuccess.MovedPermanently(res, { path })
     }
-
 }
-
-
 
 export const verificationConfirm = async (req: Request, res: Response, next: NextFunction) => {
     const path: string = req.params.path
@@ -52,10 +41,10 @@ export const verificationConfirm = async (req: Request, res: Response, next: Nex
 
     await Verification.findOneAndRemove({ path })
 
-    if (type == 'signup') signupVerified(req, res, next)
+    if (type === 'signup') signupVerified(req, res, next)
 
-    if (type == 'new_auth') {
-        let addLogRes = await addLog(req, data.user_id, next)
+    if (type === 'new_auth') {
+        const addLogRes = await addLog(req, data.user_id, next)
         if (!addLogRes) return next(HandleError.BadRequest('There was a problem authenticating'))
 
         const newAuth = {
@@ -66,9 +55,4 @@ export const verificationConfirm = async (req: Request, res: Response, next: Nex
 
         newAuthentication(newAuth, res)
     }
-
-
-
-
 }
-

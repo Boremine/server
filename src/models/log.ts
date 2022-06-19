@@ -1,36 +1,36 @@
 import { Schema, model } from 'mongoose'
 
 interface Log {
-    browser:string,
-    version:string,
-    os:string,
-    platform:string,
+    browser: string,
+    version: string,
+    os: string,
+    platform: string,
     ip: string,
-    device:string,
+    device: string,
     user_id: Schema.Types.ObjectId,
     refreshToken_id: Schema.Types.ObjectId
 }
 
 const LogSchema = new Schema<Log>({
     browser: {
-        type: String,
+        type: String
     },
     version: {
-        type: String,
+        type: String
     },
     os: {
-        type: String,
+        type: String
     },
     platform: {
-        type: String,
+        type: String
     },
     ip: {
         type: String,
         required: true
     },
-    device:{
-        type:String,
-        required:true
+    device: {
+        type: String,
+        required: true
     },
     user_id: {
         type: Schema.Types.ObjectId,
@@ -38,15 +38,12 @@ const LogSchema = new Schema<Log>({
         required: true,
         index: true
     },
-    refreshToken_id:{
-        type:Schema.Types.ObjectId,
+    refreshToken_id: {
+        type: Schema.Types.ObjectId,
         ref: 'RefreshToken',
         index: true
     }
 
 }, { timestamps: true })
-
-
-
 
 export default model('Log', LogSchema)

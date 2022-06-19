@@ -1,5 +1,4 @@
 import { Router } from 'express'
-const router: Router = Router()
 
 import {
     verificationValidate as verificationValidate_CONTROLLER,
@@ -16,9 +15,9 @@ import {
     verificationConfirm as verificationConfirm_SANITIZE
 } from './sanitize'
 
+const router: Router = Router()
+
 router.get('/validate/:path', verificationValidate_SANITIZE, verificationValidate_VALIDATOR, verificationValidate_CONTROLLER)
 router.post('/confirm/:path', verificationConfirm_SANITIZE, verificationConfirm_VALIDATOR, verificationConfirm_CONTROLLER)
-
-
 
 export default router

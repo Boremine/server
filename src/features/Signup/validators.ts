@@ -3,27 +3,23 @@ import { HandleError } from '../../responses/error/HandleError'
 
 import User from '../../models/user'
 
-
-
-interface Body {
+interface RequestBody {
     username: string,
     email: string,
     password: string,
 }
 
-interface Validation {
+interface RequestValidation {
     username?: string,
     email?: string,
     password?: string,
 }
 
-
-
 export const signupRequest = async (req: Request, res: Response, next: NextFunction) => {
-    const body: Body = req.body
-    let val: Validation = {}
-    
-    if (!body.username.match("^[A-Za-z0-9-_]+$")) val.username = 'Letters, numbers, dashes, and underscores only'
+    const body: RequestBody = req.body
+    const val:RequestValidation = {}
+
+    if (!body.username.match('^[A-Za-z0-9-_]+$')) val.username = 'Letters, numbers, dashes, and underscores only'
     if (body.username.length > 20 || body.username.length < 3) val.username = 'Username must be between 3 and 20 characters'
     await User.findOne({ username: body.username.toLowerCase() }).then(user => { if (user) val.username = 'Username is taken' })
 
@@ -34,7 +30,6 @@ export const signupRequest = async (req: Request, res: Response, next: NextFunct
     if (body.password.length > 256) val.password = 'Password must be less than 256 characteres long'
 
     if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
-
 
     next()
 }

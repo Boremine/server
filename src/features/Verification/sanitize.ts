@@ -1,26 +1,30 @@
 import { Request, Response, NextFunction } from 'express'
 
+interface ParamsValidate {
+    path?: string
+}
 
 export const verificationValidate = (req: Request, res: Response, next: NextFunction) => {
+    const params: ParamsValidate = req.params
 
-    req.params.path = String(req.params.path)
-    
+    params.path = params.path ? String(params.path) : ''
+
     next()
 }
 
-
-
-
-
-interface Confirm{
-    code:string
+interface BodyConfirm {
+    code: string
+}
+interface ParamsConfirm {
+    path?: string
 }
 
 export const verificationConfirm = (req: Request, res: Response, next: NextFunction) => {
-    let body:Confirm = req.body
+    const body: BodyConfirm = req.body
+    const params: ParamsConfirm = req.params
 
-    !body.code ? body.code = '':null
-    req.params.path = String(req.params.path)
-    
+    body.code = body.code ? String(body.code) : ''
+    params.path = params.path ? String(params.path) : ''
+
     next()
 }
