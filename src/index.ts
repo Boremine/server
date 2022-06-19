@@ -2,7 +2,7 @@ import express, { Application } from 'express'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-import mongoose from 'mongoose'
+import mongoose, { ConnectOptions } from 'mongoose'
 // import slowDown from 'express-slow-down'
 import useragent from 'express-useragent'
 
@@ -72,7 +72,7 @@ app.use(cookieParser(process.env.COOKIE_PARSER_SECRET))
 // app.use(speedLimiter)
 
 mongoose
-  .connect(`${process.env.DATABASE}`)
+  .connect(`${process.env.DATABASE}`, { useNewUrlParser: true, useUnifiedTopology: true } as ConnectOptions)
   .then(() => console.log(`Database connected! ${process.env.DATABASE}`))
   .catch(err => console.log(`Failed to connect to database: ${err.message}`))
 
