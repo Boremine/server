@@ -15,7 +15,7 @@ import { HandleSuccess } from '../../../responses/success/HandleSuccess'
 interface Body {
   user_id: string
   username: string
-  log_id: string | void
+  log_id: string
 }
 
 export const newAuthentication = async (body: Body, res: Response) => {
