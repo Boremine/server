@@ -22,5 +22,5 @@ import { Request, Response, NextFunction } from 'express'
 export const profileGet = async (req: Request, res: Response, next: NextFunction) => {
     // const locals = res.locals
 
-    res.sendStatus(200)
+    res.status(200).json({ message: 'Sucessssss' })
 }
