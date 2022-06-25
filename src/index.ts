@@ -42,7 +42,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello Test V4.17 db Connection')
+  res.send('Hello Test V4.18 db Connection')
 })
 
 const server = http.createServer(app)
