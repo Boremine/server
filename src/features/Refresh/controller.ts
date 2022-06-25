@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Request, Response, NextFunction } from 'express'
 import User from '../../models/user'
 // import Log from '../../models/log'
@@ -99,6 +100,8 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
     populate: { path: 'refreshToken_id' }
   })
   if (!user) return next(HandleError.Unauthorized('User not found'))
+  // console.log(req.useragent)
+  // console.log(user.logs)
 
   const tokenOwner: Token | boolean = validUserAgent(req.useragent, user.logs)
   if (!tokenOwner) return next(HandleError.Unauthorized('Invalid Refresh Token 1'))

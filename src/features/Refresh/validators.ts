@@ -5,7 +5,7 @@ import { HandleError } from '../../responses/error/HandleError'
 
 export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
     let { refresh_token } = req.signedCookies
-
+    // console.log(refresh_token, 'Refresh Token')
     if (process.env.NODE_ENV === 'test') refresh_token = req.cookies.refresh_token
 
     const secret: string = String(process.env.REFRESH_TOKEN_SECRET)
@@ -20,7 +20,7 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
             res.clearCookie('refresh_token')
             return next(HandleError.Forbidden('Refresh Token Expired'))
         }
-
+        // console.log(decoded, 'Decoded Refresh Token')
         res.locals = {
             username: decoded.username,
             user_id: decoded.user_id

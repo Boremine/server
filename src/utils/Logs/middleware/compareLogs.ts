@@ -4,13 +4,14 @@ import Log from '../../../models/log'
 import User from '../../../models/user'
 
 import { verificationGenerate_G } from '../../../features/Verification/controllers'
-import { Details } from 'express-useragent'
+// import { Details } from 'express-useragent'
+import { UserAgent } from '../../../types/express-useragent-interface'
 
 interface LogType {
     _id: string,
 }
 
-const checkLogs = (logs: Array<Details & LogType>, userAgent: Details | undefined) => {
+const checkLogs = (logs: Array<UserAgent & LogType>, userAgent: UserAgent | undefined) => {
     let found: boolean | string = true
 
     for (let i = 0; i < logs.length; i++) {
@@ -37,9 +38,10 @@ const checkLogs = (logs: Array<Details & LogType>, userAgent: Details | undefine
 
 export const compareLogs = async (req: Request, res: Response, next: NextFunction) => {
     const userAgent = req.useragent
+    // console.log(userAgent)
     const { user_id } = res.locals
     const user = await User.findById(user_id).populate({ path: 'logs', model: Log }).select('logs username email')
-    const logs: Array<Details & LogType> | any = user?.logs
+    const logs: Array<UserAgent & LogType> | any = user?.logs
     const log_id: boolean | string = checkLogs(logs, userAgent)
     if (!logs.length || !log_id) return verificationGenerate_G(res, { ...req.body, ...res.locals }, 'new_auth')
     res.locals.log_id = log_id.toString()

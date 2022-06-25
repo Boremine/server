@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Request, NextFunction } from 'express'
 
 import User from '../../../models/user'
