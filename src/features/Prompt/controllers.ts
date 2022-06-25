@@ -144,7 +144,6 @@ export const votePrompt = async (req: Request, res: Response, next: NextFunction
 
 export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
     const prompt = await Prompt.findOne().populate('user_id', 'username').select('text color title')
-
     if (!prompt) {
         setTimeout(() => {
             displayPrompt(io)
