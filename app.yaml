@@ -14,3 +14,6 @@ env_variables:
   REFRESH_TOKEN_SECRET: 'sefesfesfsefesfse'
   NODEMAILER_EMAIL: boremine.business@gmail.com
   NODEMAILER_PASSWORD: jfpporevunxpcjdy
+  REDIS_CONNECTION: redis://redis-16221.c258.us-east-1-4.ec2.cloud.redislabs.com:16221
+  REDIS_PASSWORD: r22PYXrhlCPWotxZaW4ZHt5T852SZeU4
+  REDIS_USERNAME: default
