@@ -44,7 +44,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello Test V4.18 db Connection')
+  res.send('Hello Test V4.19 db Connection')
 })
 
 // app.get('/test/email', async (req: Request, res: Response) => {
