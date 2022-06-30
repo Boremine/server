@@ -8,8 +8,8 @@ interface PostBody {
 export const postPrompt = (req: Request, res: Response, next: NextFunction) => {
     const body: PostBody = req.body
 
-    body.text = body.text ? String(body.text) : ''
-    body.title = body.title ? String(body.title) : ''
+    body.text = body.text ? String(body.text).trim() : ''
+    body.title = body.title ? String(body.title).trim() : ''
 
     next()
 }

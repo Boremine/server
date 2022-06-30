@@ -17,3 +17,14 @@ Content-Type: application/json
     "code": "e28d2356"
 }
 
+
+###
+
+GET http://192.168.0.199:3001 HTTP/1.1
+
+
+###
+
+GET http://192.168.0.199:3001/test/email HTTP/1.1
+
+

@@ -4,6 +4,8 @@ import Verification from '../../models/verification'
 import { HandleSuccess } from '../../responses/success/HandleSuccess'
 
 import crypto from 'crypto'
+import nodemailer from 'nodemailer'
+
 import { signupVerified } from '../Signup/controllers'
 import { newAuthentication } from '../../utils/Authentication/function/newAuthentication'
 import { addLog } from '../../utils/Logs/functions/addLog'
@@ -13,7 +15,11 @@ export const verificationValidate = async (req: Request, res: Response, next: Ne
     HandleSuccess.Ok(res, 'Path valid')
 }
 
-export const verificationGenerate_G = async (res: Response, body: Object, type: string) => {
+interface GenerateBody {
+    [key: string]: any;
+}
+
+export const verificationGenerate_G = async (res: Response, body: GenerateBody, type: 'new_auth' | 'signup') => {
     const path: string = crypto.randomBytes(40).toString('hex')
 
     const code: string = crypto.randomBytes(4).toString('hex')
@@ -29,10 +35,40 @@ export const verificationGenerate_G = async (res: Response, body: Object, type: 
     await NewVerification.save()
 
     if (process.env.NODE_ENV === 'test') return HandleSuccess.MovedPermanently(res, { path, code })
-    else {
-        console.log(code)
-        HandleSuccess.MovedPermanently(res, { path })
+
+    let emailSubject = 'f'
+
+    switch (type) {
+        case 'signup':
+            emailSubject = 'Creating Account: verification code'
+            break
+        case 'new_auth':
+            emailSubject = 'New Login: verification code'
+            break
     }
+
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            user: process.env.NODEMAILER_EMAIL,
+            pass: process.env.NODEMAILER_PASSWORD
+        }
+    })
+
+    try {
+        await transporter.sendMail({
+            from: 'Boremine <noreply@boremine.com>',
+            to: body.email,
+            subject: emailSubject,
+            html: `Code: ${code}`
+        })
+    } catch {
+        // return HandleSuccess.MovedPermanently(res, { path })
+    }
+    console.log('pass')
+    HandleSuccess.MovedPermanently(res, { path })
 }
 
 export const verificationConfirm = async (req: Request, res: Response, next: NextFunction) => {
