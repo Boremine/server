@@ -1,4 +1,4 @@
-import { authorizeConnections } from '../../utils/Socket/function/validateConnection'
+import { authorizeConnections } from '../../utils/Socket/functions/validateConnection'
 
 interface Constructor {
     prompt_id: string

@@ -14,7 +14,7 @@ import { newAuthentication } from '../../utils/Authentication/function/newAuthen
 const userColors: Array<string> = ['#fcba03', '#158eeb', '#1520eb', '#8415eb', '#d915eb', '#eb15b2', '#eb1579', '#eb152e', '#eb7c15', '#ebab15', '#d2eb15', '#72eb15', '#15eb15']
 
 interface RequestBody {
-    username: string,
+    username: string
     email: string,
     password: string,
 }

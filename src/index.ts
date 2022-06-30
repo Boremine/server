@@ -3,6 +3,7 @@ import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
+
 // import slowDown from 'express-slow-down'
 import useragent from 'express-useragent'
 
@@ -12,7 +13,7 @@ import http from 'http'
 import { displayPrompt } from './features/Prompt/controllers'
 import { displayChatto } from './features/Chatto/controllers'
 
-import { validateConnections } from './utils/Socket/function/validateConnection'
+import { validateConnections } from './utils/Socket/functions/validateConnection'
 
 import { error_handler } from './responses/error/error-handler'
 
@@ -31,6 +32,7 @@ import signupRoute from './features/Signup/routes'
 import loginRoute from './features/Login/routes'
 import verificationRoute from './features/Verification/routes'
 import refreshRoute from './features/Refresh/routes'
+// import nodemailer from 'nodemailer'
 
 export const app: Application = express()
 
@@ -44,6 +46,10 @@ if (process.env.NODE_ENV === 'development') {
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello Test V4.18 db Connection')
 })
+
+// app.get('/test/email', async (req: Request, res: Response) => {
+
+// })
 
 const server = http.createServer(app)
 export const io = new socketIO.Server(server, {

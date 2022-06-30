@@ -1,9 +1,8 @@
 import { Router } from 'express'
 
 import rateLimit from 'express-rate-limit'
-
-// import RedisStore from 'rate-limit-redis'
-// import { createClient } from 'redis'
+import RedisStore from 'rate-limit-redis'
+import { createClient } from 'redis'
 
 import {
     sendMessage as sendMessage_CONTROLLER
@@ -21,27 +20,21 @@ import {
     authorize
 } from '../../utils/Authorize/middleware/verifyToken'
 
-// const tete = process.env.REDIS_PASSWORD
-// console.log(tete)
-// console.log(process.env.REDIS_PASSWORD)
-
-// const client = createClient({ url: 'redis://redis-16221.c258.us-east-1-4.ec2.cloud.redislabs.com:16221', password: 'r22PYXrhlCPWotxZaW4ZHt5T852SZeU4', username: 'default' })
-// client.connect()
-// client.on('connect', () => {
-//     console.log('Redis Connected')
-// })
+const client = createClient({ url: process.env.REDIS_CONNECTION, password: process.env.REDIS_PASSWORD, username: process.env.REDIS_USERNAME })
+client.connect()
+client.on('connect', () => {
+    console.log('Redis Connected (Chatto/Post)')
+})
 
 const limiter = rateLimit({
-    windowMs: 30000,
-    max: 10,
-    // windowMs: 2000,
-    // max: 1,
+    windowMs: 3000,
+    max: 1,
     standardHeaders: true,
     message: 'To many requests, wait a moment',
-    keyGenerator: (request, response) => `${response.locals.user_id}`
-    // store: new RedisStore({
-    //     sendCommand: (...args: string[]) => client.sendCommand(args)
-    // })
+    keyGenerator: (request, response) => `${response.locals.user_id} ${request.useragent?.ip}`,
+    store: new RedisStore({
+        sendCommand: (...args: string[]) => client.sendCommand(args)
+    })
 })
 
 const router: Router = Router()
