@@ -7,7 +7,7 @@ interface Body {
 export const sendMessage = (req: Request, res: Response, next: NextFunction) => {
     const body:Body = req.body
 
-    body.message = body.message ? String(body.message) : ''
+    body.message = body.message ? String(body.message).trim() : ''
 
     next()
 }

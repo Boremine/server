@@ -23,7 +23,7 @@ export const verificationConfirm = (req: Request, res: Response, next: NextFunct
     const body: BodyConfirm = req.body
     const params: ParamsConfirm = req.params
 
-    body.code = body.code ? String(body.code) : ''
+    body.code = body.code ? String(body.code).toLowerCase().trim() : ''
     params.path = params.path ? String(params.path) : ''
 
     next()

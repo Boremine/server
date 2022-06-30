@@ -12,4 +12,6 @@ env_variables:
   COOKIE_PARSER_SECRET: '938f2j29rthgb9rhg349t85ehg8dr7ghw47twg98rtyg3tg'
   ACCESS_TOKEN_SECRET: 'fjeifj348f2j9f8ejf982j98fj'
   REFRESH_TOKEN_SECRET: 'sefesfesfsefesfse'
+  NODEMAILER_EMAIL: boremine.business@gmail.com
+  NODEMAILER_PASSWORD: jfpporevunxpcjdy
 
