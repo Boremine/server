@@ -2,12 +2,4 @@ steps:
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
   args: ['-c', 'gcloud config set app/cloud_build_timeout 1600 && gcloud app deploy']
-  env:
-    - 'CLIENT_DOMAIN=${_CLIENT_DOMAIN}'
-    - 'DATABASE=${_DATABASE}'
-    - 'COOKIE_PARSER_SECRET=${_COOKIE_PARSER_SECRET}'
-    - 'ACCESS_TOKEN_SECRET=${_ACCESS_TOKEN_SECRET}'
-    - 'REFRESH_TOKEN_SECRET=${_REFRESH_TOKEN_SECRET}'
-    - 'NODEMAILER_EMAIL=${_NODEMAILER_EMAIL}'
-    - 'NODEMAILER_PASSWORD=${_NODEMAILER_PASSWORD}'
 timeout: '1600s'
