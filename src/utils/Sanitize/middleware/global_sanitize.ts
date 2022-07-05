@@ -14,15 +14,7 @@ export const global_sanitize = async (req: Request, res: Response, next: NextFun
     req.body = sanitize(req.body)
     req.params = sanitize(req.params)
 
-    console.log(req.header('X-AppEngine-Country'))
-    console.log(req.header('X-AppEngine-Region'))
-    console.log(req.header('X-AppEngine-City'))
-    console.log(req.header('X-AppEngine-CityLatLong'))
     console.log(req.headers)
-    console.log(req.headers['X-AppEngine-Country'])
-    console.log(req.headers['X-AppEngine-Region'])
-    console.log(req.headers['X-AppEngine-City'])
-    console.log(req.headers['X-AppEngine-CityLatLong'])
 
     if (req.useragent) {
         req.useragent.device = req.cookies.device ? req.cookies.device : 'global'

@@ -12,6 +12,7 @@ env_variables:
   COOKIE_PARSER_SECRET: '938f2j29rthgb9rhg349t85ehg8dr7ghw47twg98rtyg3tg'
   ACCESS_TOKEN_SECRET: 'fjeifj348f2j9f8ejf982j98fj'
   REFRESH_TOKEN_SECRET: 'sefesfesfsefesfse'
+  FORGOTPASSWORD_TOKEN_SECRET: 'jgjerigi38rj38rj8ghd8gh827dh8'
   NODEMAILER_EMAIL: 'boremine.business@gmail.com'
   NODEMAILER_PASSWORD: 'jfpporevunxpcjdy'
   REDIS_CONNECTION: 'redis://redis-16221.c258.us-east-1-4.ec2.cloud.redislabs.com:16221'
