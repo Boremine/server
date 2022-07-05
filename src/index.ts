@@ -27,11 +27,14 @@ import authInfoRoute from './features/AuthInfo/routes'
 import profileRoute from './features/Profile/routes'
 import chattoRoute from './features/Chatto/routes'
 import promptRoute from './features/Prompt/routes'
+import forgotRoute from './features/ForgotPassword/routes'
 
 import signupRoute from './features/Signup/routes'
 import loginRoute from './features/Login/routes'
 import verificationRoute from './features/Verification/routes'
 import refreshRoute from './features/Refresh/routes'
+import logoutRoute from './features/Logout/routes'
+import accountRoute from './features/Account/routes'
 // import nodemailer from 'nodemailer'
 
 export const app: Application = express()
@@ -86,9 +89,11 @@ app.use('/profile', profileRoute)
 app.use('/authInfo', authInfoRoute)
 app.use('/chatto', chattoRoute)
 app.use('/prompt', promptRoute)
-
+app.use('/account', accountRoute)
 app.use('/signup', signupRoute)
+app.use('/logout', logoutRoute)
 app.use('/login', loginRoute)
+app.use('/forgot', forgotRoute)
 app.use('/verification', verificationRoute)
 app.use('/refresh', refreshRoute)
 

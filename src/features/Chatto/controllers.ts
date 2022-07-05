@@ -27,7 +27,8 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
     const body: SendBody = req.body
     const { user_id, username } = res.locals
 
-    // const io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> = req.app.get('socketio')
+    const user = await User.findById(user_id)
+    if (!user) return next(HandleError.BadRequest("User doesn't exist"))
 
     const NewChatto = new Chatto({
         user_id,
@@ -35,8 +36,6 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
     })
 
     NewChatto.save()
-    const user = await User.findById(user_id)
-    if (!user) return next(HandleError.BadRequest("User doesn't exist"))
 
     user.chatties.push(NewChatto)
     await user.save()

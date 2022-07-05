@@ -11,15 +11,19 @@ import { newAuthentication } from '../../utils/Authentication/function/newAuthen
 import { addLog } from '../../utils/Logs/functions/addLog'
 import { HandleError } from '../../responses/error/HandleError'
 
+import { forgotVerified } from '../ForgotPassword/controllers'
+
 export const verificationValidate = async (req: Request, res: Response, next: NextFunction) => {
-    HandleSuccess.Ok(res, 'Path valid')
+    const { type, email } = res.locals
+
+    HandleSuccess.Ok(res, { type, email })
 }
 
 interface GenerateBody {
     [key: string]: any;
 }
 
-export const verificationGenerate_G = async (res: Response, body: GenerateBody, type: 'new_auth' | 'signup') => {
+export const verificationGenerate_G = async (res: Response, body: GenerateBody, type: 'new_auth' | 'signup' | 'forgot') => {
     const path: string = crypto.randomBytes(40).toString('hex')
 
     const code: string = crypto.randomBytes(4).toString('hex')
@@ -40,10 +44,13 @@ export const verificationGenerate_G = async (res: Response, body: GenerateBody, 
 
     switch (type) {
         case 'signup':
-            emailSubject = 'Creating Account: verification code'
+            emailSubject = 'Account Creation'
             break
         case 'new_auth':
-            emailSubject = 'New Login: verification code'
+            emailSubject = 'New Login'
+            break
+        case 'forgot':
+            emailSubject = 'Reset Password'
             break
     }
 
@@ -57,17 +64,17 @@ export const verificationGenerate_G = async (res: Response, body: GenerateBody, 
         }
     })
 
-    try {
-        await transporter.sendMail({
-            from: 'Boremine <noreply@boremine.com>',
-            to: body.email,
-            subject: emailSubject,
-            html: `Code: ${code}`
-        })
-    } catch {
-        // return HandleSuccess.MovedPermanently(res, { path })
-    }
-    console.log('pass')
+    transporter.sendMail({
+        from: 'Boremine <noreply@boremine.com>',
+        to: body.email,
+        subject: emailSubject,
+        html: `Code: ${code}`
+    }, function (err, info) {
+        if (err) {
+            console.log('Invalid email address')
+        }
+    })
+
     HandleSuccess.MovedPermanently(res, { path })
 }
 
@@ -78,8 +85,7 @@ export const verificationConfirm = async (req: Request, res: Response, next: Nex
     await Verification.findOneAndRemove({ path })
 
     if (type === 'signup') signupVerified(req, res, next)
-
-    if (type === 'new_auth') {
+    else if (type === 'new_auth') {
         const addLogRes = await addLog(req, data.user_id, next)
         if (!addLogRes) return next(HandleError.BadRequest('There was a problem authenticating'))
 
@@ -90,5 +96,5 @@ export const verificationConfirm = async (req: Request, res: Response, next: Nex
         }
 
         newAuthentication(newAuth, res)
-    }
+    } else if (type === 'forgot') forgotVerified(req, res, next)
 }

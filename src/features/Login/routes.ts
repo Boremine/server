@@ -6,15 +6,15 @@ import { createClient } from 'redis'
 import { compareLogs } from '../../utils/Logs/middleware/compareLogs'
 
 import {
-	loginTry as loginTry_SANITIZE
+    loginTry as loginTry_SANITIZE
 } from './sanitize'
 
 import {
-	loginTry as loginTry_VALIDATORS
+    loginTry as loginTry_VALIDATORS
 } from './validators'
 
 import {
-	loginTry as loginTry_CONTROLLER
+    loginTry as loginTry_CONTROLLER
 } from './controllers'
 
 const client = createClient({ url: process.env.REDIS_CONNECTION, password: process.env.REDIS_PASSWORD, username: process.env.REDIS_USERNAME })
@@ -23,7 +23,7 @@ client.on('connect', () => {
     console.log('Redis Connected (Login/Try)')
 })
 
-const limiter = rateLimit({
+const loginTry_LIMITER = rateLimit({
     windowMs: 10000,
     max: 5,
     standardHeaders: true,
@@ -36,6 +36,6 @@ const limiter = rateLimit({
 
 const router: Router = Router()
 
-router.post('/try', limiter, loginTry_SANITIZE, loginTry_VALIDATORS, compareLogs, loginTry_CONTROLLER)
+router.post('/try', loginTry_LIMITER, loginTry_SANITIZE, loginTry_VALIDATORS, compareLogs, loginTry_CONTROLLER)
 
 export default router
