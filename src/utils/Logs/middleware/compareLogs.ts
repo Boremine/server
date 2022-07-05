@@ -38,12 +38,12 @@ const checkLogs = (logs: Array<UserAgent & LogType>, userAgent: UserAgent | unde
 
 export const compareLogs = async (req: Request, res: Response, next: NextFunction) => {
     const userAgent = req.useragent
-    // console.log(userAgent)
     const { user_id } = res.locals
+
     const user = await User.findById(user_id).populate({ path: 'logs', model: Log }).select('logs username email')
     const logs: Array<UserAgent & LogType> | any = user?.logs
     const log_id: boolean | string = checkLogs(logs, userAgent)
-    if (!logs.length || !log_id) return verificationGenerate_G(res, { ...req.body, ...res.locals }, 'new_auth')
+    if (!logs.length || !log_id) return verificationGenerate_G(res, { ...res.locals }, 'new_auth')
     res.locals.log_id = log_id.toString()
 
     next()

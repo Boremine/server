@@ -13,18 +13,21 @@ const getIp = (req: Request) => {
 export const global_sanitize = async (req: Request, res: Response, next: NextFunction) => {
     req.body = sanitize(req.body)
     req.params = sanitize(req.params)
-    // console.log(req.cookies)
-    // console.log(req.header('x-appengine-user-ip')?.split(',')[0])
-    // console.log(req.header('x-forwarded-for')?.split(',')[0])
+
+    console.log(req.header('X-AppEngine-Country'))
+    console.log(req.header('X-AppEngine-Region'))
+    console.log(req.header('X-AppEngine-City'))
+    console.log(req.header('X-AppEngine-CityLatLong'))
+    console.log(req.headers)
+    console.log(req.headers['X-AppEngine-Country'])
+    console.log(req.headers['X-AppEngine-Region'])
+    console.log(req.headers['X-AppEngine-City'])
+    console.log(req.headers['X-AppEngine-CityLatLong'])
+
     if (req.useragent) {
         req.useragent.device = req.cookies.device ? req.cookies.device : 'global'
         req.useragent.ip = getIp(req)
     }
-    // await Stringify(req.body)
-    // await Stringify(req.params)
-    // await Stringify(req.useragent)
-
-    // console.log(req.body)
 
     next()
 }
