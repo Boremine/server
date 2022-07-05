@@ -10,13 +10,13 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
     const secret: string = String(process.env.REFRESH_TOKEN_SECRET)
 
     if (!refresh_token) {
-        res.clearCookie('refresh_token', { domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : '.boremine.com' })
+        res.clearCookie('refresh_token', { path: '/', domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : '.boremine.com' })
         return next(HandleError.Forbidden('Refresh Token Expired'))
     }
 
     jwt.verify(refresh_token, secret, (err: VerifyErrors | null, decoded: any) => {
         if (err) {
-            res.clearCookie('access_token', { domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : '.boremine.com' })
+            res.clearCookie('access_token', { path: '/', domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : '.boremine.com' })
             return next(HandleError.Forbidden('Refresh Token Expired'))
         }
 
