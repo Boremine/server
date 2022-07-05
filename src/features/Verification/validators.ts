@@ -10,6 +10,11 @@ export const verificationValidate = async (req: Request, res: Response, next: Ne
     const verification = await Verification.findOne({ path })
     if (!verification) return next(HandleError.NotFound('Path expired'))
 
+    res.locals = {
+        type: verification.type,
+        email: verification.data.email
+    }
+
     next()
 }
 
@@ -26,6 +31,8 @@ export const verificationConfirm = async (req: Request, res: Response, next: Nex
         await Verification.findOneAndRemove({ path })
         return next(HandleError.NotFound('Path expired'))
     }
+
+    if (verification.data.fakeVerification) return next(HandleError.NotAcceptable('Code incorrect'))
     if (verification.codeHashed !== yourCodeHashed) return next(HandleError.NotAcceptable('Code incorrect'))
 
     res.locals = {

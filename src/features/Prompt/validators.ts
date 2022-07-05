@@ -43,6 +43,7 @@ export const votePrompt = async (req: Request, res: Response, next: NextFunction
 
     const user = await User.findByIdAndUpdate(user_id).select('alreadyVoted')
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
+
     if (state === 'wait' || state === 'end_fail' || state === 'end_pass') return next(HandleError.BadRequest('Prompt not ready'))
     if (user.alreadyVoted === 'pop' || user.alreadyVoted === 'drop') return next(HandleError.NotAcceptable('Already voted'))
 

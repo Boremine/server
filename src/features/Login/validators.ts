@@ -6,13 +6,13 @@ import bcrypt from 'bcrypt'
 
 import User from '../../models/user'
 
-interface Body {
+interface TryBody {
     email: string,
     password: string,
 }
 
 export const loginTry = async (req: Request, res: Response, next: NextFunction) => {
-    const body: Body = req.body
+    const body: TryBody = req.body
 
     const user = await User.findOne({ email: body.email })
     if (!user) return next(HandleError.NotAcceptable('Email or Password is incorrect'))
@@ -23,8 +23,8 @@ export const loginTry = async (req: Request, res: Response, next: NextFunction) 
 
     res.locals = {
         user_id: user._id.toString(),
-        username: user.usernameDisplay
-
+        username: user.usernameDisplay,
+        email: user.email
     }
 
     next()

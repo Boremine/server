@@ -5,7 +5,13 @@ interface Verification {
     codeHashed: string,
     type: string,
     tries: number,
-    data: object
+    data: {
+        email?:string
+        username?:string
+        password?:string
+        user_id?:string
+        fakeVerification?:boolean
+    }
     expireAt: Date
 }
 
