@@ -14,11 +14,10 @@ export const global_sanitize = async (req: Request, res: Response, next: NextFun
     req.body = sanitize(req.body)
     req.params = sanitize(req.params)
 
-    // console.log(req.headers)
-
     if (req.useragent) {
         req.useragent.device = req.cookies.device ? req.cookies.device : 'global'
         req.useragent.ip = getIp(req)
+        req.useragent.location = `${req.header('X-AppEngine-Region')}, ${req.header('X-AppEngine-City')}, ${req.header('X-AppEngine-Country')}`
     }
 
     next()
