@@ -30,7 +30,7 @@ export const setAccessToken = (res: Response, token: string) => {
       process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
         ? ''
         : '.boremine.com',
-    sameSite: 'none',
+    sameSite: 'strict',
     maxAge: 1000 * 60 * 5
   })
 }
@@ -44,7 +44,7 @@ export const setRefreshToken = (res: Response, token: string) => {
       process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
         ? ''
         : '.boremine.com',
-    sameSite: 'none',
+    sameSite: 'strict',
     maxAge: 1000 * 60 * 60 * 24 * 365
   })
 }

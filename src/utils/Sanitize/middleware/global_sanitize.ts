@@ -14,7 +14,7 @@ export const global_sanitize = async (req: Request, res: Response, next: NextFun
     req.body = sanitize(req.body)
     req.params = sanitize(req.params)
 
-    console.log(req.headers)
+    // console.log(req.headers)
 
     if (req.useragent) {
         req.useragent.device = req.cookies.device ? req.cookies.device : 'global'
