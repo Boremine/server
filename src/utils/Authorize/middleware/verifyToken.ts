@@ -8,13 +8,13 @@ export const authorize = async (req: Request, res: Response, next: NextFunction)
     const secret: string = String(process.env.ACCESS_TOKEN_SECRET)
 
     if (!access_token) {
-        res.clearCookie('access_token', { path: '/', domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : '.boremine.com' })
+        res.clearCookie('access_token', { path: '/', domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : 'boremine.com' })
         return next(HandleError.Forbidden('Access Token Expired'))
     }
 
     jwt.verify(access_token, secret, (err: VerifyErrors | null, decoded: any) => {
         if (err) {
-            res.clearCookie('access_token', { path: '/', domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : '.boremine.com' })
+            res.clearCookie('access_token', { path: '/', domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : 'boremine.com' })
             return next(HandleError.Forbidden('Access Token Expired'))
         }
 
