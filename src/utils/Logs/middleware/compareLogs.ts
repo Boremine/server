@@ -24,12 +24,6 @@ const checkLogs = (logs: Array<UserAgent & LogType>, userAgent: UserAgent | unde
         if (log.platform !== userAgent?.platform) found = false
         if (log.device !== userAgent?.device) found = false
         if (log.ip !== userAgent?.ip) found = false
-        // log.browser !== userAgent?.browser ? found = false : null
-        // log.version !== userAgent?.version ? found = false : null
-        // log.os !== userAgent?.os ? found = false : null
-        // log.platform !== userAgent?.platform ? found = false : null
-        // log.device !== userAgent?.device ? found = false : null
-        // log.ip !== userAgent?.ip ? found = false : null
 
         if (found) break
     }
