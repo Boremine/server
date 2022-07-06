@@ -1,12 +1,13 @@
 import { Schema, model } from 'mongoose'
 
 interface Log {
-    browser: string,
-    version: string,
-    os: string,
-    platform: string,
-    ip: string,
-    device: string,
+    browser: string
+    version: string
+    os: string
+    platform: string
+    ip: string
+    device: string
+    location: string
     user_id: Schema.Types.ObjectId,
     refreshToken_id: Schema.Types.ObjectId
 }
@@ -29,6 +30,10 @@ const LogSchema = new Schema<Log>({
         required: true
     },
     device: {
+        type: String,
+        required: true
+    },
+    location: {
         type: String,
         required: true
     },

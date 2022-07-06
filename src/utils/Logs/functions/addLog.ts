@@ -14,7 +14,8 @@ export const addLog = async (req: Request, user_id: string, next: NextFunction) 
         os: userAgent?.os,
         platform: userAgent?.platform,
         device: userAgent?.device,
-        ip: userAgent?.ip
+        ip: userAgent?.ip,
+        location: userAgent?.location
     }
 
     const logFound = await Log.findOne(query)
