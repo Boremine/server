@@ -20,8 +20,8 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
 
   // await RefreshToken.findById(tokenOwner._id).remove()
 
-  res.clearCookie('refresh_token', { path: '/', domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : '.boremine.com' })
-  res.clearCookie('access_token', { path: '/', domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : '.boremine.com' })
+  res.clearCookie('refresh_token', { path: '/', domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : 'boremine.com' })
+  res.clearCookie('access_token', { path: '/', domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : 'boremine.com' })
 
   HandleSuccess.Ok(res, 'Logout Successful')
 }
