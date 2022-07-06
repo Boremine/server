@@ -5,4 +5,5 @@ export interface UserAgent{
     platform: string
     device:string
     ip:string | undefined
+    location:string
 }
