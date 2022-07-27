@@ -6,11 +6,12 @@ interface User {
     email: string,
     password: string,
     logs: Array<any>
-    chatties: Array<any>,
-    mural: Array<any>
-    prompt_id: Schema.Types.ObjectId
+    commentaries: Array<any>,
+    mural: Array<any>,
+    prompt_id: Schema.Types.ObjectId | any
     color: string
     alreadyVoted: 'false' | 'drop' | 'pop'
+    lastUsernameUpdate: Date
 }
 
 const UserSchema = new Schema<User>({
@@ -50,9 +51,9 @@ const UserSchema = new Schema<User>({
         type: Schema.Types.ObjectId,
         ref: 'Log'
     }],
-    chatties: [{
+    commentaries: [{
         type: Schema.Types.ObjectId,
-        ref: 'Chatto'
+        ref: 'Commentary'
     }],
     mural: [{
         type: Schema.Types.ObjectId,
@@ -65,6 +66,10 @@ const UserSchema = new Schema<User>({
     alreadyVoted: {
         type: String,
         required: true
+    },
+    lastUsernameUpdate: {
+        type: Date,
+        default: Date.now
     }
 
 }, { timestamps: true })

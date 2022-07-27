@@ -25,7 +25,7 @@ export const signupRequest = async (req: Request, res: Response, next: NextFunct
     const passwordHashed = crypto.createHash('sha256').update(body.password).digest('hex')
     body.password = await bcrypt.hash(passwordHashed, 12)
 
-    verificationGenerate_G(res, body, 'signup')
+    return verificationGenerate_G(res, body, 'signup')
 }
 
 export const signupVerified = async (req: Request, res: Response, next: NextFunction) => {

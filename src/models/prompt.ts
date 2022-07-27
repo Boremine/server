@@ -15,7 +15,7 @@ const PromptSchema = new Schema<Prompt>({
     },
     text: {
         type: String,
-        maxlength: 2000
+        maxlength: 5000
     },
     user_id: {
         type: Schema.Types.ObjectId,

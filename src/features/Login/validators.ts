@@ -23,7 +23,6 @@ export const loginTry = async (req: Request, res: Response, next: NextFunction) 
 
     res.locals = {
         user_id: user._id.toString(),
-        username: user.usernameDisplay,
         email: user.email
     }
 

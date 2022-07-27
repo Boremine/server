@@ -21,6 +21,15 @@ import morgan from 'morgan'
 // import dotenv from 'dotenv'
 import dotenvSafe from 'dotenv-safe'
 
+import './models/commentary'
+import './models/forgotPassword'
+import './models/log'
+import './models/mural'
+import './models/prompt'
+import './models/refreshToken'
+import './models/user'
+import './models/verification'
+
 import { global_sanitize } from './utils/Sanitize/middleware/global_sanitize'
 
 import authInfoRoute from './features/AuthInfo/routes'
@@ -28,7 +37,7 @@ import profileRoute from './features/Profile/routes'
 import chattoRoute from './features/Chatto/routes'
 import promptRoute from './features/Prompt/routes'
 import forgotRoute from './features/ForgotPassword/routes'
-
+import muralRoute from './features/Mural/routes'
 import signupRoute from './features/Signup/routes'
 import loginRoute from './features/Login/routes'
 import verificationRoute from './features/Verification/routes'
@@ -85,6 +94,7 @@ app.set('socketio', io)
 
 app.use(global_sanitize)
 
+app.use('/mural', muralRoute)
 app.use('/profile', profileRoute)
 app.use('/authInfo', authInfoRoute)
 app.use('/chatto', chattoRoute)

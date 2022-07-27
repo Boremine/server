@@ -3,14 +3,14 @@ import socketIO from 'socket.io'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 
 import User from '../../models/user'
-import Chatto from '../../models/chatto'
+import Commentary from '../../models/commentary'
 
 import { state } from '../Prompt/controllers'
 import { HandleError } from '../../responses/error/HandleError'
 
 interface ChattoBlock {
     message: string
-    username: string
+    usernameDisplay: string
     color: string
 }
 
@@ -25,24 +25,25 @@ export const clearChattoes = () => { currentChattoes = [] }
 
 export const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
     const body: SendBody = req.body
-    const { user_id, username } = res.locals
+    const { user_id } = res.locals
 
     const user = await User.findById(user_id)
     if (!user) return next(HandleError.BadRequest("User doesn't exist"))
 
-    const NewChatto = new Chatto({
+    const NewChatto = new Commentary({
         user_id,
-        message: body.message
+        message: body.message,
+        fromChatto: true
     })
 
     NewChatto.save()
 
-    user.chatties.push(NewChatto)
+    user.commentaries.push(NewChatto)
     await user.save()
 
     if (state !== 'wait') currentChattoes.push(NewChatto._id.toString())
 
-    chattoBlock.push({ message: body.message, username, color: user.color })
+    chattoBlock.push({ message: body.message, usernameDisplay: user.usernameDisplay, color: user.color })
 
     res.sendStatus(200)
 }
