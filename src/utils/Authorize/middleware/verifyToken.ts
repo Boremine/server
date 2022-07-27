@@ -19,8 +19,7 @@ export const authorize = async (req: Request, res: Response, next: NextFunction)
         }
 
         res.locals = {
-            user_id: decoded.user_id,
-            username: decoded.username
+            user_id: decoded.user_id
         }
     })
 

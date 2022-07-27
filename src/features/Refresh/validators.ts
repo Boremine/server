@@ -21,7 +21,6 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
         }
 
         res.locals = {
-            username: decoded.username,
             user_id: decoded.user_id
         }
     })

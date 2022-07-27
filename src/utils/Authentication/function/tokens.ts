@@ -2,7 +2,6 @@ import { Response } from 'express'
 import jwt from 'jsonwebtoken'
 
 interface Payload {
-  username: string
   user_id: string
   iat?: number
 }
@@ -10,7 +9,7 @@ interface Payload {
 export const generateAccessToken = (payload: Payload) => {
   if (process.env.NODE_ENV === 'test') payload.iat = Date.now()
   const secret: string = String(process.env.ACCESS_TOKEN_SECRET)
-  const token: string = jwt.sign(payload, secret, { expiresIn: '5m' })
+  const token: string = jwt.sign(payload, secret, { expiresIn: '2m' })
   return token
 }
 
@@ -31,7 +30,7 @@ export const setAccessToken = (res: Response, token: string) => {
         ? ''
         : 'boremine.com',
     sameSite: 'strict',
-    maxAge: 1000 * 60 * 5
+    maxAge: 1000 * 60 * 2
   })
 }
 
