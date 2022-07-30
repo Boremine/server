@@ -2,19 +2,25 @@ import { Router } from 'express'
 
 import {
     getMural as getMural_CONTROLLER,
-    getOnePromptInfo as getOnePromptInfo_CONTROLLER,
-    getOnePromptComments as getOnePromptComments_CONTROLLER,
-    markPrompt as markPrompt_CONTROLLER
+    getOnePieceInfo as getOnePieceInfo_CONTROLLER,
+    getOnePieceComments as getOnePieceComments_CONTROLLER,
+    markPiece as markPiece_CONTROLLER,
+    addComment as addComment_CONTROLLER,
+    markComment as markComment_CONTROLLER
 } from './controllers'
 
 import {
-    markPrompt as markPrompt_VALIDATOR
+    markPiece as markPiece_VALIDATOR,
+    addComment as addComment_VALIDATOR,
+    markComment as markComment_VALIDATOR
 } from './validators'
 
 import {
-    getOnePromptInfo as getOnePromptInfo_SANITIZE,
-    getOnePromptComments as getOnePromptComments_SANITIZE,
-    markPrompt as markPrompt_SANITIZE
+    getOnePieceInfo as getOnePieceInfo_SANITIZE,
+    getOnePieceComments as getOnePieceComments_SANITIZE,
+    markPiece as markPiece_SANITIZE,
+    addComment as addComment_SANITIZE,
+    markComment as markComment_SANITIZE
 } from './sanitize'
 
 import { authorize } from '../../utils/Authorize/middleware/verifyToken'
@@ -22,9 +28,12 @@ import { authorize } from '../../utils/Authorize/middleware/verifyToken'
 const router: Router = Router()
 
 router.get('/', getMural_CONTROLLER)
-router.get('/:id', getOnePromptInfo_SANITIZE, getOnePromptInfo_CONTROLLER)
-router.get('/comments/:id', getOnePromptComments_SANITIZE, getOnePromptComments_CONTROLLER)
+router.get('/:piece_id', getOnePieceInfo_SANITIZE, getOnePieceInfo_CONTROLLER)
+router.post('/:piece_id/comments', getOnePieceComments_SANITIZE, getOnePieceComments_CONTROLLER)
 
-router.put('/mark/:id', authorize, markPrompt_SANITIZE, markPrompt_VALIDATOR, markPrompt_CONTROLLER)
+router.put('/:piece_id/mark', authorize, markPiece_SANITIZE, markPiece_VALIDATOR, markPiece_CONTROLLER)
+
+router.post('/:piece_id/comments/add', authorize, addComment_SANITIZE, addComment_VALIDATOR, addComment_CONTROLLER)
+router.put('/comment/:comment_id/mark', authorize, markComment_SANITIZE, markComment_VALIDATOR, markComment_CONTROLLER)
 
 export default router
