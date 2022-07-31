@@ -12,7 +12,8 @@ import {
 import {
     markPiece as markPiece_VALIDATOR,
     addComment as addComment_VALIDATOR,
-    markComment as markComment_VALIDATOR
+    markComment as markComment_VALIDATOR,
+    getOnePieceComments as getOnePieceComments_VALIDATOR
 } from './validators'
 
 import {
@@ -29,7 +30,7 @@ const router: Router = Router()
 
 router.get('/', getMural_CONTROLLER)
 router.get('/:piece_id', getOnePieceInfo_SANITIZE, getOnePieceInfo_CONTROLLER)
-router.post('/:piece_id/comments', getOnePieceComments_SANITIZE, getOnePieceComments_CONTROLLER)
+router.post('/:piece_id/comments', getOnePieceComments_SANITIZE, getOnePieceComments_VALIDATOR, getOnePieceComments_CONTROLLER)
 
 router.put('/:piece_id/mark', authorize, markPiece_SANITIZE, markPiece_VALIDATOR, markPiece_CONTROLLER)
 
