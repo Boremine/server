@@ -37,8 +37,10 @@ export const accountChangeUsername = async (req: Request, res: Response, next: N
 
     if (!body.username.match('^[A-Za-z0-9-_]+$')) val.username = 'Letters, numbers, dashes, and underscores only'
     if (body.username.length > 20 || body.username.length < 3) val.username = 'Username must be between 3 and 20 characters'
-    await User.findOne({ username: body.username.toLowerCase() }).then(user => { if (user) val.username = 'Username is taken' })
-    if (user.username === body.username.toLowerCase()) val.username = 'This is your current username'
+    await User.findOne({ username: body.username.toLowerCase() }).then(otherUser => {
+        if (otherUser && otherUser.username !== user.username) val.username = 'Username is taken'
+    })
+    if (user.username === body.username) val.username = 'This is your current username'
 
     const changeDate = new Date(user.lastUsernameUpdate.setDate(user.lastUsernameUpdate.getDate() + 1))
     const currentDate = new Date()
@@ -46,7 +48,7 @@ export const accountChangeUsername = async (req: Request, res: Response, next: N
     const diffMiliseconds = changeDate.valueOf() - currentDate.valueOf()
     const diffDays = Math.ceil(diffMiliseconds / (1000 * 60 * 60 * 24))
 
-    // if (diffMiliseconds > 0) val.username = `${diffDays} day${diffDays > 1 ? 's' : ''} remaining before you can change your username`
+    if (diffMiliseconds > 0) val.username = `${diffDays} day${diffDays > 1 ? 's' : ''} remaining before you can change your username`
 
     if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
 
