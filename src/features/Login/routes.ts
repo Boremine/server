@@ -17,25 +17,25 @@ import {
     loginTry as loginTry_CONTROLLER
 } from './controllers'
 
-const client = createClient({ url: process.env.REDIS_CONNECTION, password: process.env.REDIS_PASSWORD, username: process.env.REDIS_USERNAME })
-client.connect()
-client.on('connect', () => {
-    console.log('Redis Connected (Login/Try)')
-})
+// const client = createClient({ url: process.env.REDIS_CONNECTION, password: process.env.REDIS_PASSWORD, username: process.env.REDIS_USERNAME })
+// client.connect()
+// client.on('connect', () => {
+//     console.log('Redis Connected (Login/Try)')
+// })
 
-const loginTry_LIMITER = rateLimit({
-    windowMs: 10000,
-    max: 5,
-    standardHeaders: true,
-    message: 'To many requests, wait a moment',
-    keyGenerator: (request, response) => `${response.locals.user_id} ${request.useragent?.ip}`,
-    store: new RedisStore({
-        sendCommand: (...args: string[]) => client.sendCommand(args)
-    })
-})
+// const loginTry_LIMITER = rateLimit({
+//     windowMs: 10000,
+//     max: 5,
+//     standardHeaders: true,
+//     message: 'To many requests, wait a moment',
+//     keyGenerator: (request, response) => `${response.locals.user_id} ${request.useragent?.ip}`,
+//     store: new RedisStore({
+//         sendCommand: (...args: string[]) => client.sendCommand(args)
+//     })
+// })
 
 const router: Router = Router()
 
-router.post('/try', loginTry_LIMITER, loginTry_SANITIZE, loginTry_VALIDATORS, compareLogs, loginTry_CONTROLLER)
+router.post('/try', loginTry_SANITIZE, loginTry_VALIDATORS, compareLogs, loginTry_CONTROLLER)
 
 export default router
