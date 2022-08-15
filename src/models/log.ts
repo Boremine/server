@@ -6,6 +6,7 @@ interface Log {
     ip: string
     device: string
     location: string
+    machine: string
     user_id: Schema.Types.ObjectId,
     refreshToken_id: Schema.Types.ObjectId | any
 }
@@ -26,6 +27,10 @@ const LogSchema = new Schema<Log>({
         required: true
     },
     location: {
+        type: String,
+        required: true
+    },
+    machine: {
         type: String,
         required: true
     },
