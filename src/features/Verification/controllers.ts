@@ -56,6 +56,7 @@ export const verificationGenerate_G = async (res: Response, body: GenerateBody, 
             break
     }
 
+    // console.log(code)
     const emailHtml = `Code: ${code}`
     sendEmail(body.email, emailSubject, emailHtml)
 

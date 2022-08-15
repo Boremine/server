@@ -21,7 +21,12 @@ export const addLog = async (req: Request, user_id: string, next: NextFunction, 
     const logFound = await Log.findOne(query)
     if (logFound) return false
 
-    const NewLog = new Log(query)
+    let machine: string
+
+    if (userAgent?.isDesktop) machine = 'desktop'
+    else if (userAgent?.isMobile) machine = 'mobile'
+
+    const NewLog = new Log({ ...query, machine })
 
     const log = await NewLog.save()
 
