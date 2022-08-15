@@ -19,6 +19,8 @@ import { checkIfFirstFive } from '../../utils/Prompts/functions/checkIfFirstFive
 // import { Types } from 'mongoose'
 // import { encrypt } from '../../utils/Prompts/functions/EncryptMuralId'
 
+// import { saveToReddit } from '../../utils/Prompts/functions/saveTo'
+
 // const promptColors: Array<string> = ['#fcba03', '#158eeb', '#1520eb', '#8415eb', '#d915eb', '#eb15b2', '#eb1579', '#eb152e', '#eb7c15', '#ebab15', '#d2eb15', '#72eb15', '#15eb15']
 const promptColors: Array<string> = ['blue', 'red', 'green', 'orange', 'purple']
 let currentPrompt: CurrentPrompt | undefined
@@ -102,7 +104,7 @@ const waitState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap,
     })
 
     if (promptGoTo === 'Pass') {
-        // const _id = new mongoose.Types.ObjectId()
+        // saveToReddit(currentPrompt?.body.title!, currentPrompt?.body.text!, currentPrompt?.voting!)
 
         const NewMural = new Mural({
             title: currentPrompt?.body.title,

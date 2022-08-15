@@ -14,7 +14,7 @@ const getIp = (req: Request) => {
 export const global_sanitize = async (req: Request, res: Response, next: NextFunction) => {
     req.body = sanitize(req.body)
     req.params = sanitize(req.params)
-
+    // console.log(req.useragent)
     if (req.useragent) {
         req.useragent.device = req.cookies.device ? crypto.createHash('sha256').update(req.cookies.device).digest('hex').slice(0, 20) : 'global'
         req.useragent.ip = getIp(req)
