@@ -49,21 +49,19 @@ const assignSort = (sort: string, type: string) => {
     // sortOptionsHolder.likes_amount = 1
     // sortOptionsHolder.dislikes_amount = -1
 
-    // sortOptionsHolder.createdAt = -1
+    sortOptionsHolder.createdAt = -1
 
     return sortOptionsHolder
 }
 
 export const getOnePieceComments = async (req: Request, res: Response, next: NextFunction) => {
-    // const { sort, type } = res.locals
+    const { sort, type } = res.locals
     const { piece_id } = req.params
     const { limit } = req.body
-    // console.log(sort, type)
-    // let sortOptions: any = {}
 
-    // sortOptions = assignSort(sort, type)
-    // console.log(sortOptions)
-    // const tete = likes_amount: -1
+    let sortOptions: any = {}
+
+    sortOptions = assignSort(sort, type)
 
     if (!isValidObjectId(piece_id)) return next(HandleError.NotFound('No piece found'))
     const piece = await Mural.findById(piece_id).populate(
@@ -74,11 +72,12 @@ export const getOnePieceComments = async (req: Request, res: Response, next: Nex
                 path: 'user_id',
                 select: 'usernameDisplay color'
             },
-            options: { sort: { createdAt: -1 }, limit }
+            options: { sort: sortOptions, limit }
         }
     ).select('commentary _id')
     if (!piece) return next(HandleError.NotFound('No piece found'))
     // console.log(piece.commentary)
+    // console.log('---------------------------------------')
     piece.commentary = piece.commentary.slice(limit - 8, limit)
 
     HandleSuccess.Ok(res, piece.commentary)

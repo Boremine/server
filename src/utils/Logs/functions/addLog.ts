@@ -12,7 +12,7 @@ export const addLog = async (req: Request, user_id: string, next: NextFunction, 
     const query = {
         user_id,
         browser: userAgent?.browser,
-        os: userAgent?.os,
+        platform: userAgent?.platform,
         device: userAgent?.device,
         ip: userAgent?.ip,
         location: userAgent?.location
@@ -38,7 +38,7 @@ export const addLog = async (req: Request, user_id: string, next: NextFunction, 
         const emailHtml = `
         <p>A new log in has been detected from:</p>
         <ul>
-            <li>${query.browser} (${query.os})</li>
+            <li>${query.browser} (${query.platform})</li>
             <li>${query.location}</li>
             <li>${query.ip}</li>
         </ul>

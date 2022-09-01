@@ -44,7 +44,7 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
   const user = await User.findById(user_id).lean().populate([
     {
       path: 'logs',
-      select: 'browser ip device os platform machine version refreshToken_id location _id',
+      select: 'browser ip device platform machine version refreshToken_id location _id',
       populate: {
         path: 'refreshToken_id',
         select: 'token history _id'

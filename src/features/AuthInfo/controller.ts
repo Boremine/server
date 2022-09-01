@@ -11,7 +11,7 @@ export const getAuth = async (req: Request, res: Response, next: NextFunction) =
 
     const user = await User.findById(user_id).lean().populate([{
         path: 'logs',
-        select: 'browser ip device os location machine _id'
+        select: 'browser ip device platform location machine _id'
     }, {
         path: 'prompt_id',
         select: '_id title text'
