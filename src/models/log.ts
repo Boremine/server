@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose'
 
 interface Log {
     browser: string
-    os: string
+    platform: string
     ip: string
     device: string
     location: string
@@ -15,7 +15,7 @@ const LogSchema = new Schema<Log>({
     browser: {
         type: String
     },
-    os: {
+    platform: {
         type: String
     },
     ip: {
