@@ -42,7 +42,7 @@ export const accountChangeUsername = async (req: Request, res: Response, next: N
     })
     if (user.username === body.username) val.username = 'This is your current username'
 
-    const changeDate = new Date(user.lastUsernameUpdate.setDate(user.lastUsernameUpdate.getDate() + 12))
+    const changeDate = new Date(user.lastUsernameUpdate.setDate(user.lastUsernameUpdate.getDate() + 1))
     const currentDate = new Date()
 
     const diffMiliseconds = changeDate.valueOf() - currentDate.valueOf()
