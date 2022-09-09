@@ -76,8 +76,7 @@ export const getOnePieceComments = async (req: Request, res: Response, next: Nex
         }
     ).select('commentary _id')
     if (!piece) return next(HandleError.NotFound('No piece found'))
-    // console.log(piece.commentary)
-    // console.log('---------------------------------------')
+
     piece.commentary = piece.commentary.slice(limit - 8, limit)
 
     HandleSuccess.Ok(res, piece.commentary)
@@ -185,10 +184,6 @@ export const markComment = async (req: Request, res: Response, next: NextFunctio
     } else if (mark === 'dislikes') {
         updateMarks('dislikes', 'likes')
     }
-    // await comment.updateOne({
-    //     $push: { likes: user_id }
-    // })
-    // comment.
 
     HandleSuccess.Ok(res, 'sefse')
 }
