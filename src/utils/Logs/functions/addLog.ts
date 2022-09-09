@@ -6,7 +6,7 @@ import Log from '../../../models/log'
 
 import { sendEmail } from '../../Nodemailer/functions/sendEmail'
 
-export const addLog = async (req: Request, user_id: string, next: NextFunction, emailDetection: 'sendEmailDetection' | false = false) => {
+export const addLog = async (req: Request, user_id: string, next: NextFunction, detectionType: 'login' | 'forgotPassword' | false = false) => {
     const userAgent = req.useragent
 
     const query = {
@@ -18,8 +18,8 @@ export const addLog = async (req: Request, user_id: string, next: NextFunction, 
         location: userAgent?.location
     }
 
-    const logFound = await Log.findOne(query)
-    if (logFound) return false
+    // const logFound = await Log.findOne(query)
+    // if (logFound) return false
 
     let machine: string
 
@@ -34,7 +34,9 @@ export const addLog = async (req: Request, user_id: string, next: NextFunction, 
     user?.logs.push(NewLog)
     await user?.save()
 
-    if (emailDetection) {
+    // let emailHtml:string
+
+    if (detectionType === 'login') {
         const emailHtml = `
         <p>A new log in has been detected from:</p>
         <ul>
@@ -47,6 +49,19 @@ export const addLog = async (req: Request, user_id: string, next: NextFunction, 
         
     `
         sendEmail(user?.email, `New Login Detected`, emailHtml)
+    } else if (detectionType === 'forgotPassword') {
+        const emailHtml = `
+        <p>A new log in has been detected from:</p>
+        <ul>
+            <li>${query.browser} (${query.platform})</li>
+            <li>${query.location}</li>
+            <li>${query.ip}</li>
+        </ul>
+
+        <p>If this was you, you can ignore this message</p>
+        
+    `
+        sendEmail(user?.email, `Password reset successful`, emailHtml)
     }
 
     return log._id.toString()
