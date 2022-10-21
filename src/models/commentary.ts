@@ -3,16 +3,19 @@ import { Schema, model } from 'mongoose'
 interface Commentary {
     message: string,
     user_id: Schema.Types.ObjectId
-    piece_id: Schema.Types.ObjectId
+    piece_id?: Schema.Types.ObjectId
     likes: Array<any>
     likes_amount: number
     dislikes: Array<any>
     dislikes_amount: number
 
-    nestedComments: Array<any>
-    fromComment_id: Schema.Types.ObjectId
+    nestedComments?: Array<any>
+    fromComment_id?: Schema.Types.ObjectId
 
     fromChatto: boolean
+
+    updatedAt?: Date
+    createdAt:Date
 }
 
 const CommentarySchema = new Schema<Commentary>({

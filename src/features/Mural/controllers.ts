@@ -4,33 +4,127 @@ import Commentary from '../../models/commentary'
 import { HandleError } from '../../responses/error/HandleError'
 import { HandleSuccess } from '../../responses/success/HandleSuccess'
 
+import mongoose from 'mongoose'
 import { isValidObjectId } from 'mongoose'
 
 export const getMural = async (req: Request, res: Response, next: NextFunction) => {
-    const mural = await Mural.find().populate(
-        {
-            path: 'user_id',
-            select: 'usernameDisplay color -_id'
-        }
-    ).limit(50).select('chattoes_amount comments_amount pops drops dislikes likes dislikes_amount likes_amount title text createdAt _id').sort({ createdAt: -1 })
+    const { limit } = res.locals
 
-    HandleSuccess.Ok(res, mural)
+    // const mural = await Mural.find().populate(
+    //     {
+    //         path: 'user_id',
+    //         select: 'usernameDisplay color -_id'
+    //     }
+    // ).select('chattoes_amount comments_amount pops drops dislikes likes dislikes_amount likes_amount title text createdAt _id').sort({ createdAt: -1 }).limit(limit)
+
+    // const muralHold = mural.slice(limit - 12, limit)
+    // console.log(muralHold)
+    const mural = await Mural.aggregate([
+        {
+            $sort: {
+                createdAt: -1
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'user_id',
+                foreignField: '_id',
+                as: 'user_id',
+                pipeline: [
+                    { $project: { usernameDisplay: 1, _id: 0 } }
+                ]
+            }
+        },
+        {
+            $limit: limit
+        },
+        {
+            $unwind: {
+                path: '$user_id',
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $project: {
+                title: '$title',
+                text: '$text',
+                chattoes_amount: '$chattoes_amount',
+                comments_amount: '$comments_amount',
+                pops: '$pops',
+                drops: '$drops',
+                likes: '$likes',
+                dislikes: '$dislikes',
+                likes_amount: '$likes_amount',
+                dislikes_amount: '$dislikes_amount',
+                createdAt: '$createdAt',
+                user_id: { $ifNull: ['$user_id', { usernameDisplay: 'deleted' }] }
+            }
+        }
+    ])
+
+    const muralHold = mural.slice(limit - 12, limit)
+
+    HandleSuccess.Ok(res, muralHold)
 }
 
 export const getOnePieceInfo = async (req: Request, res: Response, next: NextFunction) => {
-    const { piece_id } = req.params
+    const { piece_id } = res.locals
 
     if (!isValidObjectId(piece_id)) return next(HandleError.NotFound('No piece found'))
-    const piece = await Mural.findById(piece_id).populate(
+    // const piece = await Mural.findById(piece_id).populate(
+    //     {
+    //         path: 'user_id',
+    //         select: 'usernameDisplay _id'
+    //     }
+    // ).select('chattoes_amount comments_amount pops drops dislikes likes dislikes_amount likes_amount title text createdAt _id')
+
+    const piece = await Mural.aggregate([
         {
-            path: 'user_id',
-            select: 'usernameDisplay color _id'
+            $match: {
+                _id: new mongoose.Types.ObjectId(piece_id)
+
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'user_id',
+                foreignField: '_id',
+                as: 'user_id',
+                pipeline: [
+                    { $project: { usernameDisplay: 1, _id: 0 } }
+                ]
+            }
+        },
+        {
+            $unwind: {
+                path: '$user_id',
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $project: {
+                title: '$title',
+                text: '$text',
+                chattoes_amount: '$chattoes_amount',
+                comments_amount: '$comments_amount',
+                pops: '$pops',
+                drops: '$drops',
+                likes: '$likes',
+                dislikes: '$dislikes',
+                likes_amount: '$likes_amount',
+                dislikes_amount: '$dislikes_amount',
+                createdAt: '$createdAt',
+                user_id: { $ifNull: ['$user_id', { usernameDisplay: 'deleted' }] }
+            }
         }
-    ).select('chattoes_amount comments_amount pops drops dislikes likes dislikes_amount likes_amount title text createdAt _id')
+    ])
+    // console.log(mural2)
+    // console.log(piece[0])
+    if (!piece[0]) return next(HandleError.NotFound('No piece found'))
 
-    if (!piece) return next(HandleError.NotFound('No piece found'))
-
-    HandleSuccess.Ok(res, piece)
+    HandleSuccess.Ok(res, piece[0])
 }
 
 const assignSort = (sort: string, type: string) => {
@@ -55,9 +149,7 @@ const assignSort = (sort: string, type: string) => {
 }
 
 export const getOnePieceComments = async (req: Request, res: Response, next: NextFunction) => {
-    const { sort, type } = res.locals
-    const { piece_id } = req.params
-    const { limit } = req.body
+    const { sort, type, piece_id, limit } = res.locals
 
     let sortOptions: any = {}
 
@@ -70,12 +162,13 @@ export const getOnePieceComments = async (req: Request, res: Response, next: Nex
             select: 'message user_id likes_amount dislikes_amount likes dislikes createdAt fromChatto _id',
             populate: {
                 path: 'user_id',
-                select: 'usernameDisplay color'
+                select: 'usernameDisplay -_id'
             },
             options: { sort: sortOptions, limit }
         }
     ).select('commentary _id')
     if (!piece) return next(HandleError.NotFound('No piece found'))
+    // console.log(piece)
 
     piece.commentary = piece.commentary.slice(limit - 8, limit)
 
@@ -83,8 +176,7 @@ export const getOnePieceComments = async (req: Request, res: Response, next: Nex
 }
 
 export const markPiece = async (req: Request, res: Response, next: NextFunction) => {
-    const { piece_id } = req.params
-    const { mark, user_id } = res.locals
+    const { mark, user_id, piece_id } = res.locals
 
     if (!isValidObjectId(piece_id)) return next(HandleError.NotFound('No prompt found'))
     const piece = await Mural.findById(piece_id)
@@ -124,9 +216,7 @@ export const markPiece = async (req: Request, res: Response, next: NextFunction)
 }
 
 export const addComment = async (req: Request, res: Response, next: NextFunction) => {
-    const { user_id } = res.locals
-    const { comment } = req.body
-    const { piece_id } = req.params
+    const { user_id, usernameDisplay, piece_id, comment } = res.locals
 
     if (!isValidObjectId(piece_id)) return next(HandleError.NotFound('No Piece found'))
     const piece = await Mural.findById(piece_id)
@@ -144,12 +234,25 @@ export const addComment = async (req: Request, res: Response, next: NextFunction
     piece.comments_amount++
     await piece?.save()
 
-    HandleSuccess.Created(res, 'Comment created')
+    const yourComment = {
+        likes: NewCommentary.likes,
+        likes_amount: NewCommentary.likes_amount,
+        dislikes: NewCommentary.dislikes,
+        dislikes_amount: NewCommentary.dislikes_amount,
+        message: NewCommentary.message,
+        fromChatto: NewCommentary.fromChatto,
+        createdAt: NewCommentary.createdAt,
+        user_id: {
+            usernameDisplay
+        },
+        _id: NewCommentary._id
+    }
+
+    HandleSuccess.Created(res, yourComment)
 }
 
 export const markComment = async (req: Request, res: Response, next: NextFunction) => {
-    const { user_id, mark } = res.locals
-    const { comment_id } = req.params
+    const { user_id, mark, comment_id } = res.locals
 
     if (!isValidObjectId(comment_id)) return next(HandleError.NotFound('No Comment found'))
     const comment = await Commentary.findById(comment_id)

@@ -9,6 +9,7 @@ import crypto from 'crypto'
 import { HandleError } from '../../responses/error/HandleError'
 import { verificationGenerate_G } from '../Verification/controllers'
 import { sendEmail } from '../../utils/Nodemailer/functions/sendEmail'
+import { clearCookiesSettings } from '../../utils/Authentication/function/tokens'
 // import { findUserAgent } from '../../utils/Logs/functions/findLog'
 
 export const accountChangeUsername = async (req: Request, res: Response, next: NextFunction) => {
@@ -69,8 +70,8 @@ export const accountDeleteDevice = async (req: Request, res: Response, next: Nex
 
     if (log.refreshToken_id) {
         if (currentRefreshToken === log.refreshToken_id.token) {
-            res.clearCookie('access_token', { path: '/', domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : 'boremine.com' })
-            res.clearCookie('refresh_token', { path: '/', domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : 'boremine.com' })
+            res.clearCookie('access_token', clearCookiesSettings)
+            res.clearCookie('refresh_token', clearCookiesSettings)
         }
 
         await RefreshToken.findByIdAndDelete(log.refreshToken_id).lean()
@@ -79,4 +80,29 @@ export const accountDeleteDevice = async (req: Request, res: Response, next: Nex
     // if (!log) return next(HandleError.BadRequest(`Device doesn't exist`))
 
     HandleSuccess.Ok(res, 'Device deleted')
+}
+
+export const deleteAccount = async (req: Request, res: Response, next: NextFunction) => {
+    const { user_id } = res.locals
+
+    const user = await User.findById(user_id).populate({ path: 'logs', select: '_id refreshToken_id' }).select('_id')
+    if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
+    // console.log(user)
+    const refreshTokensIds: Array<string> = []
+    const logsIds: Array<string> = []
+
+    // console.log('----------------------')
+    for (let i = 0; i < user.logs.length; i++) {
+        const id = user.logs[i]
+        refreshTokensIds.push(id.refreshToken_id)
+        logsIds.push(id._id)
+    }
+    // console.log(refreshTokensIds)
+    // console.log(logsIds)
+
+    await RefreshToken.deleteMany({ _id: { $in: refreshTokensIds } })
+    await Log.deleteMany({ _id: { $in: logsIds } })
+    await User.findByIdAndDelete(user._id)
+
+    HandleSuccess.Ok(res, 'Account deleted')
 }

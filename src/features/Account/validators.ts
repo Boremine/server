@@ -42,7 +42,7 @@ export const accountChangeUsername = async (req: Request, res: Response, next: N
     })
     if (user.username === body.username) val.username = 'This is your current username'
 
-    const changeDate = new Date(user.lastUsernameUpdate.setDate(user.lastUsernameUpdate.getDate() + 1))
+    const changeDate = new Date(user.lastUsernameUpdate.setDate(user.lastUsernameUpdate.getDate() + 29))
     const currentDate = new Date()
 
     const diffMiliseconds = changeDate.valueOf() - currentDate.valueOf()
@@ -125,6 +125,18 @@ export const accountChangePassword = async (req: Request, res: Response, next: N
     await user.updateOne({ password: newPasswordBcrypt })
 
     res.locals.user = user
+
+    next()
+}
+
+export const deleteAccount = async (req: Request, res: Response, next: NextFunction) => {
+    const { password, user_id } = res.locals
+
+    const user = await User.findById(user_id)
+    if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
+
+    const matchPassword: boolean = await validatePassword(password, user.password)
+    if (!matchPassword) return next(HandleError.NotAcceptable('Incorrect Password'))
 
     next()
 }
