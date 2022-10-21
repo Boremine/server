@@ -32,7 +32,7 @@ interface ChangePasswordBody {
     currentPassword: string
     newPassword: string
     newPasswordConfirm: string
-    allOut:boolean
+    allOut: boolean
 }
 
 export const accountChangePassword = async (req: Request, res: Response, next: NextFunction) => {
@@ -53,6 +53,14 @@ export const accountDeleteDevice = async (req: Request, res: Response, next: Nex
     const params: DeleteDeviceParams = req.params
 
     params.id = params.id ? String(params.id) : ''
+
+    next()
+}
+
+export const deleteAccount = async (req: Request, res: Response, next: NextFunction) => {
+    const { password } = req.body
+
+    res.locals.password = String(password)
 
     next()
 }

@@ -1,5 +1,17 @@
 import { Request, Response, NextFunction } from 'express'
 
+interface MuralQuery {
+    limit?: number
+}
+
+export const getMural = async (req: Request, res: Response, next: NextFunction) => {
+    const query: MuralQuery = req.query
+
+    res.locals.limit = Number(query.limit)
+
+    next()
+}
+
 interface OnePieceInfoParams {
     piece_id?: string
 }
@@ -7,7 +19,9 @@ interface OnePieceInfoParams {
 export const getOnePieceInfo = async (req: Request, res: Response, next: NextFunction) => {
     const params: OnePieceInfoParams = req.params
 
-    params.piece_id = params.piece_id ? String(params.piece_id) : ''
+    res.locals = {
+        piece_id: String(params.piece_id)
+    }
 
     next()
 }
@@ -16,16 +30,23 @@ interface OnePieceCommentsParams {
     piece_id?: string
 }
 
-interface OnePieceCommentsBody {
-    limit:number | ''
+interface OnePieceCommentsQuery {
+    limit?: number
+    sort?: string
+    type?: string
 }
 
 export const getOnePieceComments = async (req: Request, res: Response, next: NextFunction) => {
     const params: OnePieceCommentsParams = req.params
-    const body:OnePieceCommentsBody = req.body
+    const query: OnePieceCommentsQuery = req.query
 
-    params.piece_id = params.piece_id ? String(params.piece_id) : ''
-    body.limit = body.limit ? Number(body.limit) : ''
+    res.locals = {
+        piece_id: String(params.piece_id),
+        limit: Number(query.limit),
+        sort: String(query.sort),
+        type: String(query.type)
+
+    }
 
     next()
 }
@@ -41,7 +62,7 @@ export const markPiece = async (req: Request, res: Response, next: NextFunction)
     const params: markPieceParams = req.params
     const body: markPieceBody = req.body
 
-    params.piece_id = params.piece_id ? String(params.piece_id) : ''
+    res.locals.piece_id = String(params.piece_id)
 
     if (body.mark === 'like') res.locals.mark = 'likes'
     else if (body.mark === 'dislike') res.locals.mark = 'dislikes'
@@ -60,8 +81,8 @@ export const addComment = async (req: Request, res: Response, next: NextFunction
     const params: addCommentParams = req.params
     const body: addCommentBody = req.body
 
-    params.piece_id = params.piece_id ? String(params.piece_id) : ''
-    body.comment = body.comment ? String(body.comment) : ''
+    res.locals.piece_id = String(params.piece_id)
+    res.locals.comment = String(body.comment).trim()
 
     next()
 }
@@ -77,7 +98,7 @@ export const markComment = async (req: Request, res: Response, next: NextFunctio
     const params: markCommentParams = req.params
     const body: markCommentBody = req.body
 
-    params.comment_id = params.comment_id ? String(params.comment_id) : ''
+    res.locals.comment_id = String(params.comment_id)
 
     if (body.mark === 'like') res.locals.mark = 'likes'
     else if (body.mark === 'dislike') res.locals.mark = 'dislikes'
