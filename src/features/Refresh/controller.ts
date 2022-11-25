@@ -62,7 +62,7 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
   }
 
   const tokenOwner: TokenFound | boolean = findUserAgent(req.useragent, user.logs)
-
+  console.log(tokenOwner)
   if (!tokenOwner) return next(HandleError.Unauthorized('Invalid Refresh Token'))
 
   // if (tokenOwner.token !== tokenSender) {
