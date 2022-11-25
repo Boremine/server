@@ -36,5 +36,6 @@ export const findUserAgent = (testAgent: UserAgent | undefined, ownerAgents: Arr
 
         if (tokenFound) break
     }
+
     return tokenFound
 }

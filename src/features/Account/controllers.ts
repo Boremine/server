@@ -10,7 +10,6 @@ import { HandleError } from '../../responses/error/HandleError'
 import { verificationGenerate_G } from '../Verification/controllers'
 import { sendEmail } from '../../utils/Nodemailer/functions/sendEmail'
 import { clearCookiesSettings } from '../../utils/Authentication/function/tokens'
-// import { findUserAgent } from '../../utils/Logs/functions/findLog'
 
 export const accountChangeUsername = async (req: Request, res: Response, next: NextFunction) => {
     HandleSuccess.Ok(res, 'Username Changed')
