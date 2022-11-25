@@ -17,19 +17,18 @@ import {
 import { HandleSuccess } from '../../responses/success/HandleSuccess'
 import { checkIfFirstFive } from '../../utils/Prompts/functions/checkIfFirstFive'
 
-// const checkForHistory = (tokenHistory: string[], testToken: string) => {
-//   let check: string | boolean = 'notInHistory'
-//   for (let i = 0; i < tokenHistory.length; i++) {
-//     const historyToken = tokenHistory[i]
+const checkForHistory = (tokenHistory: string[], testToken: string) => {
+  let check: string | boolean = 'notInHistory'
+  for (let i = 0; i < tokenHistory.length; i++) {
+    const historyToken = tokenHistory[i]
+    if (historyToken === testToken) {
+      check = 'inHistory'
+      break
+    }
+  }
 
-//     if (historyToken === testToken) {
-//       check = 'inHistory'
-//       break
-//     }
-//   }
-
-//   return check
-// }
+  return check
+}
 
 export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
   const { user_id } = res.locals
@@ -63,22 +62,20 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
   }
 
   const tokenOwner: TokenFound | boolean = findUserAgent(req.useragent, user.logs)
+
   if (!tokenOwner) return next(HandleError.Unauthorized('Invalid Refresh Token'))
 
-  // console.log(tokenOwner)
-  // console.log(tokenSender)
-
-  // if (tokenOwner.token !== tokenSender) {
-  //   switch (checkForHistory(tokenOwner.history, tokenSender)) {
-  //     case 'inHistory':
-  //       console.log('inHistory')
-  //       await RefreshToken.findByIdAndDelete(tokenOwner._id)
-  //       return next(HandleError.Unauthorized('Invalid Refresh Token 2'))
-  //     case 'notInHistory':
-  //       console.log('notInHistory')
-  //       return next(HandleError.Unauthorized('Invalid Refresh Token 3'))
-  //   }
-  // }
+  if (tokenOwner.token !== tokenSender) {
+    switch (checkForHistory(tokenOwner.history, tokenSender)) {
+      case 'inHistory':
+        console.log('inHistory')
+        await RefreshToken.findByIdAndDelete(tokenOwner._id)
+        return next(HandleError.Unauthorized('Invalid Refresh Token 2'))
+      case 'notInHistory':
+        console.log('notInHistory')
+        return next(HandleError.Unauthorized('Invalid Refresh Token 3'))
+    }
+  }
 
   const payload = {
     user_id

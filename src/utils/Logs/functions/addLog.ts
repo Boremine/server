@@ -6,6 +6,8 @@ import Log from '../../../models/log'
 
 import { sendEmail } from '../../Nodemailer/functions/sendEmail'
 
+import { loginDetection } from '../../Nodemailer/functions/templates/loginDetection'
+
 export const addLog = async (req: Request, user_id: string, next: NextFunction, detectionType: 'login' | 'forgotPassword' | false = false) => {
     const userAgent = req.useragent
 
@@ -35,33 +37,24 @@ export const addLog = async (req: Request, user_id: string, next: NextFunction, 
     await user?.save()
 
     // let emailHtml:string
+    const loginDetectedBody = {
+        text: '',
+        browser: query.browser,
+        platform: query.platform,
+        location: query.location,
+        ip: query.ip
+    }
 
     if (detectionType === 'login') {
-        const emailHtml = `
-        <p>A new log in has been detected from:</p>
-        <ul>
-            <li>${query.browser} (${query.platform})</li>
-            <li>${query.location}</li>
-            <li>${query.ip}</li>
-        </ul>
-
-        <p>If this was you, you can ignore this message</p>
-        
-    `
-        sendEmail(user?.email, `New Login Detected`, emailHtml)
+        const emailSubject = 'New Login Detected'
+        loginDetectedBody.text = 'There is a new login detected on your account from:'
+        const emailHtml = loginDetection(emailSubject, loginDetectedBody)
+        sendEmail(user?.email, emailSubject, emailHtml)
     } else if (detectionType === 'forgotPassword') {
-        const emailHtml = `
-        <p>A new log in has been detected from:</p>
-        <ul>
-            <li>${query.browser} (${query.platform})</li>
-            <li>${query.location}</li>
-            <li>${query.ip}</li>
-        </ul>
-
-        <p>If this was you, you can ignore this message</p>
-        
-    `
-        sendEmail(user?.email, `Password reset successful`, emailHtml)
+        const emailSubject = 'Password Reset Successful'
+        loginDetectedBody.text = 'Your password was successfully changed, and it was from:'
+        const emailHtml = loginDetection(emailSubject, loginDetectedBody)
+        sendEmail(user?.email, emailSubject, emailHtml)
     }
 
     return log._id.toString()
