@@ -10,6 +10,9 @@ import bcrypt from 'bcrypt'
 import User from '../../models/user'
 import Log from '../../models/log'
 import ForgotPassword from '../../models/forgotPassword'
+// import { HandleError } from '../../responses/error/HandleError'
+import { addLog } from '../../utils/Logs/functions/addLog'
+import { newAuthentication } from '../../utils/Authentication/function/newAuthentication'
 
 export const forgotRequest = async (req: Request, res: Response, next: NextFunction) => {
     const { email, user_id, fakeVerification } = res.locals
@@ -64,8 +67,18 @@ export const forgotConfirm = async (req: Request, res: Response, next: NextFunct
     await User.findByIdAndUpdate(user_id, { password: passwordBcrypt, logs: [] })
     await Log.deleteMany({ user_id })
 
+    const addLogRes = await addLog(req, user_id.toString(), next, 'forgotPassword')
+    // if (!addLogRes) return next(HandleError.BadRequest('There was a problem adding log'))
+
+    const newAuth = {
+        user_id: user_id.toString(),
+        log_id: addLogRes
+    }
+
     const NewForgotPassword = new ForgotPassword({ token })
     await NewForgotPassword.save()
 
-    HandleSuccess.Ok(res, 'Password Reset')
+    newAuthentication(newAuth, res)
+
+    // HandleSuccess.Ok(res, 'Password Reset')
 }

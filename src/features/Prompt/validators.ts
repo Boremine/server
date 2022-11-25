@@ -2,12 +2,8 @@ import { Request, Response, NextFunction } from 'express'
 import User from '../../models/user'
 
 import { HandleError } from '../../responses/error/HandleError'
+import { checkIfFirstFive } from '../../utils/Prompts/functions/checkIfFirstFive'
 import { state } from './controllers'
-
-interface PostValidation {
-    title?: string,
-    text?: string,
-}
 
 interface PostBody {
     title: string
@@ -15,20 +11,16 @@ interface PostBody {
 }
 
 export const postPrompt = async (req: Request, res: Response, next: NextFunction) => {
-    const body:PostBody = req.body
+    const body: PostBody = req.body
     const { user_id } = res.locals
-
-    const val:PostValidation = {}
 
     const user = await User.findById(user_id).populate('prompt_id')
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
-    // if(user.prompt_id) return next(HandleError.NotAcceptable("Prompt Already in line"))
-    if (!body.title) val.title = 'Title is required'
+    if (user.prompt_id) return next(HandleError.NotAcceptable('Prompt Already in line'))
+    if (!body.title) return next(HandleError.NotAcceptable('Title is required'))
 
-    if (body.title.length > 500) val.title = 'Title must be less than 500 characteres long'
-    if (body.text.length > 2000) val.title = 'Text must be less than 500 characteres long'
-
-    if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
+    if (body.title.length > 500) return next(HandleError.NotAcceptable('Title must be less than 500 characteres long'))
+    if (body.text.length > 5000) return next(HandleError.NotAcceptable('Text must be less than 5000 characteres long'))
 
     next()
 }
@@ -39,7 +31,7 @@ interface VoteBody {
 
 export const votePrompt = async (req: Request, res: Response, next: NextFunction) => {
     const { user_id } = res.locals
-    const body:VoteBody = req.body
+    const body: VoteBody = req.body
 
     const user = await User.findByIdAndUpdate(user_id).select('alreadyVoted')
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
@@ -56,6 +48,47 @@ export const votePrompt = async (req: Request, res: Response, next: NextFunction
     } else {
         return next(HandleError.BadRequest('Invalid option'))
     }
+
+    next()
+}
+
+interface UpdateBody {
+    title: string
+    text: string
+}
+
+export const updatePrompt = async (req: Request, res: Response, next: NextFunction) => {
+    const body: UpdateBody = req.body
+    const { user_id } = res.locals
+
+    const user = await User.findById(user_id).populate('prompt_id')
+    if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
+    if (!user.prompt_id) return next(HandleError.NotAcceptable('No prompt in line'))
+
+    const promptInFirstFive = await checkIfFirstFive(user.prompt_id._id)
+    if (promptInFirstFive) return next(HandleError.NotAcceptable('Prompt is in first five'))
+
+    if (!body.title) return next(HandleError.NotAcceptable('Title is required'))
+
+    if (body.title.length > 500) return next(HandleError.NotAcceptable('Title must be less than 500 characteres long'))
+    if (body.text.length > 5000) return next(HandleError.NotAcceptable('Text must be less than 5000 characteres long'))
+
+    res.locals.prompt_id = user.prompt_id._id
+
+    next()
+}
+
+export const deletePrompt = async (req: Request, res: Response, next: NextFunction) => {
+    const { user_id } = res.locals
+
+    const user = await User.findById(user_id).populate('prompt_id')
+    if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
+    if (!user.prompt_id) return next(HandleError.NotAcceptable('No prompt in line'))
+
+    const promptInFirstFive = await checkIfFirstFive(user.prompt_id._id)
+    if (promptInFirstFive) return next(HandleError.NotAcceptable('Prompt is in first five'))
+
+    res.locals.prompt_id = user.prompt_id._id
 
     next()
 }

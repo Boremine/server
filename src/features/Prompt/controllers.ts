@@ -4,7 +4,7 @@ import socketIO from 'socket.io'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 
 import Prompt from '../../models/prompt'
-import Chatto from '../../models/chatto'
+import Commentary from '../../models/commentary'
 import User from '../../models/user'
 import Mural from '../../models/mural'
 
@@ -12,8 +12,17 @@ import { HandleSuccess } from '../../responses/success/HandleSuccess'
 
 import { currentChattoes, clearChattoes } from '../Chatto/controllers'
 import { CurrentPrompt } from './classes'
+import { checkIfFirstFive } from '../../utils/Prompts/functions/checkIfFirstFive'
+// import mongoose from 'mongoose'
+// import { HandleError } from '../../responses/error/HandleError'
+// import { sendEmail } from '../../utils/Nodemailer/functions/sendEmail'
+// import { Types } from 'mongoose'
+// import { encrypt } from '../../utils/Prompts/functions/EncryptMuralId'
 
-const promptColors: Array<string> = ['#fcba03', '#158eeb', '#1520eb', '#8415eb', '#d915eb', '#eb15b2', '#eb1579', '#eb152e', '#eb7c15', '#ebab15', '#d2eb15', '#72eb15', '#15eb15']
+// import { saveToReddit } from '../../utils/Prompts/functions/saveTo'
+
+// const promptColors: Array<string> = ['#fcba03', '#158eeb', '#1520eb', '#8415eb', '#d915eb', '#eb15b2', '#eb1579', '#eb152e', '#eb7c15', '#ebab15', '#d2eb15', '#72eb15', '#15eb15']
+const promptColors: Array<string> = ['blue', 'red', 'green', 'orange', 'purple']
 let currentPrompt: CurrentPrompt | undefined
 export let state: 'display' | 'end_fail' | 'end_pass' | 'wait' = 'wait'
 let promptGoTo: 'notPass' | 'Pass'
@@ -21,13 +30,34 @@ let promptGoTo: 'notPass' | 'Pass'
 let interval: NodeJS.Timer
 
 export const getLine = async (req: Request, res: Response, next: NextFunction) => {
-    const line = await Prompt.find({}).lean().populate('user_id', 'username -_id').select('color')
+    const line = await Prompt.find({}).lean().populate('user_id', 'usernameDisplay -_id').select('color')
 
     HandleSuccess.Ok(res, line)
 }
 
+export const updatePrompt = async (req: Request, res: Response, next: NextFunction) => {
+    const { title, text } = req.body
+    const { prompt_id } = res.locals
+
+    await Prompt.findByIdAndUpdate(prompt_id, { title, text })
+
+    HandleSuccess.Ok(res, { _id: prompt_id, title, text, promptInFirstFive: false })
+}
+
+export const deletePrompt = async (req: Request, res: Response, next: NextFunction) => {
+    const { prompt_id } = res.locals
+
+    const io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> = req.app.get('socketio')
+
+    await Prompt.findByIdAndRemove(prompt_id)
+
+    io.emit('line', { _id: prompt_id, deletion: true })
+
+    HandleSuccess.Ok(res, 'Prompt Deleted')
+}
+
 export const postPrompt = async (req: Request, res: Response, next: NextFunction) => {
-    const { user_id, username } = res.locals
+    const { user_id } = res.locals
     const { text, title } = req.body
 
     const io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> = req.app.get('socketio')
@@ -41,11 +71,14 @@ export const postPrompt = async (req: Request, res: Response, next: NextFunction
 
     const promptCreated = await NewPrompt.save()
 
-    await User.findByIdAndUpdate(user_id, { prompt_id: promptCreated._id })
+    const user = await User.findByIdAndUpdate(user_id, { prompt_id: promptCreated._id })
 
-    io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { username } })
+    io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { usernameDisplay: user?.usernameDisplay } })
 
-    HandleSuccess.Created(res, 'Prompt in Line')
+    // const prompts = await Prompt.find().limit(5)
+    const promptInFirstFive = await checkIfFirstFive(NewPrompt._id.toString())
+
+    HandleSuccess.Created(res, { _id: NewPrompt._id, title: NewPrompt.title, text: NewPrompt.text, promptInFirstFive })
 }
 
 export const latestPrompt = async (req: Request, res: Response, next: NextFunction) => {
@@ -61,18 +94,26 @@ const waitState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap,
             title: ''
         },
         countDown: 0,
-        voteScale: 0,
+        voteScale: {
+            pops: 0,
+            drops: 0,
+            scale: 0
+        },
         state,
         nextPrompt: true
     })
 
     if (promptGoTo === 'Pass') {
+        // saveToReddit(currentPrompt?.body.title!, currentPrompt?.body.text!, currentPrompt?.voting!)
+
         const NewMural = new Mural({
+            title: currentPrompt?.body.title,
             text: currentPrompt?.body.text,
             user_id: currentPrompt?.user_id,
             pops: currentPrompt?.voting.pops,
             drops: currentPrompt?.voting.drops,
-            chattoes: currentChattoes
+            commentary: currentChattoes,
+            chattoes_amount: currentChattoes.length
         })
 
         await NewMural.save()
@@ -81,7 +122,7 @@ const waitState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap,
         user?.mural.push(NewMural)
         await user?.save()
 
-        await Chatto.updateMany({ _id: { $in: currentChattoes } }, { mural_id: NewMural._id })
+        await Commentary.updateMany({ _id: { $in: currentChattoes } }, { mural_id: NewMural._id })
 
         clearChattoes()
     }
@@ -124,14 +165,16 @@ export const votePrompt = async (req: Request, res: Response, next: NextFunction
     switch (option) {
         case 'pop':
             currentPrompt?.increasePops()
-            if ((currentPrompt!.voting.pops - currentPrompt!.voting.drops) >= currentPrompt!.majorityConnections) {
+            // if ((currentPrompt!.voting.pops - currentPrompt!.voting.drops) >= currentPrompt!.majorityConnections) {
+            if (currentPrompt!.voting.pops >= currentPrompt!.majorityConnections) {
                 state = 'end_pass'
                 io.emit('prompt', { ...currentPrompt?.getPromptEmit(), state })
             }
             break
         case 'drop':
             currentPrompt?.increaseDrops()
-            if ((currentPrompt!.voting.drops - currentPrompt!.voting.pops) >= currentPrompt!.majorityConnections) {
+            // if ((currentPrompt!.voting.drops - currentPrompt!.voting.pops) >= currentPrompt!.majorityConnections) {
+            if (currentPrompt!.voting.drops >= currentPrompt!.majorityConnections) {
                 endState(io, 'end_fail')
             }
             break
@@ -143,7 +186,10 @@ export const votePrompt = async (req: Request, res: Response, next: NextFunction
 }
 
 export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
-    const prompt = await Prompt.findOne().populate('user_id', 'username').select('text color title')
+    const prompt_ids: Array<string> = []
+
+    const prompt = await Prompt.findOne().populate('user_id', 'username email').select('text color title')
+
     if (!prompt) {
         setTimeout(() => {
             displayPrompt(io)
@@ -165,7 +211,8 @@ export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, Defaul
             pops: 0,
             drops: 0
         },
-        barColor: prompt.color
+        barColor: prompt.color,
+        fiveLatestPrompts: prompt_ids
     })
 
     io.emit('prompt', { ...currentPrompt.getPrompt(), state })

@@ -26,7 +26,7 @@ client.on('connect', () => {
     console.log('Redis Connected (Chatto/Post)')
 })
 
-const limiter = rateLimit({
+const sendMessage_LIMITER = rateLimit({
     windowMs: 3000,
     max: 1,
     standardHeaders: true,
@@ -39,6 +39,6 @@ const limiter = rateLimit({
 
 const router: Router = Router()
 
-router.post('/post', authorize, limiter, sendMessage_SANITIZE, sendMessage_VALIDATOR, sendMessage_CONTROLLER)
+router.post('/post', authorize, sendMessage_LIMITER, sendMessage_SANITIZE, sendMessage_VALIDATOR, sendMessage_CONTROLLER)
 
 export default router

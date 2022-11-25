@@ -4,14 +4,14 @@ import Verification from '../../models/verification'
 import { HandleSuccess } from '../../responses/success/HandleSuccess'
 
 import crypto from 'crypto'
-import nodemailer from 'nodemailer'
+// import nodemailer from 'nodemailer'
+import { sendEmail } from '../../utils/Nodemailer/functions/sendEmail'
 
 import { signupVerified } from '../Signup/controllers'
-import { newAuthentication } from '../../utils/Authentication/function/newAuthentication'
-import { addLog } from '../../utils/Logs/functions/addLog'
-import { HandleError } from '../../responses/error/HandleError'
-
 import { forgotVerified } from '../ForgotPassword/controllers'
+import { loginVerified } from '../Login/controllers'
+import { accountChangeEmailVerified } from '../Account/controllers'
+import { forCode } from '../../utils/Nodemailer/functions/templates/forCode'
 
 export const verificationValidate = async (req: Request, res: Response, next: NextFunction) => {
     const { type, email } = res.locals
@@ -23,7 +23,7 @@ interface GenerateBody {
     [key: string]: any;
 }
 
-export const verificationGenerate_G = async (res: Response, body: GenerateBody, type: 'new_auth' | 'signup' | 'forgot') => {
+export const verificationGenerate_G = async (res: Response, body: GenerateBody, type: 'new_auth' | 'signup' | 'forgot' | 'change_email') => {
     const path: string = crypto.randomBytes(40).toString('hex')
 
     const code: string = crypto.randomBytes(4).toString('hex')
@@ -40,61 +40,39 @@ export const verificationGenerate_G = async (res: Response, body: GenerateBody, 
 
     if (process.env.NODE_ENV === 'test') return HandleSuccess.MovedPermanently(res, { path, code })
 
-    let emailSubject = 'f'
+    let emailSubject = ''
+    let emailHtml = ''
 
     switch (type) {
         case 'signup':
             emailSubject = 'Account Creation'
             break
         case 'new_auth':
-            emailSubject = 'New Login'
+            emailSubject = 'Log In Confirmation'
             break
         case 'forgot':
             emailSubject = 'Reset Password'
             break
+        case 'change_email':
+            emailSubject = 'Change Email'
+            break
     }
 
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        auth: {
-            user: process.env.NODEMAILER_EMAIL,
-            pass: process.env.NODEMAILER_PASSWORD
-        }
-    })
+    emailHtml = forCode(emailSubject, code)
 
-    transporter.sendMail({
-        from: 'Boremine <noreply@boremine.com>',
-        to: body.email,
-        subject: emailSubject,
-        html: `Code: ${code}`
-    }, function (err, info) {
-        if (err) {
-            console.log('Invalid email address')
-        }
-    })
+    sendEmail(body.email, emailSubject, emailHtml)
 
     HandleSuccess.MovedPermanently(res, { path })
 }
 
 export const verificationConfirm = async (req: Request, res: Response, next: NextFunction) => {
     const path: string = req.params.path
-    const { type, data } = res.locals
+    const { type } = res.locals
 
     await Verification.findOneAndRemove({ path })
 
     if (type === 'signup') signupVerified(req, res, next)
-    else if (type === 'new_auth') {
-        const addLogRes = await addLog(req, data.user_id, next)
-        if (!addLogRes) return next(HandleError.BadRequest('There was a problem authenticating'))
-
-        const newAuth = {
-            user_id: data.user_id,
-            username: data.username,
-            log_id: addLogRes
-        }
-
-        newAuthentication(newAuth, res)
-    } else if (type === 'forgot') forgotVerified(req, res, next)
+    else if (type === 'new_auth') loginVerified(req, res, next)
+    else if (type === 'forgot') forgotVerified(req, res, next)
+    else if (type === 'change_email') accountChangeEmailVerified(req, res, next)
 }

@@ -19,9 +19,8 @@ const checkLogs = (logs: Array<UserAgent & LogType>, userAgent: UserAgent | unde
         found = log._id
 
         if (log.browser !== userAgent?.browser) found = false
-        if (log.version !== userAgent?.version) found = false
-        if (log.os !== userAgent?.os) found = false
         if (log.platform !== userAgent?.platform) found = false
+        if (log.location !== userAgent?.location) found = false
         if (log.device !== userAgent?.device) found = false
         if (log.ip !== userAgent?.ip) found = false
 

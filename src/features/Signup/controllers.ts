@@ -11,7 +11,8 @@ import { addLog } from '../../utils/Logs/functions/addLog'
 import { newAuthentication } from '../../utils/Authentication/function/newAuthentication'
 // import { newAuthentication } from '../../utils/middlewares/newAuthentication'
 
-const userColors: Array<string> = ['#fcba03', '#158eeb', '#1520eb', '#8415eb', '#d915eb', '#eb15b2', '#eb1579', '#eb152e', '#eb7c15', '#ebab15', '#d2eb15', '#72eb15', '#15eb15']
+// const userColors: Array<string> = ['#fcba03', '#158eeb', '#1520eb', '#8415eb', '#d915eb', '#eb15b2', '#eb1579', '#eb152e', '#eb7c15', '#ebab15', '#d2eb15', '#72eb15', '#15eb15']
+const userColors: Array<string> = ['blue', 'red', 'green', 'orange', 'purple']
 
 interface RequestBody {
     username: string
@@ -25,7 +26,7 @@ export const signupRequest = async (req: Request, res: Response, next: NextFunct
     const passwordHashed = crypto.createHash('sha256').update(body.password).digest('hex')
     body.password = await bcrypt.hash(passwordHashed, 12)
 
-    verificationGenerate_G(res, body, 'signup')
+    return verificationGenerate_G(res, body, 'signup')
 }
 
 export const signupVerified = async (req: Request, res: Response, next: NextFunction) => {
@@ -46,11 +47,10 @@ export const signupVerified = async (req: Request, res: Response, next: NextFunc
         if (err) return next(HandleError.Internal(err))
 
         const addLogRes = await addLog(req, user_created._id.toString(), next)
-        if (!addLogRes) return next(HandleError.BadRequest('There was a problem adding log'))
+        // if (!addLogRes) return next(HandleError.BadRequest('There was a problem adding log'))
 
         const newAuth = {
             user_id: user_created._id.toString(),
-            username: user_created.usernameDisplay,
             log_id: addLogRes
         }
 

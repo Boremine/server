@@ -25,3 +25,17 @@ export const votePrompt = (req: Request, res: Response, next: NextFunction) => {
 
     next()
 }
+
+interface UpdateBody {
+    text: string
+    title: string
+}
+
+export const updatePrompt = async (req: Request, res: Response, next: NextFunction) => {
+    const body: UpdateBody = req.body
+
+    body.text = body.text ? String(body.text).trim() : ''
+    body.title = body.title ? String(body.title).trim() : ''
+
+    next()
+}
