@@ -17,18 +17,18 @@ import {
 import { HandleSuccess } from '../../responses/success/HandleSuccess'
 import { checkIfFirstFive } from '../../utils/Prompts/functions/checkIfFirstFive'
 
-// const checkForHistory = (tokenHistory: string[], testToken: string) => {
-//   let check: string | boolean = 'notInHistory'
-//   for (let i = 0; i < tokenHistory.length; i++) {
-//     const historyToken = tokenHistory[i]
-//     if (historyToken === testToken) {
-//       check = 'inHistory'
-//       break
-//     }
-//   }
+const checkForHistory = (tokenHistory: string[], testToken: string) => {
+  let check: string | boolean = 'notInHistory'
+  for (let i = 0; i < tokenHistory.length; i++) {
+    const historyToken = tokenHistory[i]
+    if (historyToken === testToken) {
+      check = 'inHistory'
+      break
+    }
+  }
 
-//   return check
-// }
+  return check
+}
 
 export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
   const { user_id } = res.locals
@@ -60,24 +60,19 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
   if (user.prompt_id) {
     user.prompt_id.promptInFirstFive = await checkIfFirstFive(user.prompt_id._id)
   }
-  console.log(req.useragent)
-  console.log('----------------------------')
-  console.log(user.logs)
+
   const tokenOwner: TokenFound | boolean = findUserAgent(req.useragent, user.logs)
-  console.log(tokenOwner)
   if (!tokenOwner) return next(HandleError.Unauthorized('Invalid Refresh Token'))
 
-  // if (tokenOwner.token !== tokenSender) {
-  //   switch (checkForHistory(tokenOwner.history, tokenSender)) {
-  //     case 'inHistory':
-  //       console.log('inHistory')
-  //       await RefreshToken.findByIdAndDelete(tokenOwner._id)
-  //       return next(HandleError.Unauthorized('Invalid Refresh Token 2'))
-  //     case 'notInHistory':
-  //       console.log('notInHistory')
-  //       return next(HandleError.Unauthorized('Invalid Refresh Token 3'))
-  //   }
-  // }
+  if (tokenOwner.token !== tokenSender) {
+    switch (checkForHistory(tokenOwner.history, tokenSender)) {
+      case 'inHistory':
+        await RefreshToken.findByIdAndDelete(tokenOwner._id)
+        return next(HandleError.Unauthorized('Invalid Refresh Token 2'))
+      case 'notInHistory':
+        return next(HandleError.Unauthorized('Invalid Refresh Token 3'))
+    }
+  }
 
   const payload = {
     user_id
