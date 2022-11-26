@@ -60,7 +60,9 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
   if (user.prompt_id) {
     user.prompt_id.promptInFirstFive = await checkIfFirstFive(user.prompt_id._id)
   }
-
+  console.log(req.useragent)
+  console.log('----------------------------')
+  console.log(user.logs)
   const tokenOwner: TokenFound | boolean = findUserAgent(req.useragent, user.logs)
   console.log(tokenOwner)
   if (!tokenOwner) return next(HandleError.Unauthorized('Invalid Refresh Token'))
