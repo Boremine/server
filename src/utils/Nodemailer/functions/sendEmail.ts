@@ -16,13 +16,6 @@ export const sendEmail = (to:string, subject:string, html:string) => {
         to,
         subject,
         html
-        // text: 'test',
-        // attachments: [{
-        //     filename: 'BoremineLogo.png',
-        //     // eslint-disable-next-line n/no-path-concat
-        //     path: __dirname + '/BoremineLogo.png',
-        //     cid: 'logo'
-        // }]
     }, function (err, info) {
         if (err) {
             console.log('Invalid email address')
