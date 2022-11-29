@@ -8,8 +8,8 @@ interface PostBody {
 export const postPrompt = (req: Request, res: Response, next: NextFunction) => {
     const body: PostBody = req.body
 
-    body.text = body.text ? String(body.text).trim() : ''
-    body.title = body.title ? String(body.title).trim() : ''
+    body.text = String(body.text).trim()
+    body.title = String(body.title).trim()
 
     next()
 }
@@ -21,7 +21,7 @@ interface VoteBody {
 export const votePrompt = (req: Request, res: Response, next: NextFunction) => {
     const body: VoteBody = req.body
 
-    body.option = body.option ? String(body.option) : ''
+    body.option = String(body.option)
 
     next()
 }
@@ -34,8 +34,8 @@ interface UpdateBody {
 export const updatePrompt = async (req: Request, res: Response, next: NextFunction) => {
     const body: UpdateBody = req.body
 
-    body.text = body.text ? String(body.text).trim() : ''
-    body.title = body.title ? String(body.title).trim() : ''
+    body.text = String(body.text).trim()
+    body.title = String(body.title).trim()
 
     next()
 }

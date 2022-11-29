@@ -7,7 +7,7 @@ interface ParamsValidate {
 export const verificationValidate = (req: Request, res: Response, next: NextFunction) => {
     const params: ParamsValidate = req.params
 
-    params.path = params.path ? String(params.path) : ''
+    params.path = String(params.path)
 
     next()
 }
@@ -23,8 +23,8 @@ export const verificationConfirm = (req: Request, res: Response, next: NextFunct
     const body: BodyConfirm = req.body
     const params: ParamsConfirm = req.params
 
-    body.code = body.code ? String(body.code).toLowerCase().trim() : ''
-    params.path = params.path ? String(params.path) : ''
+    body.code = String(body.code).toLowerCase().trim()
+    params.path = String(params.path)
 
     next()
 }

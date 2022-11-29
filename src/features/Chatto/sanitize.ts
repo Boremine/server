@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express'
 
-interface Body {
+interface SendMessageBody {
     message:string
 }
 
 export const sendMessage = (req: Request, res: Response, next: NextFunction) => {
-    const body:Body = req.body
+    const body:SendMessageBody = req.body
 
-    body.message = body.message ? String(body.message).trim() : ''
+    body.message = String(body.message).trim()
 
     next()
 }

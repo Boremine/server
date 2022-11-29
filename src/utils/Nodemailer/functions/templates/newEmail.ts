@@ -1,12 +1,5 @@
-interface Body {
-    text: string
-    browser: string
-    platform: string
-    location: string
-    ip: string
-}
 
-export const loginDetection = (title: string, body: Body) => {
+export const newEmail = (title:string, username:string, email:string) => {
     const html = `
     <!DOCTYPE html>
 <html lang="en">
@@ -44,19 +37,6 @@ export const loginDetection = (title: string, body: Body) => {
             margin: 10px;
         }
 
-        .info_container{
-            text-align: left;
-            padding: 0 40px 0 40px;
-            background-color: #3fb2ff4d;
-        }
-
-        .info_container > li{
-            font-weight: 500;
-            padding: 5px;
-        }
-
-       
-
         .footer{
             width: 30rem;
             margin: auto;
@@ -65,32 +45,25 @@ export const loginDetection = (title: string, body: Body) => {
             margin-top: 50px;
         }
 
-    
+
     </style>
 </head>
 
 <body>
     <div class="container">
     <table class="logo">
-    <tr>
+        <tr>
+            <th>
+            <img class="logo_img" src="cid:logo" width="60"/>
+        </th>
         <th>
-        <img class="logo_img" src="cid:logo" width="60"/>
-    </th>
-    <th>
-        <h1 class="logo_text">Boremine</h1>
-    </th>
-    </tr>
-</table>
-        <h2 class="title">${title}</h2>
-        <p>${body.text}</p>
-
-        <ul class="info_container">
-            <li>${body.browser} (${body.platform})</li>
-            <li>${body.location}</li>
-            <li>IP: ${body.ip}</li>
-        </ul>
-     
-    </div>
+            <h1 class="logo_text">Boremine</h1>
+        </th>
+        </tr>
+    </table>
+    <h2 class="title">${title}</h2>
+    <p>Your Boremine account <strong>${username}</strong> is now associated with the email address ${email}.</p>
+    <p>You will now recieve email notifications from Boremine to this email address.</p>
 
     
     <div class="footer">

@@ -33,7 +33,6 @@ import './models/verification'
 import { global_sanitize } from './utils/Sanitize/middleware/global_sanitize'
 
 import authInfoRoute from './features/AuthInfo/routes'
-import profileRoute from './features/Profile/routes'
 import chattoRoute from './features/Chatto/routes'
 import promptRoute from './features/Prompt/routes'
 import forgotRoute from './features/ForgotPassword/routes'
@@ -96,7 +95,6 @@ app.set('socketio', io)
 app.use(global_sanitize)
 
 app.use('/mural', muralRoute)
-app.use('/profile', profileRoute)
 app.use('/authInfo', authInfoRoute)
 app.use('/chatto', chattoRoute)
 app.use('/prompt', promptRoute)

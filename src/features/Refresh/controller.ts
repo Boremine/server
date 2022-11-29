@@ -2,8 +2,7 @@
 import { Request, Response, NextFunction } from 'express'
 import User from '../../models/user'
 import { findUserAgent, TokenFound } from '../../utils/Logs/functions/findLog'
-// import Log from '../../models/log'
-// import Log from '../../models/log'
+
 import RefreshToken from '../../models/refreshToken'
 import crypto from 'crypto'
 import { HandleError } from '../../responses/error/HandleError'
@@ -67,9 +66,11 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
   if (tokenOwner.token !== tokenSender) {
     switch (checkForHistory(tokenOwner.history, tokenSender)) {
       case 'inHistory':
+        console.log('inHIstory')
         await RefreshToken.findByIdAndDelete(tokenOwner._id)
         return next(HandleError.Unauthorized('Invalid Refresh Token 2'))
       case 'notInHistory':
+        console.log('NotInHistory')
         return next(HandleError.Unauthorized('Invalid Refresh Token 3'))
     }
   }

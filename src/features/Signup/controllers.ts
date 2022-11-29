@@ -9,9 +9,7 @@ import bcrypt from 'bcrypt'
 import { verificationGenerate_G } from '../Verification/controllers'
 import { addLog } from '../../utils/Logs/functions/addLog'
 import { newAuthentication } from '../../utils/Authentication/function/newAuthentication'
-// import { newAuthentication } from '../../utils/middlewares/newAuthentication'
 
-// const userColors: Array<string> = ['#fcba03', '#158eeb', '#1520eb', '#8415eb', '#d915eb', '#eb15b2', '#eb1579', '#eb152e', '#eb7c15', '#ebab15', '#d2eb15', '#72eb15', '#15eb15']
 const userColors: Array<string> = ['blue', 'red', 'green', 'orange', 'purple']
 
 interface RequestBody {
