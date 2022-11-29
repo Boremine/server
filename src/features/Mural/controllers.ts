@@ -69,15 +69,9 @@ export const getMural = async (req: Request, res: Response, next: NextFunction) 
 }
 
 export const getOnePieceInfo = async (req: Request, res: Response, next: NextFunction) => {
-    const { piece_id } = res.locals
+    const { piece_id } = req.params
 
     if (!isValidObjectId(piece_id)) return next(HandleError.NotFound('No piece found'))
-    // const piece = await Mural.findById(piece_id).populate(
-    //     {
-    //         path: 'user_id',
-    //         select: 'usernameDisplay _id'
-    //     }
-    // ).select('chattoes_amount comments_amount pops drops dislikes likes dislikes_amount likes_amount title text createdAt _id')
 
     const piece = await Mural.aggregate([
         {
@@ -120,8 +114,7 @@ export const getOnePieceInfo = async (req: Request, res: Response, next: NextFun
             }
         }
     ])
-    // console.log(mural2)
-    // console.log(piece[0])
+
     if (!piece[0]) return next(HandleError.NotFound('No piece found'))
 
     HandleSuccess.Ok(res, piece[0])
@@ -149,24 +142,15 @@ const assignSort = (sort: string, type: string) => {
 }
 
 export const getOnePieceComments = async (req: Request, res: Response, next: NextFunction) => {
-    const { sort, type, piece_id, limit } = res.locals
+    const { sort, type, limit } = res.locals
+    const { piece_id } = req.params
 
     let sortOptions: any = {}
 
     sortOptions = assignSort(sort, type)
 
     if (!isValidObjectId(piece_id)) return next(HandleError.NotFound('No piece found'))
-    // const piece = await Mural.findById(piece_id).populate(
-    //     {
-    //         path: 'commentary',
-    //         select: 'message user_id likes_amount dislikes_amount likes dislikes createdAt fromChatto _id',
-    //         populate: {
-    //             path: 'user_id',
-    //             select: 'usernameDisplay -_id'
-    //         },
-    //         options: { sort: sortOptions, limit }
-    //     }
-    // ).select('commentary _id')
+
     const piece = await Mural.aggregate([
         {
             $match: {
@@ -225,46 +209,23 @@ export const getOnePieceComments = async (req: Request, res: Response, next: Nex
                 ]
             }
         },
-        // {
-        //     $unwind: {
-        //         path: '$commentary',
-        //         preserveNullAndEmptyArrays: true
-        //     }
-        // },
         {
             $project: {
                 commentary: 1
-                // title: '$title',
-                // text: '$text',
-                // chattoes_amount: '$chattoes_amount',
-                // comments_amount: '$comments_amount',
-                // pops: '$pops',
-                // drops: '$drops',
-                // likes: '$likes',
-                // dislikes: '$dislikes',
-                // likes_amount: '$likes_amount',
-                // dislikes_amount: '$dislikes_amount',
-                // createdAt: 1
-                // user_id: { $ifNull: ['$user_id', { usernameDisplay: 'deleted' }] },
-                // commentary: '$commentary'
-                // 'commentary.user_id.usernameDisplay': 1
             }
         }
     ])
 
     if (!piece) return next(HandleError.NotFound('No piece found'))
-    // console.log(piece2)
-    // console.log(piece.commentary)
-    // console.log('---------------------------')
-    // console.log(piece2[0].commentary)
+
     const comments = piece[0].commentary.slice(limit - 8, limit)
-    // console.log(comments)
 
     HandleSuccess.Ok(res, comments)
 }
 
 export const markPiece = async (req: Request, res: Response, next: NextFunction) => {
-    const { mark, user_id, piece_id } = res.locals
+    const { mark, user_id } = res.locals
+    const { piece_id } = req.params
 
     if (!isValidObjectId(piece_id)) return next(HandleError.NotFound('No prompt found'))
     const piece = await Mural.findById(piece_id)
@@ -304,7 +265,9 @@ export const markPiece = async (req: Request, res: Response, next: NextFunction)
 }
 
 export const addComment = async (req: Request, res: Response, next: NextFunction) => {
-    const { user_id, usernameDisplay, piece_id, comment } = res.locals
+    const { user_id, usernameDisplay } = res.locals
+    const { piece_id } = req.params
+    const { comment } = req.body
 
     if (!isValidObjectId(piece_id)) return next(HandleError.NotFound('No Piece found'))
     const piece = await Mural.findById(piece_id)
@@ -340,7 +303,8 @@ export const addComment = async (req: Request, res: Response, next: NextFunction
 }
 
 export const markComment = async (req: Request, res: Response, next: NextFunction) => {
-    const { user_id, mark, comment_id } = res.locals
+    const { user_id, mark } = res.locals
+    const { comment_id } = req.params
 
     if (!isValidObjectId(comment_id)) return next(HandleError.NotFound('No Comment found'))
     const comment = await Commentary.findById(comment_id)

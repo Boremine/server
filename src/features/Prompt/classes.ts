@@ -89,7 +89,6 @@ export class CurrentPrompt {
     }
 
     public getVotingScale = () => {
-        // return ((this.voting.pops - this.voting.drops) / this.majorityConnections) * 100
         const voting = {
             pops: (this.voting.pops / this.majorityConnections) * 100,
             drops: (this.voting.drops / this.majorityConnections) * 100,

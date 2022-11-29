@@ -10,6 +10,16 @@ Content-Type: application/json
 
 ###
 
+POST http://192.168.0.199:3001/login/try HTTP/1.1
+Content-Type: application/json
+
+{
+    "password": "12345678"
+}
+
+
+###
+
 POST https://api.boremine.com/verification/confirm/66c89984cae152a6eb9708db6ae151b8a6ab982ba8e79c4d410eba5d50425879edd8b200e86d1d67 HTTP/1.1
 Content-Type: application/json
 

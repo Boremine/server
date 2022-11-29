@@ -37,7 +37,8 @@ export const markPiece = async (req: Request, res: Response, next: NextFunction)
 }
 
 export const addComment = async (req: Request, res: Response, next: NextFunction) => {
-    const { user_id, comment } = res.locals
+    const { user_id } = res.locals
+    const { comment } = req.body
 
     const user = await User.findById(user_id)
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))

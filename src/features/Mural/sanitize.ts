@@ -19,9 +19,7 @@ interface OnePieceInfoParams {
 export const getOnePieceInfo = async (req: Request, res: Response, next: NextFunction) => {
     const params: OnePieceInfoParams = req.params
 
-    res.locals = {
-        piece_id: String(params.piece_id)
-    }
+    params.piece_id = String(params.piece_id)
 
     next()
 }
@@ -40,13 +38,11 @@ export const getOnePieceComments = async (req: Request, res: Response, next: Nex
     const params: OnePieceCommentsParams = req.params
     const query: OnePieceCommentsQuery = req.query
 
-    res.locals = {
-        piece_id: String(params.piece_id),
-        limit: Number(query.limit),
-        sort: String(query.sort),
-        type: String(query.type)
+    params.piece_id = String(params.piece_id)
 
-    }
+    res.locals.limit = Number(query.limit)
+    res.locals.sort = String(query.sort)
+    res.locals.type = String(query.type)
 
     next()
 }
@@ -62,7 +58,7 @@ export const markPiece = async (req: Request, res: Response, next: NextFunction)
     const params: markPieceParams = req.params
     const body: markPieceBody = req.body
 
-    res.locals.piece_id = String(params.piece_id)
+    params.piece_id = String(params.piece_id)
 
     if (body.mark === 'like') res.locals.mark = 'likes'
     else if (body.mark === 'dislike') res.locals.mark = 'dislikes'
@@ -81,8 +77,8 @@ export const addComment = async (req: Request, res: Response, next: NextFunction
     const params: addCommentParams = req.params
     const body: addCommentBody = req.body
 
-    res.locals.piece_id = String(params.piece_id)
-    res.locals.comment = String(body.comment).trim()
+    body.comment = String(body.comment)
+    params.piece_id = String(params.piece_id)
 
     next()
 }
@@ -98,6 +94,7 @@ export const markComment = async (req: Request, res: Response, next: NextFunctio
     const params: markCommentParams = req.params
     const body: markCommentBody = req.body
 
+    params.comment_id = String(params.comment_id)
     res.locals.comment_id = String(params.comment_id)
 
     if (body.mark === 'like') res.locals.mark = 'likes'
