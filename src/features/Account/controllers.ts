@@ -11,6 +11,9 @@ import { verificationGenerate_G } from '../Verification/controllers'
 import { sendEmail } from '../../utils/Nodemailer/functions/sendEmail'
 import { clearCookiesSettings } from '../../utils/Authentication/function/tokens'
 
+import { newEmail } from '../../utils/Nodemailer/functions/templates/newEmail'
+import { oldEmail } from '../../utils/Nodemailer/functions/templates/oldEmail'
+
 export const accountChangeUsername = async (req: Request, res: Response, next: NextFunction) => {
     HandleSuccess.Ok(res, 'Username Changed')
 }
@@ -28,8 +31,13 @@ export const accountChangeEmailVerified = async (req: Request, res: Response, ne
     const user = await User.findByIdAndUpdate(user_id, { email })
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
 
-    sendEmail(user.email, 'Email Changed Successfully', `tatata`)
-    sendEmail(email, 'New Email Assigned', 'new email assign')
+    let emailHtml: string = ''
+
+    emailHtml = newEmail('You changed your email successfully!', user.usernameDisplay, email)
+    sendEmail(email, 'Email Changed Successfully', emailHtml)
+
+    emailHtml = oldEmail('This is no longer your boremine email', user.usernameDisplay, email, user.email)
+    sendEmail(user.email, 'Your Email Has Changed', emailHtml)
 
     HandleSuccess.Ok(res, 'Email Changed')
 }
