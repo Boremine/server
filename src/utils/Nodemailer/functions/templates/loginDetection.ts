@@ -94,7 +94,8 @@ export const loginDetection = (title: string, body: Body) => {
 
     
     <div class="footer">
-        <p class="no-replay">This is a notification-only email, Please do not replay to this message.</p>
+        <p>This is a notification-only email, Please do not replay to this message.</p>
+        <p>You can contact boremine at contact@boremine.com</p>
     </div>
 </body>
 

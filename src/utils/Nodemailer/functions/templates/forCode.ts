@@ -79,8 +79,8 @@ export const forCode = (title:string, code:string) => {
             <h3 class="code">${code}</h3>
         </div>
         <div class="footer">
-            <p class="no-replay">This is a notification-only email, Please do not replay to this message.</p>
-            <p>You</p>
+            <p>This is a notification-only email, Please do not replay to this message.</p>
+            <p>You can contact boremine at contact@boremine.com</p>
         </div>
     </body>
     
