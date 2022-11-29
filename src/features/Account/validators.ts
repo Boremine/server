@@ -129,13 +129,18 @@ export const accountChangePassword = async (req: Request, res: Response, next: N
     next()
 }
 
+interface DeleteAcountBody {
+    password:string
+}
+
 export const deleteAccount = async (req: Request, res: Response, next: NextFunction) => {
-    const { password, user_id } = res.locals
+    const body:DeleteAcountBody = req.body
+    const { user_id } = res.locals
 
     const user = await User.findById(user_id)
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
 
-    const matchPassword: boolean = await validatePassword(password, user.password)
+    const matchPassword: boolean = await validatePassword(body.password, user.password)
     if (!matchPassword) return next(HandleError.NotAcceptable('Incorrect Password'))
 
     next()

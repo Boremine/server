@@ -8,8 +8,8 @@ interface ChangeUsernameBody {
 export const accountChangeUsername = async (req: Request, res: Response, next: NextFunction) => {
     const body: ChangeUsernameBody = req.body
 
-    body.password = body.password ? String(body.password) : ''
-    body.username = body.username ? String(body.username).trim() : ''
+    body.password = String(body.password)
+    body.username = String(body.username).trim()
 
     next()
 }
@@ -22,8 +22,8 @@ interface ChangeEmailBody {
 export const accountChangeEmail = async (req: Request, res: Response, next: NextFunction) => {
     const body: ChangeEmailBody = req.body
 
-    body.password = body.password ? String(body.password) : ''
-    body.email = body.email ? String(body.email).toLowerCase().trim() : ''
+    body.password = String(body.password)
+    body.email = String(body.email).toLowerCase().trim()
 
     next()
 }
@@ -38,9 +38,9 @@ interface ChangePasswordBody {
 export const accountChangePassword = async (req: Request, res: Response, next: NextFunction) => {
     const body: ChangePasswordBody = req.body
 
-    body.currentPassword = body.currentPassword ? String(body.currentPassword) : ''
-    body.newPassword = body.newPassword ? String(body.newPassword) : ''
-    body.newPasswordConfirm = body.newPasswordConfirm ? String(body.newPasswordConfirm) : ''
+    body.currentPassword = String(body.currentPassword)
+    body.newPassword = String(body.newPassword)
+    body.newPasswordConfirm = String(body.newPasswordConfirm)
 
     next()
 }
@@ -52,14 +52,20 @@ interface DeleteDeviceParams {
 export const accountDeleteDevice = async (req: Request, res: Response, next: NextFunction) => {
     const params: DeleteDeviceParams = req.params
 
-    params.id = params.id ? String(params.id) : ''
+    params.id = String(params.id)
 
     next()
 }
 
+interface DeleteAccountBody {
+    password:string
+}
+
 export const deleteAccount = async (req: Request, res: Response, next: NextFunction) => {
     const { password } = req.body
+    const body:DeleteAccountBody = req.body
 
+    body.password = String(body.password)
     res.locals.password = String(password)
 
     next()
