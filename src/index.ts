@@ -66,7 +66,7 @@ app.get('/', (req: Request, res: Response) => {
 const server = http.createServer(app)
 export const io = new socketIO.Server(server, {
   cors: {
-    origin: process.env.CLIENT_DOMAIN,
+    origin: [String(process.env.CLIENT_DOMAIN2), String(process.env.CLIENT_DOMAIN)],
     credentials: true
   }
 })
@@ -77,7 +77,7 @@ app.use(helmet())
 app.use(useragent.express())
 app.use(
   cors({
-    origin: process.env.CLIENT_DOMAIN,
+    origin: [String(process.env.CLIENT_DOMAIN2), String(process.env.CLIENT_DOMAIN)],
     exposedHeaders: 'RateLimit-Reset',
     credentials: true
   })
