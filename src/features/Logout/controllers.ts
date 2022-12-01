@@ -23,7 +23,7 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
 
   if (!tokenOwner) return next(HandleSuccess.Ok(res, 'Logout Successful'))
 
-  await RefreshToken.findById(tokenOwner._id).remove()
+  await RefreshToken.findById(tokenOwner._id).deleteOne()
 
   HandleSuccess.Ok(res, 'Logout Successful')
 }
