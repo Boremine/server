@@ -180,7 +180,7 @@ export const votePrompt = async (req: Request, res: Response, next: NextFunction
 export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
     const prompt_ids: Array<string> = []
 
-    const prompt = await Prompt.findOne().populate('user_id', 'username email').select('text color title')
+    const prompt = await Prompt.findOne().populate('user_id', 'usernameDisplay email').select('text color title')
 
     if (!prompt) {
         setTimeout(() => {
@@ -195,7 +195,7 @@ export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, Defaul
         user_id: prompt.user_id._id,
         body: {
             title: prompt.title,
-            username: prompt.user_id.username,
+            username: prompt.user_id.usernameDisplay,
             text: prompt.text
         },
         countDown: 30,

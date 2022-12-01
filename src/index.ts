@@ -43,7 +43,7 @@ import verificationRoute from './features/Verification/routes'
 import refreshRoute from './features/Refresh/routes'
 import logoutRoute from './features/Logout/routes'
 import accountRoute from './features/Account/routes'
-// import nodemailer from 'nodemailer'
+import supportRoute from './features/Support/routes'
 
 export const app: Application = express()
 
@@ -105,6 +105,7 @@ app.use('/login', loginRoute)
 app.use('/forgot', forgotRoute)
 app.use('/verification', verificationRoute)
 app.use('/refresh', refreshRoute)
+app.use('/support', supportRoute)
 
 app.use(error_handler)
 

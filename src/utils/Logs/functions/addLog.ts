@@ -36,7 +36,6 @@ export const addLog = async (req: Request, user_id: string, next: NextFunction, 
     user?.logs.push(NewLog)
     await user?.save()
 
-    // let emailHtml:string
     const loginDetectedBody = {
         text: '',
         browser: query.browser,
