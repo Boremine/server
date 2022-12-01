@@ -17,6 +17,18 @@ Content-Type: application/json
     "password": "12345678"
 }
 
+###
+
+POST http://192.168.0.199:3001/support/notAuthenticated HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "12345678@asefsae.com",
+    "title": "efjseifjse",
+    "topic": "bug"
+    
+}
+
 
 ###
 
