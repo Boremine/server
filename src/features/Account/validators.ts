@@ -32,11 +32,13 @@ export const accountChangeUsername = async (req: Request, res: Response, next: N
     const user = await User.findById(user_id)
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
 
+    if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
     const matchPassword: boolean = await validatePassword(body.password, user.password)
     if (!matchPassword) val.password = 'Incorrect Password'
 
     if (!body.username.match('^[A-Za-z0-9-_]+$')) val.username = 'Letters, numbers, dashes, and underscores only'
-    if (body.username.length > 20 || body.username.length < 3) val.username = 'Username must be between 3 and 20 characters'
+    if (body.username.length < 3) val.username = 'Username must be between 3 and 20 characters'
+    if (body.username.length > 20) return next(HandleError.NotAcceptable('Username must be between 3 and 20 characters'))
     await User.findOne({ username: body.username.toLowerCase() }).then(otherUser => {
         if (otherUser && otherUser.username !== user.username) val.username = 'Username is taken'
     })
@@ -76,11 +78,12 @@ export const accountChangeEmail = async (req: Request, res: Response, next: Next
     const user = await User.findById(user_id)
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
 
+    if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
     const matchPassword: boolean = await validatePassword(body.password, user.password)
     if (!matchPassword) val.password = 'Incorrect Password'
 
     if (!/^[^\s@]+@[^\s@]+$/.test(body.email)) val.email = 'Enter a valid email address'
-    if (body.email.length > 254) val.email = 'Email must be less than 254 characters'
+    if (body.email.length > 254) return next(HandleError.NotAcceptable('Email must be less than 254 characters'))
     await User.findOne({ email: body.email }).then(user => { if (user) val.email = 'Email is taken' })
     if (user.email === body.email) val.email = 'This is your current email'
 
@@ -110,6 +113,7 @@ export const accountChangePassword = async (req: Request, res: Response, next: N
     const user = await User.findById(user_id).populate({ path: 'logs', populate: { path: 'refreshToken_id' } })
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
 
+    if (body.currentPassword.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
     const matchPassword: boolean = await validatePassword(body.currentPassword, user.password)
     if (!matchPassword) val.currentPassword = 'Incorrect Password'
 
@@ -140,6 +144,7 @@ export const deleteAccount = async (req: Request, res: Response, next: NextFunct
     const user = await User.findById(user_id)
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
 
+    if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
     const matchPassword: boolean = await validatePassword(body.password, user.password)
     if (!matchPassword) return next(HandleError.NotAcceptable('Incorrect Password'))
 
