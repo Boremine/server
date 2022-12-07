@@ -10,7 +10,7 @@ import { verificationGenerate_G } from '../Verification/controllers'
 import { addLog } from '../../utils/Logs/functions/addLog'
 import { newAuthentication } from '../../utils/Authentication/function/newAuthentication'
 
-const userColors: Array<string> = ['blue', 'red', 'green', 'orange', 'purple']
+import { userColors } from '../../utils/Authentication/function/userColors'
 
 interface RequestBody {
     username: string
@@ -19,7 +19,7 @@ interface RequestBody {
 }
 
 export const signupRequest = async (req: Request, res: Response, next: NextFunction) => {
-    const body:RequestBody = req.body
+    const body: RequestBody = req.body
 
     const passwordHashed = crypto.createHash('sha256').update(body.password).digest('hex')
     body.password = await bcrypt.hash(passwordHashed, 12)
