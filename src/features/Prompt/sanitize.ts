@@ -14,6 +14,22 @@ export const postPrompt = (req: Request, res: Response, next: NextFunction) => {
     next()
 }
 
+interface PostBodyNoAuthenticated {
+    text: string
+    title: string
+    naid:string
+}
+
+export const postPromptNotAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+    const body: PostBodyNoAuthenticated = req.body
+
+    body.text = String(body.text).trim()
+    body.title = String(body.title).trim()
+    body.naid = String(body.naid)
+
+    next()
+}
+
 interface VoteBody {
     option: string
 }

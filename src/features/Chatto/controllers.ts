@@ -7,6 +7,10 @@ import Commentary from '../../models/commentary'
 
 import { state } from '../Prompt/controllers'
 import { HandleError } from '../../responses/error/HandleError'
+// import mongoose from 'mongoose'
+
+import { userColors } from '../../utils/Authentication/function/userColors'
+import crypto from 'crypto'
 
 interface ChattoBlock {
     message: string
@@ -44,6 +48,32 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
     if (state !== 'wait') currentChattoes.push(NewChatto._id.toString())
 
     chattoBlock.push({ message: body.message, usernameDisplay: user.usernameDisplay, color: user.color })
+
+    res.sendStatus(200)
+}
+
+interface SendBodyNotAuthenticated {
+    message: string
+    naid: string
+    nact: number
+}
+
+export const sendMessageNotAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
+    const body: SendBodyNotAuthenticated = req.body
+
+    // const NewChatto = new Commentary({
+    //     user_id: new mongoose.Types.ObjectId('111111111111111111111111'),
+    //     message: body.message,
+    //     fromChatto: true
+    // })
+
+    // NewChatto.save()
+
+    // if (state !== 'wait') currentChattoes.push(NewChatto._id.toString())
+
+    const usernameDisplay = await crypto.createHash('sha256').update(body.naid).digest('hex')
+
+    chattoBlock.push({ message: body.message, usernameDisplay: `(${usernameDisplay.slice(0, 5)})`, color: userColors[body.nact - 1] })
 
     res.sendStatus(200)
 }
