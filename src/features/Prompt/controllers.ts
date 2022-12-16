@@ -17,6 +17,8 @@ import { checkIfFirstFive } from '../../utils/Prompts/functions/checkIfFirstFive
 import mongoose from 'mongoose'
 import crypto from 'crypto'
 
+import { saveToFacebook, saveToReddit, saveToTwitter } from '../../utils/Prompts/functions/saveTo'
+
 const promptColors: Array<string> = ['blue', 'red', 'green', 'orange', 'purple']
 let currentPrompt: CurrentPrompt | undefined
 export let state: 'display' | 'end_fail' | 'end_pass' | 'wait' = 'wait'
@@ -100,6 +102,30 @@ export const latestPrompt = async (req: Request, res: Response, next: NextFuncti
     HandleSuccess.Ok(res, { ...currentPrompt?.getPrompt(), state })
 }
 
+const saveToMural = async () => {
+    const NewMural = new Mural({
+        title: currentPrompt?.body.title,
+        text: currentPrompt?.body.text,
+        user_id: currentPrompt?.user_id,
+        pops: currentPrompt?.voting.pops,
+        drops: currentPrompt?.voting.drops,
+        commentary: currentChattoes,
+        chattoes_amount: currentChattoes.length
+    })
+
+    await NewMural.save()
+
+    saveToReddit(currentPrompt?.body.username!, currentPrompt?.body.title!, currentPrompt?.body.text!, NewMural._id.toString())
+    saveToTwitter(currentPrompt?.body.username!, currentPrompt?.body.title!, NewMural._id.toString())
+    saveToFacebook(currentPrompt?.body.username!, currentPrompt?.body.title!, NewMural._id.toString())
+
+    const user = await User.findById(currentPrompt?.user_id)
+    user?.mural.push(NewMural)
+    await user?.save()
+
+    await Commentary.updateMany({ _id: { $in: currentChattoes } }, { mural_id: NewMural._id })
+}
+
 const waitState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
     state = 'wait'
     io.emit('prompt', {
@@ -118,29 +144,10 @@ const waitState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap,
         nextPrompt: true
     })
 
-    if (promptGoTo === 'Pass') {
-        // saveToReddit(currentPrompt?.body.title!, currentPrompt?.body.text!, currentPrompt?.voting!)
+    // NOTAUTHENTICATED REQUIRED
+    if (promptGoTo === 'Pass' && currentPrompt?.body.username !== '(unauthenticated)') saveToMural()
 
-        const NewMural = new Mural({
-            title: currentPrompt?.body.title,
-            text: currentPrompt?.body.text,
-            user_id: currentPrompt?.user_id,
-            pops: currentPrompt?.voting.pops,
-            drops: currentPrompt?.voting.drops,
-            commentary: currentChattoes,
-            chattoes_amount: currentChattoes.length
-        })
-
-        await NewMural.save()
-
-        const user = await User.findById(currentPrompt?.user_id)
-        user?.mural.push(NewMural)
-        await user?.save()
-
-        await Commentary.updateMany({ _id: { $in: currentChattoes } }, { mural_id: NewMural._id })
-
-        clearChattoes()
-    }
+    clearChattoes()
 
     await User.updateMany({ $or: [{ alreadyVoted: 'pop' }, { alreadyVoted: 'drop' }] }, { alreadyVoted: false })
 
