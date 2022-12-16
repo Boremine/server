@@ -1,57 +1,57 @@
-import Snoowrap from 'snoowrap'
-import Client from 'twitter-api-v2'
-import axios from 'axios'
+// import Snoowrap from 'snoowrap'
+// import Client from 'twitter-api-v2'
+// import axios from 'axios'
 // import { createCanvas, loadImage } from 'canvas'
 
-const r = new Snoowrap({
-    userAgent: 'Whatever',
-    clientId: process.env.REDDIT_CLIENTID,
-    clientSecret: process.env.REDDIT_CLIENTSECRET,
-    username: process.env.REDDIT_USERNAME,
-    password: process.env.REDDIT_PASSWORD
-})
+// const r = new Snoowrap({
+//     userAgent: 'Whatever',
+//     clientId: process.env.REDDIT_CLIENTID,
+//     clientSecret: process.env.REDDIT_CLIENTSECRET,
+//     username: process.env.REDDIT_USERNAME,
+//     password: process.env.REDDIT_PASSWORD
+// })
 
-export const saveToReddit = (username: string, title: string, text: string, id: string) => {
-    r.getSubreddit('boremine')
-        .submitSelfpost({
-            title,
-            text: `By: **${username}**
-            \n${text.length > 500 ? `${text.substring(0, 500)}...` : `${text.substring(0, 500)}`}
-            \n **See more details about this piece [here](https://boremine.com/mural/${id})**`,
-            subredditName: 'boremine',
-            sendReplies: false
-        })
-}
+// export const saveToReddit = (username: string, title: string, text: string, id: string) => {
+//     r.getSubreddit('boremine')
+//         .submitSelfpost({
+//             title,
+//             text: `By: **${username}**
+//             \n${text.length > 500 ? `${text.substring(0, 500)}...` : `${text.substring(0, 500)}`}
+//             \n **See more details about this piece [here](https://boremine.com/mural/${id})**`,
+//             subredditName: 'boremine',
+//             sendReplies: false
+//         })
+// }
 
-const client = new Client({
-    appKey: String(process.env.TWITTER_APP_KEY),
-    appSecret: String(process.env.TWITTER_APP_SECRET),
-    accessToken: String(process.env.TWITTER_ACCESS_TOKEN),
-    accessSecret: String(process.env.TWITTER_ACCESS_SECRET)
-})
+// const client = new Client({
+//     appKey: String(process.env.TWITTER_APP_KEY),
+//     appSecret: String(process.env.TWITTER_APP_SECRET),
+//     accessToken: String(process.env.TWITTER_ACCESS_TOKEN),
+//     accessSecret: String(process.env.TWITTER_ACCESS_SECRET)
+// })
 
-const rwClient = client.readWrite
+// const rwClient = client.readWrite
 
-export const saveToTwitter = async (username: string, title: string, id: string) => {
-    try {
-        await rwClient.v2.tweet(`By: ${username}\n\n${title}\n\nSee more details here https://boremine.com/mural/${id}`)
-    } catch (e) {
-        console.log(e)
-    }
-}
+// export const saveToTwitter = async (username: string, title: string, id: string) => {
+//     try {
+//         await rwClient.v2.tweet(`By: ${username}\n\n${title}\n\nSee more details here https://boremine.com/mural/${id}`)
+//     } catch (e) {
+//         console.log(e)
+//     }
+// }
 
-export const saveToFacebook = async (username: string, title: string, id: string) => {
-    await axios({
-        url: `https://graph.facebook.com/105203525773591/feed`,
-        params: { access_token: process.env.FACEBOOK_ACCESS_TOKEN },
-        data: { message: `By: ${username}\n\n${title}\n\nSee more details here https://boremine.com/mural/${id}` },
-        method: 'post'
-    }).then((res) => {
-        // console.log(res)
-    }).catch((err) => {
-        console.log(err.response)
-    })
-}
+// export const saveToFacebook = async (username: string, title: string, id: string) => {
+//     await axios({
+//         url: `https://graph.facebook.com/105203525773591/feed`,
+//         params: { access_token: process.env.FACEBOOK_ACCESS_TOKEN },
+//         data: { message: `By: ${username}\n\n${title}\n\nSee more details here https://boremine.com/mural/${id}` },
+//         method: 'post'
+//     }).then((res) => {
+//         // console.log(res)
+//     }).catch((err) => {
+//         console.log(err.response)
+//     })
+// }
 
 // const printAtWordWrap = (context: any, text: string, x: number, y: number, lineHeight: number, fitWidth: number) => {
 //     fitWidth = fitWidth || 0
