@@ -11,7 +11,7 @@ const PromptSchema = new Schema<Prompt>({
     title: {
         type: String,
         required: true,
-        maxlength: 500
+        maxlength: 200
     },
     text: {
         type: String,

@@ -18,11 +18,13 @@ interface Mural {
 const MuralSchema = new Schema<Mural>({
     title: {
         type: String,
-        required: true
+        required: true,
+        maxlength: 200
     },
     text: {
         type: String,
-        required: false
+        required: false,
+        maxlength: 5000
     },
     user_id: {
         type: Schema.Types.ObjectId,
