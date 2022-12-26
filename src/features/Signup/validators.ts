@@ -46,7 +46,7 @@ export const signupRequest = async (req: Request, res: Response, next: NextFunct
 
     await axios({
         url: `https://challenges.cloudflare.com/turnstile/v0/siteverify`,
-        data: { secret: '0x4AAAAAAABveLWJr3a4FgXRW7YWOFs99qc', remoteip: req.useragent?.ip, response: req.body.cftToken },
+        data: { secret: '0x4AAAAAAABveLWJr3a4FgXRW7YWOFs99qc', response: req.body.cftToken },
         method: 'post'
     }).then((res) => {
         if (res.data.success) cftPass = true
