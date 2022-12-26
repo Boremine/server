@@ -3,6 +3,7 @@ import { HandleError } from '../../responses/error/HandleError'
 import axios from 'axios'
 
 import User from '../../models/user'
+import { HandleSuccess } from '../../responses/success/HandleSuccess'
 
 interface RequestBody {
     username: string
@@ -41,15 +42,20 @@ export const signupRequest = async (req: Request, res: Response, next: NextFunct
     // formData.append('response', req.body.cftToken)
     console.log(req.body.cftToken)
 
+    let cftPass = false
+
     await axios({
         url: `https://challenges.cloudflare.com/turnstile/v0/siteverify`,
         data: { secret: '0x4AAAAAAABveLWJr3a4FgXRW7YWOFs99qc', remoteip: req.useragent?.ip, response: req.body.cftToken },
         method: 'post'
     }).then((res) => {
+        if (res.data.success) cftPass = true
         console.log(res.data)
-    }).catch((err) => {
-        console.log(err.response.data)
+    }).catch(() => {
+        console.log('error')
     })
+
+    if (cftPass) console.log('YOU PASSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
 
     if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
 
