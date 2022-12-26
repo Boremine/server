@@ -1,7 +1,7 @@
 import Snoowrap from 'snoowrap'
 import Client from 'twitter-api-v2'
 import axios from 'axios'
-// import { createCanvas, loadImage } from 'canvas'
+import { createCanvas, loadImage } from 'canvas'
 
 const r = new Snoowrap({
     userAgent: 'Whatever',
@@ -53,81 +53,106 @@ export const saveToFacebook = async (username: string, title: string, id: string
     })
 }
 
-// const printAtWordWrap = (context: any, text: string, x: number, y: number, lineHeight: number, fitWidth: number) => {
-//     fitWidth = fitWidth || 0
+const fragmentText = (ctx: any, text: string, maxWidth: number) => {
+    const words = text.split(' ')
+    const lines = []
+    let line = ''
+    if (ctx.measureText(text).width < maxWidth) {
+        return [text]
+    }
+    while (words.length > 0) {
+        let split = false
+        while (ctx.measureText(words[0]).width >= maxWidth) {
+            const tmp = words[0]
+            words[0] = tmp.slice(0, -1)
+            if (!split) {
+                split = true
+                words.splice(1, 0, tmp.slice(-1))
+            } else {
+                words[1] = tmp.slice(-1) + words[1]
+            }
+        }
+        if (ctx.measureText(line + words[0]).width < maxWidth) {
+            line += words.shift() + ' '
+        } else {
+            lines.push(line)
+            line = ''
+        }
+        if (words.length === 0) {
+            lines.push(line)
+        }
+    }
+    return lines
+}
 
-//     if (fitWidth <= 0) {
-//         context.fillText(text, x, y)
-//         return
-//     }
-//     let words = text.split(' ')
-//     let currentLine = 0
-//     let idx = 1
-//     while (words.length > 0 && idx <= words.length) {
-//         const str = words.slice(0, idx).join(' ')
-//         const w = context.measureText(str).width
-//         if (w > fitWidth) {
-//             if (idx === 1) {
-//                 idx = 2
-//             }
-//             context.fillText(words.slice(0, idx - 1).join(' '), x, y + (lineHeight * currentLine))
-//             currentLine++
-//             words = words.splice(idx - 1)
-//             idx = 1
-//         } else { idx++ }
-//     }
-//     if (idx > 0) context.fillText(words.join(' '), x, y + (lineHeight * currentLine))
-// }
-
-export const saveToInstagram = async (username: string, title: string, id: string) => {
+export const saveToInstagram = async (username: string, title: string, text: string, id: string) => {
     // await axios({
-    //     url: `https://graph.facebook.com/v15.0/100088162437901`,
-    //     params: { fields: 'instagram_business_account', access_token: 'EAAJZBZAwkEkoMBAKmDfO7WEB0CuuQd1xp631G0BYuREK5Hfd1VSzY19CdynKqBM7gGzVjk5XYVdHMnPO5ODTr0itm2wQKEVu49Fr8CTWthZBYatzGZAOmsvjM9b5GFNiQewoVZBGv5Rz3eFeLvaKPER7dYz1m02y2sDk8HYupAfAEnoNFh4pZBDvXFGku3nIrPKEevlKuSfrE0PPcrPmyZCInrTHN4mx2fl6zf8iJl6cwZDZD' },
+    //     url: `https://graph.facebook.com/v15.0/oauth/access_token`,
+    //     params: { grant_type: 'fb_exchange_token', client_id: '701930951447171', client_secret: '4f55fbd7908c9d4e2935b7d093cc7d79', fb_exchange_token: 'EAAJZBZAwkEkoMBANEIf49RuJzHl371wDEpF0bxlUeJLRpZAyZCAeiJPtYj9qtHjbwArR81g5ZAtbgpN5pMYaZAiEgyZCP4RVG00Wn5yZCPDxZAlZAJLgFAaD7d6ZAUdw0F33ZCervoFNP6yeNUTVBVzQjcxA1HItlFjr8IUDsUnV0VZBDQwTYKZCZAkhEKrooFnndNFIi7Y1K5pw3Ku1Sq9hWPA2dVHgRlZB2xoXNcotnzsGocXT9wZDZD' },
     //     method: 'get'
     // }).then((res) => {
     //     console.log(res.data)
     // }).catch((err) => {
     //     console.log(err.response)
     // })
-    // const canvas = createCanvas(1080, 1080)
-    // const ctx = canvas.getContext('2d')
 
-    // const background = new Image()
-    // background.src = 'https://storage.googleapis.com/boremine.com/background%20banner%20blur%20v3.png'
+    const canvas = createCanvas(1080, 1080)
+    const ctx = canvas.getContext('2d')
 
-    // const logo = new Image()
-    // logo.src = 'https://storage.googleapis.com/boremine.com/BoremineLogo.png'
+    loadImage('https://storage.googleapis.com/boremine.com/background%20banner%20blur%20v3.png').then((backgroundImage) => {
+        ctx.drawImage(backgroundImage, 0, 0, 1080, 1080)
+        loadImage('https://storage.googleapis.com/boremine.com/BoremineLogo.png').then(async (logoImage) => {
+            ctx.drawImage(logoImage, 100, 100, 160, 160)
 
-    // loadImage('https://storage.googleapis.com/boremine.com/background%20banner%20blur%20v3.png').then((backgroundImage) => {
-    //     ctx.drawImage(backgroundImage, 0, 0, 1080, 1080)
-    //     loadImage('https://storage.googleapis.com/boremine.com/BoremineLogo.png').then((logoImage) => {
-    //         ctx.drawImage(logoImage, 100, 100, 160, 160)
-    //     })
+            ctx.font = 'bold 48px arial'
+            ctx.textAlign = 'center'
 
-    //     ctx.font = 'bold 48px sans-serif'
-    //     ctx.textAlign = 'center'
+            const txt = title
 
-    //     const txt = 'this is a very long text. Some more to print! aseoiasef saejfoi jsdrgo dsrijgdrsoig joesaif jesaoijd rsgoidrsj godisj seaoijesfisejfseaifjsif sejfiesa fjifjaes ofijdrs godrsijg dsroijeas fesaopaij dsrpgoidrsj gpsdroijeas pfoiejsa poidsrj gpodsrijgds rposigjdr pgoidsj'
+            const lines = fragmentText(ctx, txt, 1000)
 
-    //     printAtWordWrap(ctx, txt, 540, 400, 50, 1000)
+            const baseX = 540
+            let baseY = 400
+            lines.forEach(function (item) {
+                ctx.fillText(item, baseX, baseY)
+                baseY += 50
+            })
 
-    //     ctx.fillText('El tete', 800, 200)
+            ctx.fillText(username, 800, 200)
 
-    //     // console.log(canvas.toDataURL())
-    // })
+            const base64Canvas = canvas.toDataURL().split(';base64,')[1]
 
-    // background.onload = function () {
-    //     ctx.drawImage(background, 0, 0, 1080, 1080)
+            await axios({
+                url: `https://api.imgur.com/3/image`,
+                method: 'post',
+                headers: {
+                    Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify({
+                    image: base64Canvas
+                })
+            }).then(async (res) => {
+                await axios({
+                    url: `https://graph.facebook.com/v15.0/17841454619841492/media`,
+                    params: { image_url: res.data.data.link, caption: `${text.length > 500 ? `${text.substring(0, 500)}...` : `${text.substring(0, 500)}`}\nPiece ID: ${id}\n\nWant to know more about boremine? Click the link in this profile!`, access_token: process.env.INSTAGRAM_ACCESS_TOKEN },
+                    method: 'post'
+                }).then(async (res) => {
+                    await axios({
+                        url: `https://graph.facebook.com/v15.0/17841454619841492/media_publish`,
+                        params: { creation_id: res.data.id, access_token: process.env.INSTAGRAM_ACCESS_TOKEN },
+                        method: 'post'
+                    }).then((res) => {
 
-    //     ctx.drawImage(logo, 100, 100, 160, 160)
-
-    //     ctx.font = 'bold 48px sans-serif'
-    //     ctx.textAlign = 'center'
-
-    //     const txt = 'this is a very long text. Some more to print! aseoiasef saejfoi jsdrgo dsrijgdrsoig joesaif jesaoijd rsgoidrsj godisj seaoijesfisejfseaifjsif sejfiesa fjifjaes ofijdrs godrsijg dsroijeas fesaopaij dsrpgoidrsj gpsdroijeas pfoiejsa poidsrj gpodsrijgds rposigjdr pgoidsj'
-
-    //     printAtWordWrap(ctx, txt, 540, 400, 50, 1000)
-
-    //     ctx.fillText('El tete', 800, 200)
-    // }
+                    }).catch((err) => {
+                        console.log(err.response.data)
+                    })
+                }).catch((err) => {
+                    console.log(err.response.data)
+                })
+            }).catch((err) => {
+                console.log(err.response.data)
+            })
+        })
+    })
 }
