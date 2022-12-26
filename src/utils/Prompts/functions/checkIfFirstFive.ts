@@ -6,7 +6,6 @@ export const checkIfFirstFive = async (prompt_id: string) => {
     for (let i = 0; i < prompts.length; i++) {
         if (prompt_id.toString() === prompts[i]._id.toString()) {
             inFirstFive = true
-            // user.prompt_id.promptInFirstFive = true
             break
         }
     }
