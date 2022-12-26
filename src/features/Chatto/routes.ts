@@ -34,7 +34,7 @@ const sendMessage_LIMITER = rateLimit({
     max: 1,
     standardHeaders: true,
     message: 'To many requests, wait a moment',
-    keyGenerator: (request, response) => `${response.locals.user_id} ${request.useragent?.ip}`,
+    keyGenerator: (request, response) => `chatto ${response.locals.user_id} ${request.useragent?.ip}`,
     store: new RedisStore({
         sendCommand: (...args: string[]) => client.sendCommand(args)
     })
