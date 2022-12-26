@@ -28,7 +28,7 @@ const loginTry_LIMITER = rateLimit({
     max: 5,
     standardHeaders: true,
     message: 'To many requests, wait a moment',
-    keyGenerator: (request, response) => `${response.locals.user_id} ${request.useragent?.ip}`,
+    keyGenerator: (request, response) => `login ${response.locals.user_id} ${request.useragent?.ip}`,
     store: new RedisStore({
         sendCommand: (...args: string[]) => client.sendCommand(args)
     })
