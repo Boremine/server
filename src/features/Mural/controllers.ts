@@ -135,6 +135,9 @@ const assignSort = (sort: string, type: string) => {
     }
     // sortOptionsHolder.likes_amount = 1
     // sortOptionsHolder.dislikes_amount = -1
+    // 6316c6d06b57dec6025c7ced
+
+    // sortOptionsHolder.user_id = ObjectId('6316c6d06b57dec6025c7ced')
 
     sortOptionsHolder.createdAt = -1
 

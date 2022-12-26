@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { HandleError } from '../../responses/error/HandleError'
+import axios from 'axios'
 
 import User from '../../models/user'
 
@@ -8,6 +9,7 @@ interface RequestBody {
     email: string
     password: string
     passwordConfirm: string
+    cftToken: string
 }
 
 interface RequestValidation {
@@ -33,6 +35,21 @@ export const signupRequest = async (req: Request, res: Response, next: NextFunct
     if (body.password !== body.passwordConfirm) val.passwordConfirm = `Passwords don't match`
     if (body.password.length < 8) { val.password = 'Password must be at least 8 characters long'; delete val.passwordConfirm }
     if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
+
+    // const formData = new FormData()
+    // formData.append('secret', '0x4AAAAAAABveLWJr3a4FgXRW7YWOFs99qc')
+    // formData.append('response', req.body.cftToken)
+    console.log(req.body.cftToken)
+
+    await axios({
+        url: `https://challenges.cloudflare.com/turnstile/v0/siteverify`,
+        data: { secret: '0x4AAAAAAABveLWJr3a4FgXRW7YWOFs99qc', remoteip: req.useragent?.ip, response: req.body.cftToken },
+        method: 'post'
+    }).then((res) => {
+        console.log(res.data)
+    }).catch((err) => {
+        console.log(err.response.data)
+    })
 
     if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
 
