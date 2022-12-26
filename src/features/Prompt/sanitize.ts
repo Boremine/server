@@ -5,11 +5,13 @@ interface PostBody {
     title: string
 }
 
+const trimRegex = /\s+/g
+
 export const postPrompt = (req: Request, res: Response, next: NextFunction) => {
     const body: PostBody = req.body
 
-    body.text = String(body.text).trim()
-    body.title = String(body.title).trim()
+    body.text = String(body.text).trim().replace(trimRegex, ' ')
+    body.title = String(body.title).trim().replace(trimRegex, ' ')
 
     next()
 }
@@ -23,8 +25,8 @@ interface PostBodyNoAuthenticated {
 export const postPromptNotAuthenticated = (req: Request, res: Response, next: NextFunction) => {
     const body: PostBodyNoAuthenticated = req.body
 
-    body.text = String(body.text).trim()
-    body.title = String(body.title).trim()
+    body.text = String(body.text).trim().replace(trimRegex, ' ')
+    body.title = String(body.title).trim().replace(trimRegex, ' ')
     body.naid = String(body.naid)
 
     next()

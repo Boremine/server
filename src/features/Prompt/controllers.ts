@@ -17,7 +17,7 @@ import { checkIfFirstFive } from '../../utils/Prompts/functions/checkIfFirstFive
 import mongoose from 'mongoose'
 import crypto from 'crypto'
 
-import { saveToFacebook, saveToReddit, saveToTwitter } from '../../utils/Prompts/functions/saveTo'
+import { saveToFacebook, saveToInstagram, saveToReddit, saveToTwitter } from '../../utils/Prompts/functions/saveTo'
 
 const promptColors: Array<string> = ['blue', 'red', 'green', 'orange', 'purple']
 let currentPrompt: CurrentPrompt | undefined
@@ -119,6 +119,7 @@ const saveToMural = async () => {
         saveToReddit(currentPrompt?.body.username!, currentPrompt?.body.title!, currentPrompt?.body.text!, NewMural._id.toString())
         saveToTwitter(currentPrompt?.body.username!, currentPrompt?.body.title!, NewMural._id.toString())
         saveToFacebook(currentPrompt?.body.username!, currentPrompt?.body.title!, NewMural._id.toString())
+        saveToInstagram(currentPrompt?.body.username!, currentPrompt?.body.title!, currentPrompt?.body.text!, NewMural._id.toString())
     }
 
     const user = await User.findById(currentPrompt?.user_id)

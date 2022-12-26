@@ -44,7 +44,6 @@ import refreshRoute from './features/Refresh/routes'
 import logoutRoute from './features/Logout/routes'
 import accountRoute from './features/Account/routes'
 import supportRoute from './features/Support/routes'
-// import { saveToInstagram } from './utils/Prompts/functions/saveTo'
 
 export const app: Application = express()
 
@@ -59,10 +58,6 @@ app.get('/', (req: Request, res: Response) => {
   res.redirect('https://boremine.com')
   // res.send('Hello Test V4.24 db Connection')
 })
-
-// app.get('/test/email', async (req: Request, res: Response) => {
-
-// })
 
 const server = http.createServer(app)
 export const io = new socketIO.Server(server, {
