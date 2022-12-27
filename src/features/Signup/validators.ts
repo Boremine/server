@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express'
 import { HandleError } from '../../responses/error/HandleError'
-import axios from 'axios'
 
 import User from '../../models/user'
-import { HandleSuccess } from '../../responses/success/HandleSuccess'
+
+import axios from 'axios'
 
 interface RequestBody {
     username: string
@@ -37,27 +37,26 @@ export const signupRequest = async (req: Request, res: Response, next: NextFunct
     if (body.password.length < 8) { val.password = 'Password must be at least 8 characters long'; delete val.passwordConfirm }
     if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
 
-    // const formData = new FormData()
-    // formData.append('secret', '0x4AAAAAAABveLWJr3a4FgXRW7YWOFs99qc')
-    // formData.append('response', req.body.cftToken)
-    console.log(req.body.cftToken)
+    if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
 
     let cftPass = false
 
+    const formData = new URLSearchParams()
+    formData.append('secret', '0x4AAAAAAABveLWJr3a4FgXRW7YWOFs99qc')
+    formData.append('response', req.body.cftToken)
+    if (req.useragent?.ip) formData.append('remoteip', req.useragent?.ip)
+
     await axios({
         url: `https://challenges.cloudflare.com/turnstile/v0/siteverify`,
-        data: { secret: '0x4AAAAAAABveLWJr3a4FgXRW7YWOFs99qc', response: req.body.cftToken },
+        data: formData,
         method: 'post'
     }).then((res) => {
         if (res.data.success) cftPass = true
-        console.log(res.data)
     }).catch(() => {
         console.log('error')
     })
 
-    if (cftPass) console.log('YOU PASSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
-
-    if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
+    if (!cftPass) return next(HandleError.BadRequest("Something wen't wrong, try again later"))
 
     next()
 }
