@@ -42,7 +42,7 @@ export const signupRequest = async (req: Request, res: Response, next: NextFunct
     let cftPass = false
 
     const formData = new URLSearchParams()
-    formData.append('secret', '0x4AAAAAAABvlpN61of5Ns2H1ouXD5zW-jo')
+    formData.append('secret', '0x4AAAAAAABveLWJr3a4FgXRW7YWOFs99qc')
     formData.append('response', req.body.cftToken)
     if (req.useragent?.ip) formData.append('remoteip', req.useragent?.ip)
 
