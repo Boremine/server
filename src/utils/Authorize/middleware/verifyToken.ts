@@ -26,3 +26,26 @@ export const authorize = async (req: Request, res: Response, next: NextFunction)
 
     next()
 }
+
+export const authorizeNotRequired = async (req: Request, res: Response, next: NextFunction) => {
+    const { access_token } = req.signedCookies
+
+    const secret: string = String(process.env.ACCESS_TOKEN_SECRET)
+
+    if (!access_token) {
+        res.clearCookie('access_token', clearCookiesSettings)
+        return next()
+    }
+
+    jwt.verify(access_token, secret, (err: VerifyErrors | null, decoded: any) => {
+        if (err) {
+            res.clearCookie('access_token', clearCookiesSettings)
+        }
+
+        res.locals = {
+            user_id: decoded.user_id
+        }
+    })
+
+    next()
+}
