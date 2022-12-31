@@ -14,7 +14,7 @@ const getSecretValue = async (secretName: string) => {
     const [secret] = await client.accessSecretVersion({
         name: secretName
     })
-    console.log(secret.payload)
+    console.log(secret.payload?.data?.toString())
     // if (secret.payload) console.log(secret.payload.data.toString())
     // return secret.payload.data.toString()
 }
