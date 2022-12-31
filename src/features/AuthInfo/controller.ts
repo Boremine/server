@@ -25,7 +25,7 @@ export const getAuth = async (req: Request, res: Response, next: NextFunction) =
         user.prompt_id.promptInFirstFive = await checkIfFirstFive(user.prompt_id._id)
     }
 
-    console.log(await getSecretValue('TEST_ENV'))
+    console.log(getSecretValue('TEST_ENV'))
 
     HandleSuccess.Ok(res, { ...user, auth: true })
 }
