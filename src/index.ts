@@ -95,7 +95,7 @@ app.use(
 app.use(cookieParser(process.env.COOKIE_PARSER_SECRET))
 
 mongoose
-  .connect(`${process.env.DATABASE}`)
+  .connect(`${getSecretValue('DATABASE')}`)
   .then(() => console.log(`Database connected! ${process.env.DATABASE}`))
   .catch(err => console.log(`Failed to connect to database: ${err.message}`))
 
