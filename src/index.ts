@@ -70,71 +70,126 @@ const getSecretValueFromManager = async (secretName: string) => {
   }
 }
 
-export const getSecretValue = async (secretName: string):Promise<string | undefined> => {
+export const getSecretValue = async (secretName: string): Promise<string | undefined> => {
   return process.env[secretName] || await getSecretValueFromManager(secretName)
 }
 
-app.get('/', (req: Request, res: Response) => {
-  res.redirect('https://boremine.com')
-  // res.send('Hello Test V4.24 db Connection')
-})
-
 const server = http.createServer(app)
-export const io = new socketIO.Server(server, {
-  cors: {
-    origin: [String(process.env.CLIENT_DOMAIN2), String(process.env.CLIENT_DOMAIN)],
-    credentials: true
-  }
-})
 
-app.use(express.json())
-app.set('trust proxy', true)
-app.use(helmet())
-app.use(useragent.express())
-app.use(
-  cors({
-    origin: [String(process.env.CLIENT_DOMAIN2), String(process.env.CLIENT_DOMAIN)],
-    exposedHeaders: 'RateLimit-Reset',
-    credentials: true
+const startServer = async () => {
+  app.get('/', (req: Request, res: Response) => {
+    res.redirect('https://boremine.com')
   })
-)
 
-app.use(cookieParser(process.env.COOKIE_PARSER_SECRET))
+  // const connectToSocketIO = async () => {
+  //   const io = new socketIO.Server(server, {
+  //     cors: {
+  //       origin: [String(await getSecretValue('CLIENT_DOMAIN2')), String(await getSecretValue('CLIENT_DOMAIN'))],
+  //       credentials: true
+  //     }
+  //   })
 
-const connectToMongoose = async () => {
-  const databaseConnection = await getSecretValue('DATABASE')
+  //   return io
+  // }
+  // const io = connectToSocketIO()
+  const io = new socketIO.Server(server, {
+    cors: {
+      origin: [String(await getSecretValue('CLIENT_DOMAIN2')), String(await getSecretValue('CLIENT_DOMAIN'))],
+      credentials: true
+    }
+  })
+
+  app.use(express.json())
+  app.set('trust proxy', true)
+  app.use(helmet())
+  app.use(useragent.express())
+  app.use(
+    cors({
+      origin: [String(await getSecretValue('CLIENT_DOMAIN2')), String(await getSecretValue('CLIENT_DOMAIN'))],
+      exposedHeaders: 'RateLimit-Reset',
+      credentials: true
+    })
+  )
+
+  // const useCors = async () => {
+  //   // const tete = await corsSettings()
+  //   // app.use(cors({
+  //   //   origin: [String(await getSecretValue('CLIENT_DOMAIN2')), String(await getSecretValue('CLIENT_DOMAIN'))],
+  //   //   exposedHeaders: 'RateLimit-Reset',
+  //   //   credentials: true
+  //   // }))
+
+  //   return {
+  //     origin: [String(await getSecretValue('CLIENT_DOMAIN2')), String(await getSecretValue('CLIENT_DOMAIN'))],
+  //     exposedHeaders: 'RateLimit-Reset',
+  //     credentials: true
+  //   }
+  // }
+  // useCors()
+
+  // const use = async (appp:Application) => {
+  //   appp.use(cors(await useCors()))
+  // }
+  // use(app)
+  // const useCors = async () => {
+  //   app.use(
+  //     cors({
+  //       origin: [String(await getSecretValue('CLIENT_DOMAIN2')), String(await getSecretValue('CLIENT_DOMAIN'))],
+  //       exposedHeaders: 'RateLimit-Reset',
+  //       credentials: true
+  //     })
+  //   )
+  // }
+  // useCors()
+
+  app.use(cookieParser(process.env.COOKIE_PARSER_SECRET))
+
+  // const connectToMongoose = async () => {
   mongoose
-    .connect(`${databaseConnection}`)
+    .connect(`${await getSecretValue('DATABASE')}`)
     .then(() => console.log(`Database connected! ${process.env.DATABASE}`))
     .catch(err => console.log(`Failed to connect to database: ${err.message}`))
+  // }
+  // connectToMongoose()
+
+  // const setSocketIO = async () => {
+  //   app.set('socketio', await io)
+  // }
+  // setSocketIO()
+
+  app.set('socketio', io)
+
+  app.use(global_sanitize)
+
+  app.use('/mural', muralRoute)
+  app.use('/authInfo', authInfoRoute)
+  app.use('/chatto', chattoRoute)
+  app.use('/prompt', promptRoute)
+  app.use('/account', accountRoute)
+  app.use('/signup', signupRoute)
+  app.use('/logout', logoutRoute)
+  app.use('/login', loginRoute)
+  app.use('/forgot', forgotRoute)
+  app.use('/verification', verificationRoute)
+  app.use('/refresh', refreshRoute)
+  app.use('/support', supportRoute)
+
+  app.use(error_handler)
+
+  // const run = async () => {
+  //   displayChatto(await io)
+  //   displayPrompt(await io)
+  //   validateConnections(await io)
+  // }
+  // run()
+
+  displayChatto(io)
+  displayPrompt(io)
+  validateConnections(io)
+
+  const port: any = process.env.PORT || 3001
+  if (port !== 'test') {
+    server.listen(port, () => console.log(`server running on port ${port}`))
+  }
 }
-connectToMongoose()
-
-app.set('socketio', io)
-
-app.use(global_sanitize)
-
-app.use('/mural', muralRoute)
-app.use('/authInfo', authInfoRoute)
-app.use('/chatto', chattoRoute)
-app.use('/prompt', promptRoute)
-app.use('/account', accountRoute)
-app.use('/signup', signupRoute)
-app.use('/logout', logoutRoute)
-app.use('/login', loginRoute)
-app.use('/forgot', forgotRoute)
-app.use('/verification', verificationRoute)
-app.use('/refresh', refreshRoute)
-app.use('/support', supportRoute)
-
-app.use(error_handler)
-
-displayChatto(io)
-displayPrompt(io)
-
-validateConnections(io)
-
-const port: any = process.env.PORT || 3001
-if (port !== 'test') {
-  server.listen(port, () => console.log(`server running on port ${port}`))
-}
+startServer()
