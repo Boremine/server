@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 
-// import slowDown from 'express-slow-down'
 import useragent from 'express-useragent'
 
 import socketIO from 'socket.io'
@@ -18,7 +17,7 @@ import { validateConnections } from './utils/Socket/functions/validateConnection
 import { error_handler } from './responses/error/error-handler'
 
 import morgan from 'morgan'
-// import dotenv from 'dotenv'
+
 import dotenvSafe from 'dotenv-safe'
 
 import './models/commentary'
@@ -81,17 +80,6 @@ const startServer = async () => {
     res.redirect('https://boremine.com')
   })
 
-  // const connectToSocketIO = async () => {
-  //   const io = new socketIO.Server(server, {
-  //     cors: {
-  //       origin: [String(await getSecretValue('CLIENT_DOMAIN2')), String(await getSecretValue('CLIENT_DOMAIN'))],
-  //       credentials: true
-  //     }
-  //   })
-
-  //   return io
-  // }
-  // const io = connectToSocketIO()
   const io = new socketIO.Server(server, {
     cors: {
       origin: [String(await getSecretValue('CLIENT_DOMAIN2')), String(await getSecretValue('CLIENT_DOMAIN'))],
@@ -111,51 +99,12 @@ const startServer = async () => {
     })
   )
 
-  // const useCors = async () => {
-  //   // const tete = await corsSettings()
-  //   // app.use(cors({
-  //   //   origin: [String(await getSecretValue('CLIENT_DOMAIN2')), String(await getSecretValue('CLIENT_DOMAIN'))],
-  //   //   exposedHeaders: 'RateLimit-Reset',
-  //   //   credentials: true
-  //   // }))
+  app.use(cookieParser(await getSecretValue('COOKIE_PARSER_SECRET')))
 
-  //   return {
-  //     origin: [String(await getSecretValue('CLIENT_DOMAIN2')), String(await getSecretValue('CLIENT_DOMAIN'))],
-  //     exposedHeaders: 'RateLimit-Reset',
-  //     credentials: true
-  //   }
-  // }
-  // useCors()
-
-  // const use = async (appp:Application) => {
-  //   appp.use(cors(await useCors()))
-  // }
-  // use(app)
-  // const useCors = async () => {
-  //   app.use(
-  //     cors({
-  //       origin: [String(await getSecretValue('CLIENT_DOMAIN2')), String(await getSecretValue('CLIENT_DOMAIN'))],
-  //       exposedHeaders: 'RateLimit-Reset',
-  //       credentials: true
-  //     })
-  //   )
-  // }
-  // useCors()
-
-  app.use(cookieParser(process.env.COOKIE_PARSER_SECRET))
-
-  // const connectToMongoose = async () => {
   mongoose
     .connect(`${await getSecretValue('DATABASE')}`)
-    .then(() => console.log(`Database connected! ${process.env.DATABASE}`))
+    .then(async () => console.log(`Database connected! ${await getSecretValue('DATABASE')}`))
     .catch(err => console.log(`Failed to connect to database: ${err.message}`))
-  // }
-  // connectToMongoose()
-
-  // const setSocketIO = async () => {
-  //   app.set('socketio', await io)
-  // }
-  // setSocketIO()
 
   app.set('socketio', io)
 
@@ -175,13 +124,6 @@ const startServer = async () => {
   app.use('/support', supportRoute)
 
   app.use(error_handler)
-
-  // const run = async () => {
-  //   displayChatto(await io)
-  //   displayPrompt(await io)
-  //   validateConnections(await io)
-  // }
-  // run()
 
   displayChatto(io)
   displayPrompt(io)
