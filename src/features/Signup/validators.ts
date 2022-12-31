@@ -60,7 +60,7 @@ export const signupRequest = async (req: Request, res: Response, next: NextFunct
         console.log('error')
     })
 
-    if (!cftPass) return next(HandleError.BadRequest("Something wen't wrong, try again later"))
+    if (!cftPass) return next(HandleError.BadRequest('Click the checkbox above'))
 
     next()
 }

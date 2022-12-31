@@ -41,7 +41,7 @@ export const forgotValidate = async (req: Request, res: Response, next: NextFunc
         if (err) return next(HandleError.NotFound('Token Expired'))
 
         const forgetPasswordToken = await ForgotPassword.findOne({ token })
-        if (forgetPasswordToken) return next(HandleError.NotFound('Token Expired'))
+        if (!forgetPasswordToken) return next(HandleError.NotFound('Token Expired'))
     })
 
     next()
@@ -74,7 +74,7 @@ export const forgotConfirm = async (req: Request, res: Response, next: NextFunct
         if (err) return next(HandleError.NotFound('Token Expired'))
 
         const forgetPasswordToken = await ForgotPassword.findOne({ token })
-        if (forgetPasswordToken) return next(HandleError.NotFound('Token Expired'))
+        if (!forgetPasswordToken) return next(HandleError.NotFound('Token Expired'))
 
         res.locals.user_id = decoded.user_id.toString()
     })

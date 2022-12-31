@@ -126,7 +126,9 @@ const saveToMural = async () => {
     user?.mural.push(NewMural)
     await user?.save()
 
-    await Commentary.updateMany({ _id: { $in: currentChattoes } }, { mural_id: NewMural._id })
+    await Commentary.updateMany({ _id: { $in: currentChattoes } }, { piece_id: NewMural._id })
+
+    clearChattoes()
 }
 
 const waitState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
@@ -149,8 +151,6 @@ const waitState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap,
 
     // NOTAUTHENTICATED REQUIRED
     if (promptGoTo === 'Pass' && currentPrompt?.body.username !== '(unauthenticated)') saveToMural()
-
-    clearChattoes()
 
     await User.updateMany({ $or: [{ alreadyVoted: 'pop' }, { alreadyVoted: 'drop' }] }, { alreadyVoted: false })
 
