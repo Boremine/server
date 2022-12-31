@@ -98,7 +98,8 @@ app.use(
 app.use(cookieParser(process.env.COOKIE_PARSER_SECRET))
 
 const connectToMongoose = async () => {
-  const databaseConnection = await getSecretValue('DATABASE')
+  console.log(process.env.DATABASE, 'DATABASE')
+  const databaseConnection = process.env.DATABASE || await getSecretValue('DATABASE')
   mongoose
     .connect(`${databaseConnection}`)
     .then(() => console.log(`Database connected! ${process.env.DATABASE}`))

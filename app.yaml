@@ -9,7 +9,6 @@ handlers:
 env_variables:
   CLIENT_DOMAIN: 'https://boremine.com'
   CLIENT_DOMAIN2: 'https://www.boremine.com'
-  DATABASE: 'mongodb+srv://gerh0128fjs:GpMM78a1BP78DhpR@boremine.8wu2x.mongodb.net/?retryWrites=true&w=majority'
   COOKIE_PARSER_SECRET: '938f2j29rthgb9rhg349t85ehg8dr7ghw47twg98rtyg3tg'
   ACCESS_TOKEN_SECRET: 'fk388DSYR0991jsmvPG930Ija8q81jnxzbn89DH28jf9fh39JLPA99Ijd83'
   REFRESH_TOKEN_SECRET: 'fhj8FHJ38GJH9HG93HJD9gjw9fj829hg9bjshHF910EPVMBNAJjaiq8919ejvmnzhj'
