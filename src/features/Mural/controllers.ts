@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import Mural from '../../models/mural'
 import Commentary from '../../models/commentary'
-// import User from '../../models/user'
+
 import { HandleError } from '../../responses/error/HandleError'
 import { HandleSuccess } from '../../responses/success/HandleSuccess'
 
