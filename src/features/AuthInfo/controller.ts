@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { getSecretValue } from '../..'
+// import { getSecretValue } from '../..'
 import User from '../../models/user'
 
 import { HandleError } from '../../responses/error/HandleError'
@@ -25,19 +25,19 @@ export const getAuth = async (req: Request, res: Response, next: NextFunction) =
         user.prompt_id.promptInFirstFive = await checkIfFirstFive(user.prompt_id._id)
     }
 
-    console.log(await getSecretValue('TEST_ENV'))
-    if (await getSecretValue('TEST_ENV')) {
-        console.log('true')
-    } else {
-        console.log('false')
-    }
+    // console.log(await getSecretValue('TEST_ENV'))
+    // if (await getSecretValue('TEST_ENV')) {
+    //     console.log('true')
+    // } else {
+    //     console.log('false')
+    // }
 
-    console.log(await getSecretValue('TEST_ENVV'))
-    if (await getSecretValue('TEST_ENVV')) {
-        console.log('true')
-    } else {
-        console.log('false')
-    }
+    // console.log(await getSecretValue('TEST_ENVV'))
+    // if (await getSecretValue('TEST_ENVV')) {
+    //     console.log('true')
+    // } else {
+    //     console.log('false')
+    // }
 
     HandleSuccess.Ok(res, { ...user, auth: true })
 }
