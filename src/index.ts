@@ -45,6 +45,8 @@ import logoutRoute from './features/Logout/routes'
 import accountRoute from './features/Account/routes'
 import supportRoute from './features/Support/routes'
 
+import { SecretManagerServiceClient } from '@google-cloud/secret-manager'
+
 export const app: Application = express()
 
 if (process.env.NODE_ENV === 'development') {
@@ -52,6 +54,17 @@ if (process.env.NODE_ENV === 'development') {
   dotenvSafe.config({
     allowEmptyValues: false
   })
+}
+
+const client = new SecretManagerServiceClient()
+
+export const getSecretValue = async (secretName: string) => {
+    const path = `projects/boremine/secrets/${secretName}/versions/latest`
+    const [secret] = await client.accessSecretVersion({
+        name: path
+    })
+
+    return secret.payload?.data?.toString()
 }
 
 app.get('/', (req: Request, res: Response) => {
