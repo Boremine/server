@@ -10,7 +10,7 @@ import bcrypt from 'bcrypt'
 import User from '../../models/user'
 import Log from '../../models/log'
 import ForgotPassword from '../../models/forgotPassword'
-// import { HandleError } from '../../responses/error/HandleError'
+
 import { addLog } from '../../utils/Logs/functions/addLog'
 import { newAuthentication } from '../../utils/Authentication/function/newAuthentication'
 
@@ -49,6 +49,12 @@ export const forgotVerified = async (req: Request, res: Response, next: NextFunc
     const secret: string = String(process.env.FORGOTPASSWORD_TOKEN_SECRET)
     const token: string = jwt.sign(payload, secret, { expiresIn: '1d' })
 
+    const NewForgotPassword = new ForgotPassword({
+        user_id: data.user_id,
+        token
+    })
+    await NewForgotPassword.save()
+
     HandleSuccess.MovedPermanently(res, { token })
 }
 
@@ -59,26 +65,20 @@ export const forgotValidate = async (req: Request, res: Response, next: NextFunc
 export const forgotConfirm = async (req: Request, res: Response, next: NextFunction) => {
     const { password } = req.body
     const { user_id } = res.locals
-    const { token } = req.params
 
     const passwordHashed = crypto.createHash('sha256').update(password).digest('hex')
     const passwordBcrypt = await bcrypt.hash(passwordHashed, 12)
 
     await User.findByIdAndUpdate(user_id, { password: passwordBcrypt, logs: [] })
     await Log.deleteMany({ user_id })
+    await ForgotPassword.deleteMany({ user_id })
 
     const addLogRes = await addLog(req, user_id.toString(), next, 'forgotPassword')
-    // if (!addLogRes) return next(HandleError.BadRequest('There was a problem adding log'))
 
     const newAuth = {
         user_id: user_id.toString(),
         log_id: addLogRes
     }
 
-    const NewForgotPassword = new ForgotPassword({ token })
-    await NewForgotPassword.save()
-
     newAuthentication(newAuth, res)
-
-    // HandleSuccess.Ok(res, 'Password Reset')
 }

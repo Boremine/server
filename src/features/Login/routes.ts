@@ -22,6 +22,9 @@ client.connect()
 client.on('connect', () => {
     console.log('Redis Connected (Login/Try)')
 })
+client.on('error', (error) => {
+    console.error(error)
+})
 
 const loginTry_LIMITER = rateLimit({
     windowMs: 10000,

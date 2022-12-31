@@ -1,24 +1,14 @@
 import { Request, Response, NextFunction } from 'express'
 import Mural from '../../models/mural'
 import Commentary from '../../models/commentary'
+// import User from '../../models/user'
 import { HandleError } from '../../responses/error/HandleError'
 import { HandleSuccess } from '../../responses/success/HandleSuccess'
 
-// import mongoose from 'mongoose'
 import { isValidObjectId, Types } from 'mongoose'
 
 export const getMural = async (req: Request, res: Response, next: NextFunction) => {
     const { limit } = res.locals
-
-    // const mural = await Mural.find().populate(
-    //     {
-    //         path: 'user_id',
-    //         select: 'usernameDisplay color -_id'
-    //     }
-    // ).select('chattoes_amount comments_amount pops drops dislikes likes dislikes_amount likes_amount title text createdAt _id').sort({ createdAt: -1 }).limit(limit)
-
-    // const muralHold = mural.slice(limit - 12, limit)
-    // console.log(muralHold)
     const mural = await Mural.aggregate([
         {
             $sort: {
@@ -121,31 +111,62 @@ export const getOnePieceInfo = async (req: Request, res: Response, next: NextFun
 }
 
 const assignSort = (sort: string, type: string) => {
-    const sortOptionsHolder: any = {}
+    const sortOptionsHolder: { fromChatto?: number, likes_amount?: number, createdAt?: number } = {}
 
     if (type === 'comments') {
         sortOptionsHolder.fromChatto = 1
     } else if (type === 'chatto') {
         sortOptionsHolder.fromChatto = -1
     }
-    // sortOptionsHolder.fromChatto = 1
     if (sort === 'new') sortOptionsHolder.createdAt = -1
     else if (sort === 'top') {
         sortOptionsHolder.likes_amount = -1
     }
-    // sortOptionsHolder.likes_amount = 1
-    // sortOptionsHolder.dislikes_amount = -1
-    // 6316c6d06b57dec6025c7ced
-
-    // sortOptionsHolder.user_id = ObjectId('6316c6d06b57dec6025c7ced')
 
     sortOptionsHolder.createdAt = -1
 
     return sortOptionsHolder
 }
 
+const getPieceCommentsFacetLookup = {
+    $lookup: {
+        from: 'users',
+        localField: 'user_id',
+        foreignField: '_id',
+        as: 'user_id',
+        pipeline: [
+            {
+                $project: {
+                    _id: 0,
+                    usernameDisplay: 1
+                }
+            }
+        ]
+    }
+}
+
+const getPieceCommentsFacetProject = {
+    $project: {
+        message: 1,
+        likes_amount: 1,
+        dislikes_amount: 1,
+        likes: 1,
+        dislikes: 1,
+        createdAt: 1,
+        fromChatto: 1,
+        user_id: { $ifNull: ['$user_id', { usernameDisplay: '(deleted)' }] }
+    }
+}
+
+const getPieceCommentsFacetUnwind = {
+    $unwind: {
+        path: '$user_id',
+        preserveNullAndEmptyArrays: true
+    }
+}
+
 export const getOnePieceComments = async (req: Request, res: Response, next: NextFunction) => {
-    const { sort, type, limit } = res.locals
+    const { sort, type, limit, user_id } = res.locals
     const { piece_id } = req.params
 
     let sortOptions: any = {}
@@ -169,26 +190,25 @@ export const getOnePieceComments = async (req: Request, res: Response, next: Nex
                 as: 'commentary',
                 pipeline: [
                     {
-                        $lookup: {
-                            from: 'users',
-                            localField: 'user_id',
-                            foreignField: '_id',
-                            as: 'user_id',
-                            pipeline: [
+                        $facet: {
+                            yourPieces: [
+                                { $match: { user_id: new Types.ObjectId(user_id) } },
+                                getPieceCommentsFacetLookup,
                                 {
-                                    $project: {
-                                        _id: 0,
-                                        usernameDisplay: 1
-                                    }
-                                }
+                                    $sort: sortOptions
+                                },
+                                getPieceCommentsFacetUnwind,
+                                getPieceCommentsFacetProject
+                            ],
+                            otherPieces: [
+                                { $match: { user_id: { $ne: new Types.ObjectId(user_id) } } },
+                                getPieceCommentsFacetLookup,
+                                {
+                                    $sort: sortOptions
+                                },
+                                getPieceCommentsFacetUnwind,
+                                getPieceCommentsFacetProject
                             ]
-                        }
-
-                    },
-                    {
-                        $unwind: {
-                            path: '$user_id',
-                            preserveNullAndEmptyArrays: true
                         }
                     },
                     {
@@ -200,14 +220,17 @@ export const getOnePieceComments = async (req: Request, res: Response, next: Nex
                             dislikes: 1,
                             createdAt: 1,
                             fromChatto: 1,
-                            user_id: { $ifNull: ['$user_id', { usernameDisplay: '(deleted)' }] }
+
+                            documents: {
+                                $slice: [
+                                    {
+                                        $concatArrays: ['$yourPieces', '$otherPieces']
+                                    },
+                                    limit
+                                ]
+
+                            }
                         }
-                    },
-                    {
-                        $sort: sortOptions
-                    },
-                    {
-                        $limit: limit
                     }
                 ]
             }
@@ -220,8 +243,7 @@ export const getOnePieceComments = async (req: Request, res: Response, next: Nex
     ])
 
     if (!piece) return next(HandleError.NotFound('No piece found'))
-
-    const comments = piece[0].commentary.slice(limit - 8, limit)
+    const comments = piece[0].commentary[0].documents.slice(limit - 8, limit)
 
     HandleSuccess.Ok(res, comments)
 }

@@ -30,12 +30,15 @@ import {
     markComment as markComment_SANITIZE
 } from './sanitize'
 
-import { authorize } from '../../utils/Authorize/middleware/verifyToken'
+import { authorize, authorizeNotRequired } from '../../utils/Authorize/middleware/verifyToken'
 
 const client = createClient({ url: process.env.REDIS_CONNECTION, password: process.env.REDIS_PASSWORD, username: process.env.REDIS_USERNAME })
 client.connect()
 client.on('connect', () => {
     console.log('Redis Connected (Mural/AddComment)')
+})
+client.on('error', (error) => {
+    console.error(error)
 })
 
 const addComment_LIMITER = rateLimit({
@@ -53,7 +56,8 @@ const router: Router = Router()
 
 router.get('/', getMural_SANITIZE, getMural_VALIDATOR, getMural_CONTROLLER)
 router.get('/:piece_id', getOnePieceInfo_SANITIZE, getOnePieceInfo_CONTROLLER)
-router.get('/:piece_id/comments', getOnePieceComments_SANITIZE, getOnePieceComments_VALIDATOR, getOnePieceComments_CONTROLLER)
+
+router.get('/:piece_id/comments', authorizeNotRequired, getOnePieceComments_SANITIZE, getOnePieceComments_VALIDATOR, getOnePieceComments_CONTROLLER)
 
 router.put('/:piece_id/mark', authorize, markPiece_SANITIZE, markPiece_VALIDATOR, markPiece_CONTROLLER)
 

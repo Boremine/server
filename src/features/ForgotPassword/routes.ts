@@ -26,6 +26,9 @@ client.connect()
 client.on('connect', () => {
     console.log('Redis Connected (Forgot)')
 })
+client.on('error', (error) => {
+    console.error(error)
+})
 
 const forgotRequest_LIMITER = rateLimit({
     windowMs: 30000,

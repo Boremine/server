@@ -28,6 +28,9 @@ client.connect()
 client.on('connect', () => {
     console.log('Redis Connected (Chatto/Post)')
 })
+client.on('error', (error) => {
+    console.error(error)
+})
 
 const sendMessage_LIMITER = rateLimit({
     windowMs: 3000,
