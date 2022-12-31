@@ -60,11 +60,14 @@ const client = new SecretManagerServiceClient()
 
 export const getSecretValue = async (secretName: string) => {
   const path = `projects/boremine/secrets/${secretName}/versions/latest`
-  const [secret] = await client.accessSecretVersion({
-    name: path
-  })
-
-  return secret.payload?.data?.toString()
+  try {
+    const [secret] = await client.accessSecretVersion({
+      name: path
+    })
+    return secret.payload?.data?.toString()
+  } catch {
+    return undefined
+  }
 }
 
 app.get('/', (req: Request, res: Response) => {
