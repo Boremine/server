@@ -37,7 +37,7 @@ export const getAuth = async (req: Request, res: Response, next: NextFunction) =
         user.prompt_id.promptInFirstFive = await checkIfFirstFive(user.prompt_id._id)
     }
 
-    await getSecretValue('projects/boremine/secrets/TEST_ENV')
+    await getSecretValue('projects/boremine/secrets/TEST_ENV/versions/latest')
 
     HandleSuccess.Ok(res, { ...user, auth: true })
 }
