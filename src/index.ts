@@ -58,7 +58,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const client = new SecretManagerServiceClient()
 
-export const getSecretValue = async (secretName: string) => {
+const getSecretValueFromManager = async (secretName: string) => {
   const path = `projects/boremine/secrets/${secretName}/versions/latest`
   try {
     const [secret] = await client.accessSecretVersion({
@@ -68,6 +68,10 @@ export const getSecretValue = async (secretName: string) => {
   } catch {
     return undefined
   }
+}
+
+export const getSecretValue = async (secretName: string):Promise<string | undefined> => {
+  return process.env[secretName] || await getSecretValueFromManager(secretName)
 }
 
 app.get('/', (req: Request, res: Response) => {
@@ -98,8 +102,7 @@ app.use(
 app.use(cookieParser(process.env.COOKIE_PARSER_SECRET))
 
 const connectToMongoose = async () => {
-  console.log(process.env.DATABASE, 'DATABASE')
-  const databaseConnection = process.env.DATABASE || await getSecretValue('DATABASE')
+  const databaseConnection = await getSecretValue('DATABASE')
   mongoose
     .connect(`${databaseConnection}`)
     .then(() => console.log(`Database connected! ${process.env.DATABASE}`))
