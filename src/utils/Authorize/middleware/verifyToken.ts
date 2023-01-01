@@ -1,12 +1,13 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt, { VerifyErrors } from 'jsonwebtoken'
+import { getSecretValue } from '../../..'
 import { HandleError } from '../../../responses/error/HandleError'
 import { clearCookiesSettings } from '../../Authentication/function/tokens'
 
 export const authorize = async (req: Request, res: Response, next: NextFunction) => {
     const { access_token } = req.signedCookies
 
-    const secret: string = String(process.env.ACCESS_TOKEN_SECRET)
+    const secret: string = String(await getSecretValue('ACCESS_TOKEN_SECRET'))
 
     if (!access_token) {
         res.clearCookie('access_token', clearCookiesSettings)
@@ -30,7 +31,7 @@ export const authorize = async (req: Request, res: Response, next: NextFunction)
 export const authorizeNotRequired = async (req: Request, res: Response, next: NextFunction) => {
     const { access_token } = req.signedCookies
 
-    const secret: string = String(process.env.ACCESS_TOKEN_SECRET)
+    const secret: string = String(await getSecretValue('ACCESS_TOKEN_SECRET'))
 
     if (!access_token) {
         res.clearCookie('access_token', clearCookiesSettings)

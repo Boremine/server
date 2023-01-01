@@ -1,13 +1,14 @@
 import nodemailer from 'nodemailer'
+import { getSecretValue } from '../../..'
 
-export const sendEmail = (to:string, subject:string, html:string) => {
+export const sendEmail = async (to: string, subject: string, html: string) => {
     const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 465,
         secure: true,
         auth: {
-            user: process.env.NODEMAILER_EMAIL,
-            pass: process.env.NODEMAILER_PASSWORD
+            user: await getSecretValue('NODEMAILER_EMAIL'),
+            pass: await getSecretValue('NODEMAILER_PASSWORD')
         }
     })
 

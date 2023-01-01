@@ -3,6 +3,7 @@ import socketIO from 'socket.io'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import cookie from 'cookie'
 import cookieParser from 'cookie-parser'
+import { getSecretValue } from '../../..'
 
 interface Connection {
     socket_id: string
@@ -12,13 +13,13 @@ interface Connection {
 export let authorizeConnections: Array<Connection> = []
 
 export const validateConnections = (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
-    io.on('connection', (socket) => {
+    io.on('connection', async (socket) => {
         console.log('user connected', socket.id)
         let allCookies
         if (socket.handshake.headers.cookie) {
             allCookies = cookie.parse(socket.handshake.headers.cookie)
-            const signedCookie = cookieParser.signedCookie(allCookies.refresh_token, String(process.env.COOKIE_PARSER_SECRET))
-            const secret: string = String(process.env.REFRESH_TOKEN_SECRET)
+            const signedCookie = cookieParser.signedCookie(allCookies.refresh_token, String(await getSecretValue('COOKIE_PARSER_SECRET')))
+            const secret: string = String(await getSecretValue('REFRESH_TOKEN_SECRET'))
             if (signedCookie) {
                 jwt.verify(signedCookie, secret, (err: VerifyErrors | null, decoded: any) => {
                     if (err) return

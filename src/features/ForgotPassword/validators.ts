@@ -5,6 +5,7 @@ import User from '../../models/user'
 import ForgotPassword from '../../models/forgotPassword'
 
 import jwt, { VerifyErrors } from 'jsonwebtoken'
+import { getSecretValue } from '../..'
 
 interface RequestBody {
     email: string
@@ -35,7 +36,7 @@ export const forgotRequest = async (req: Request, res: Response, next: NextFunct
 
 export const forgotValidate = async (req: Request, res: Response, next: NextFunction) => {
     const { token } = req.params
-    const secret: string = String(process.env.FORGOTPASSWORD_TOKEN_SECRET)
+    const secret: string = String(await getSecretValue('FORGOTPASSWORD_TOKEN_SECRET'))
     if (!token) return next(HandleError.NotFound('Token Expired'))
     await jwt.verify(token, secret, async (err: VerifyErrors | null, decoded: any) => {
         if (err) return next(HandleError.NotFound('Token Expired'))
@@ -68,7 +69,7 @@ export const forgotConfirm = async (req: Request, res: Response, next: NextFunct
     if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
 
     const { token } = req.params
-    const secret: string = String(process.env.FORGOTPASSWORD_TOKEN_SECRET)
+    const secret: string = String(await getSecretValue('FORGOTPASSWORD_TOKEN_SECRET'))
     if (!token) return next(HandleError.NotFound('Token Expired'))
     await jwt.verify(token, secret, async (err: VerifyErrors | null, decoded: any) => {
         if (err) return next(HandleError.NotFound('Token Expired'))
