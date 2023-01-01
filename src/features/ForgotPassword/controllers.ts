@@ -13,6 +13,7 @@ import ForgotPassword from '../../models/forgotPassword'
 
 import { addLog } from '../../utils/Logs/functions/addLog'
 import { newAuthentication } from '../../utils/Authentication/function/newAuthentication'
+import { getSecretValue } from '../..'
 
 export const forgotRequest = async (req: Request, res: Response, next: NextFunction) => {
     const { email, user_id, fakeVerification } = res.locals
@@ -46,7 +47,7 @@ export const forgotVerified = async (req: Request, res: Response, next: NextFunc
         user_id: data.user_id
     }
 
-    const secret: string = String(process.env.FORGOTPASSWORD_TOKEN_SECRET)
+    const secret: string = String(await getSecretValue('FORGOTPASSWORD_TOKEN_SECRET'))
     const token: string = jwt.sign(payload, secret, { expiresIn: '1d' })
 
     const NewForgotPassword = new ForgotPassword({

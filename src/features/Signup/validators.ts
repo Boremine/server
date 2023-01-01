@@ -4,6 +4,7 @@ import { HandleError } from '../../responses/error/HandleError'
 import User from '../../models/user'
 
 import axios from 'axios'
+import { getSecretValue } from '../..'
 
 interface RequestBody {
     username: string
@@ -42,7 +43,7 @@ export const signupRequest = async (req: Request, res: Response, next: NextFunct
     let cftPass = false
 
     const formData = new URLSearchParams()
-    formData.append('secret', String(process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY))
+    formData.append('secret', String(await getSecretValue('CLOUDFLARE_TURNSTILE_SECRET_KEY')))
     formData.append('response', req.body.cftToken)
     if (req.useragent?.ip) formData.append('remoteip', req.useragent?.ip)
 

@@ -79,8 +79,8 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
     user_id
   }
 
-  const newAccessToken = generateAccessToken(payload)
-  const newRefreshToken = generateRefreshToken(payload)
+  const newAccessToken = await generateAccessToken(payload)
+  const newRefreshToken = await generateRefreshToken(payload)
 
   await RefreshToken.findByIdAndUpdate(tokenOwner._id, {
     $push: { history: tokenSender },
