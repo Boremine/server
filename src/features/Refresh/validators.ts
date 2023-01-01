@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt, { VerifyErrors } from 'jsonwebtoken'
+import { getSecretValue } from '../..'
 
 import { HandleError } from '../../responses/error/HandleError'
 import { clearCookiesSettings } from '../../utils/Authentication/function/tokens'
@@ -8,7 +9,7 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
     let { refresh_token } = req.signedCookies
     if (process.env.NODE_ENV === 'test') refresh_token = req.cookies.refresh_token
 
-    const secret: string = String(process.env.REFRESH_TOKEN_SECRET)
+    const secret: string = String(await getSecretValue('REFRESH_TOKEN_SECRET'))
 
     if (!refresh_token) {
         res.clearCookie('refresh_token', clearCookiesSettings)
