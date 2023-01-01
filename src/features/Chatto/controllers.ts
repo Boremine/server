@@ -61,16 +61,6 @@ interface SendBodyNotAuthenticated {
 export const sendMessageNotAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
     const body: SendBodyNotAuthenticated = req.body
 
-    // const NewChatto = new Commentary({
-    //     user_id: new mongoose.Types.ObjectId('111111111111111111111111'),
-    //     message: body.message,
-    //     fromChatto: true
-    // })
-
-    // NewChatto.save()
-
-    // if (state !== 'wait') currentChattoes.push(NewChatto._id.toString())
-
     const usernameDisplay = await crypto.createHash('sha256').update(body.naid).digest('hex')
 
     chattoBlock.push({ message: body.message, usernameDisplay: `(${usernameDisplay.slice(0, 5)})`, color: userColors[body.nact - 1] })
