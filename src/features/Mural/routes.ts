@@ -2,7 +2,6 @@ import { Router } from 'express'
 
 import rateLimit from 'express-rate-limit'
 import RedisStore from 'rate-limit-redis'
-import { createClient } from 'redis'
 
 import {
     getMural as getMural_CONTROLLER,
@@ -32,25 +31,18 @@ import {
 
 import { authorize, authorizeNotRequired } from '../../utils/Authorize/middleware/verifyToken'
 
-// const client = createClient({ url: process.env.REDIS_CONNECTION, password: process.env.REDIS_PASSWORD, username: process.env.REDIS_USERNAME })
-// client.connect()
-// client.on('connect', () => {
-//     console.log('Redis Connected (Mural/AddComment)')
-// })
-// client.on('error', (error) => {
-//     console.error(error)
-// })
+import clientRedis from '../../utils/Redis'
 
-// const addComment_LIMITER = rateLimit({
-//     windowMs: 20000,
-//     max: 1,
-//     standardHeaders: true,
-//     message: 'To many requests, wait a moment',
-//     keyGenerator: (request, response) => `piece ${response.locals.user_id} ${request.useragent?.ip}`,
-//     store: new RedisStore({
-//         sendCommand: (...args: string[]) => client.sendCommand(args)
-//     })
-// })
+const addComment_LIMITER = rateLimit({
+    windowMs: 20000,
+    max: 1,
+    standardHeaders: true,
+    message: 'To many requests, wait a moment',
+    keyGenerator: (request, response) => `piece ${response.locals.user_id} ${request.useragent?.ip}`,
+    store: new RedisStore({
+        sendCommand: async (...args: string[]) => (await clientRedis).sendCommand(args)
+    })
+})
 
 const router: Router = Router()
 
@@ -61,7 +53,7 @@ router.get('/:piece_id/comments', authorizeNotRequired, getOnePieceComments_SANI
 
 router.put('/:piece_id/mark', authorize, markPiece_SANITIZE, markPiece_VALIDATOR, markPiece_CONTROLLER)
 
-router.post('/:piece_id/comments/add', authorize, addComment_SANITIZE, addComment_VALIDATOR, addComment_CONTROLLER)
+router.post('/:piece_id/comments/add', authorize, addComment_LIMITER, addComment_SANITIZE, addComment_VALIDATOR, addComment_CONTROLLER)
 router.put('/comment/:comment_id/mark', authorize, markComment_SANITIZE, markComment_VALIDATOR, markComment_CONTROLLER)
 
 export default router

@@ -55,12 +55,12 @@ if (process.env.NODE_ENV === 'development') {
   })
 }
 
-const client = new SecretManagerServiceClient()
+const secretManagerClient = new SecretManagerServiceClient()
 
 const getSecretValueFromManager = async (secretName: string) => {
   const path = `projects/boremine/secrets/${secretName}/versions/latest`
   try {
-    const [secret] = await client.accessSecretVersion({
+    const [secret] = await secretManagerClient.accessSecretVersion({
       name: path
     })
     return secret.payload?.data?.toString()
