@@ -1,21 +1,22 @@
 import { Response } from 'express'
 import jwt from 'jsonwebtoken'
+import { getSecretValue } from '../../..'
 
 interface Payload {
   user_id: string
   iat?: number
 }
 
-export const generateAccessToken = (payload: Payload) => {
+export const generateAccessToken = async (payload: Payload) => {
   if (process.env.NODE_ENV === 'test') payload.iat = Date.now()
-  const secret: string = String(process.env.ACCESS_TOKEN_SECRET)
+  const secret: string = String(await getSecretValue('ACCESS_TOKEN_SECRET'))
   const token: string = jwt.sign(payload, secret, { expiresIn: '2m' })
   return token
 }
 
-export const generateRefreshToken = (payload: Payload) => {
+export const generateRefreshToken = async (payload: Payload) => {
   if (process.env.NODE_ENV === 'test') payload.iat = Date.now()
-  const secret: string = String(process.env.REFRESH_TOKEN_SECRET)
+  const secret: string = String(await getSecretValue('REFRESH_TOKEN_SECRET'))
   const token: string = jwt.sign(payload, secret, { expiresIn: '1y' })
   return token
 }

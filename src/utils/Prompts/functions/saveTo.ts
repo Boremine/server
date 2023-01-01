@@ -2,16 +2,17 @@ import Snoowrap from 'snoowrap'
 import Client from 'twitter-api-v2'
 import axios from 'axios'
 import { createCanvas, loadImage } from 'canvas'
+import { getSecretValue } from '../../..'
 
-const r = new Snoowrap({
-    userAgent: 'Whatever',
-    clientId: process.env.REDDIT_CLIENTID,
-    clientSecret: process.env.REDDIT_CLIENTSECRET,
-    username: process.env.REDDIT_USERNAME,
-    password: process.env.REDDIT_PASSWORD
-})
+export const saveToReddit = async (username: string, title: string, text: string, id: string) => {
+    const r = new Snoowrap({
+        userAgent: 'Whatever',
+        clientId: await getSecretValue('REDDIT_CLIENTID'),
+        clientSecret: await getSecretValue('REDDIT_CLIENTSECRET'),
+        username: await getSecretValue('REDDIT_USERNAME'),
+        password: await getSecretValue('REDDIT_PASSWORD')
+    })
 
-export const saveToReddit = (username: string, title: string, text: string, id: string) => {
     r.getSubreddit('boremine')
         .submitSelfpost({
             title,
@@ -23,16 +24,16 @@ export const saveToReddit = (username: string, title: string, text: string, id: 
         })
 }
 
-const client = new Client({
-    appKey: String(process.env.TWITTER_APP_KEY),
-    appSecret: String(process.env.TWITTER_APP_SECRET),
-    accessToken: String(process.env.TWITTER_ACCESS_TOKEN),
-    accessSecret: String(process.env.TWITTER_ACCESS_SECRET)
-})
-
-const rwClient = client.readWrite
-
 export const saveToTwitter = async (username: string, title: string, id: string) => {
+    const client = new Client({
+        appKey: String(await getSecretValue('TWITTER_APP_KEY')),
+        appSecret: String(await getSecretValue('TWITTER_APP_SECRET')),
+        accessToken: String(await getSecretValue('TWITTER_ACCESS_TOKEN')),
+        accessSecret: String(await getSecretValue('TWITTER_ACCESS_SECRET'))
+    })
+
+    const rwClient = client.readWrite
+
     try {
         await rwClient.v2.tweet(`By: ${username}\n\n${title}\n\nSee more details here https://boremine.com/mural/${id}`)
     } catch (e) {
@@ -43,7 +44,7 @@ export const saveToTwitter = async (username: string, title: string, id: string)
 export const saveToFacebook = async (username: string, title: string, id: string) => {
     await axios({
         url: `https://graph.facebook.com/105203525773591/feed`,
-        params: { access_token: process.env.FACEBOOK_ACCESS_TOKEN },
+        params: { access_token: await getSecretValue('FACEBOOK_ACCESS_TOKEN') },
         data: { message: `By: ${username}\n\n${title}\n\nSee more details here https://boremine.com/mural/${id}` },
         method: 'post'
     }).then((res) => {
@@ -126,7 +127,7 @@ export const saveToInstagram = async (username: string, title: string, text: str
                 url: `https://api.imgur.com/3/image`,
                 method: 'post',
                 headers: {
-                    Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
+                    Authorization: `Client-ID ${await getSecretValue('IMGUR_CLIENT_ID')}`,
                     'Content-Type': 'application/json'
                 },
                 data: JSON.stringify({
@@ -135,12 +136,12 @@ export const saveToInstagram = async (username: string, title: string, text: str
             }).then(async (res) => {
                 await axios({
                     url: `https://graph.facebook.com/v15.0/17841454619841492/media`,
-                    params: { image_url: res.data.data.link, caption: `${text.length > 500 ? `${text.substring(0, 500)}...` : `${text.substring(0, 500)}`}\nPiece ID: ${id}\n\nWant to know more about boremine? Click the link in this profile!`, access_token: process.env.INSTAGRAM_ACCESS_TOKEN },
+                    params: { image_url: res.data.data.link, caption: `${text.length > 500 ? `${text.substring(0, 500)}...` : `${text.substring(0, 500)}`}\nPiece ID: ${id}\n\nWant to know more about boremine? Click the link in this profile!`, access_token: await getSecretValue('INSTAGRAM_ACCESS_TOKEN') },
                     method: 'post'
                 }).then(async (res) => {
                     await axios({
                         url: `https://graph.facebook.com/v15.0/17841454619841492/media_publish`,
-                        params: { creation_id: res.data.id, access_token: process.env.INSTAGRAM_ACCESS_TOKEN },
+                        params: { creation_id: res.data.id, access_token: await getSecretValue('INSTAGRAM_ACCESS_TOKEN') },
                         method: 'post'
                     }).then((res) => {
 

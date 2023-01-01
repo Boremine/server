@@ -20,8 +20,8 @@ interface Body {
 export const newAuthentication = async (body: Body, res: Response) => {
   const { user_id, log_id } = body
 
-  const accessToken = generateAccessToken({ user_id })
-  const refreshToken = generateRefreshToken({ user_id })
+  const accessToken = await generateAccessToken({ user_id })
+  const refreshToken = await generateRefreshToken({ user_id })
 
   const query = {
     token: crypto
