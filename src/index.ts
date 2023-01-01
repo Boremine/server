@@ -55,6 +55,8 @@ if (process.env.NODE_ENV === 'development') {
   })
 }
 
+// test 2
+
 const secretManagerClient = new SecretManagerServiceClient()
 
 const getSecretValueFromManager = async (secretName: string) => {
