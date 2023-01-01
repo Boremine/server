@@ -87,16 +87,6 @@ const fragmentText = (ctx: any, text: string, maxWidth: number) => {
 }
 
 export const saveToInstagram = async (username: string, title: string, text: string, id: string) => {
-    // await axios({
-    //     url: `https://graph.facebook.com/v15.0/oauth/access_token`,
-    //     params: { grant_type: 'fb_exchange_token', client_id: '701930951447171', client_secret: '4f55fbd7908c9d4e2935b7d093cc7d79', fb_exchange_token: 'EAAJZBZAwkEkoMBANEIf49RuJzHl371wDEpF0bxlUeJLRpZAyZCAeiJPtYj9qtHjbwArR81g5ZAtbgpN5pMYaZAiEgyZCP4RVG00Wn5yZCPDxZAlZAJLgFAaD7d6ZAUdw0F33ZCervoFNP6yeNUTVBVzQjcxA1HItlFjr8IUDsUnV0VZBDQwTYKZCZAkhEKrooFnndNFIi7Y1K5pw3Ku1Sq9hWPA2dVHgRlZB2xoXNcotnzsGocXT9wZDZD' },
-    //     method: 'get'
-    // }).then((res) => {
-    //     console.log(res.data)
-    // }).catch((err) => {
-    //     console.log(err.response)
-    // })
-
     const canvas = createCanvas(1080, 1080)
     const ctx = canvas.getContext('2d')
 
