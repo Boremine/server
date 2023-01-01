@@ -1,14 +1,43 @@
 import { Request, Response, NextFunction } from 'express'
+// import { getSecretValue } from '../..'
 import User from '../../models/user'
+
 import { HandleError } from '../../responses/error/HandleError'
 
 import { HandleSuccess } from '../../responses/success/HandleSuccess'
+import { checkIfFirstFive } from '../../utils/Prompts/functions/checkIfFirstFive'
 
 export const getAuth = async (req: Request, res: Response, next: NextFunction) => {
-    const { user_id, username } = res.locals
+    const { user_id } = res.locals
 
-    const user = await User.findById(user_id).select('alreadyVoted')
+    const user = await User.findById(user_id).lean().populate([{
+        path: 'logs',
+        select: 'browser ip device platform location machine _id'
+    }, {
+        path: 'prompt_id',
+        select: '_id title text'
+    }
+    ]).select('usernameDisplay email alreadyVoted lastUsernameUpdate prompt_id _id')
+
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
 
-    HandleSuccess.Ok(res, { user_id, username, auth: true, alreadyVoted: user.alreadyVoted === 'false' ? false : user.alreadyVoted })
+    if (user.prompt_id) {
+        user.prompt_id.promptInFirstFive = await checkIfFirstFive(user.prompt_id._id)
+    }
+
+    // console.log(await getSecretValue('TEST_ENV'))
+    // if (await getSecretValue('TEST_ENV')) {
+    //     console.log('true')
+    // } else {
+    //     console.log('false')
+    // }
+
+    // console.log(await getSecretValue('TEST_ENVV'))
+    // if (await getSecretValue('TEST_ENVV')) {
+    //     console.log('true')
+    // } else {
+    //     console.log('false')
+    // }
+
+    HandleSuccess.Ok(res, { ...user, auth: true })
 }

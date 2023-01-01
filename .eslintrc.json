@@ -18,7 +18,11 @@
         "indent": 0,
         "no-console": 1,
         "camelcase": 0,
-        "no-tabs": 0
+        "no-tabs": 0,
+        "quotes": ["error", "single", {
+            "avoidEscape": true,
+            "allowTemplateLiterals": true
+        }]
     },
     "globals":{
         "NodeJS": true

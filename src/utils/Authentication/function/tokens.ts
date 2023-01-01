@@ -1,22 +1,22 @@
 import { Response } from 'express'
 import jwt from 'jsonwebtoken'
+import { getSecretValue } from '../../..'
 
 interface Payload {
-  username: string
   user_id: string
   iat?: number
 }
 
-export const generateAccessToken = (payload: Payload) => {
+export const generateAccessToken = async (payload: Payload) => {
   if (process.env.NODE_ENV === 'test') payload.iat = Date.now()
-  const secret: string = String(process.env.ACCESS_TOKEN_SECRET)
-  const token: string = jwt.sign(payload, secret, { expiresIn: '5m' })
+  const secret: string = String(await getSecretValue('ACCESS_TOKEN_SECRET'))
+  const token: string = jwt.sign(payload, secret, { expiresIn: '2m' })
   return token
 }
 
-export const generateRefreshToken = (payload: Payload) => {
+export const generateRefreshToken = async (payload: Payload) => {
   if (process.env.NODE_ENV === 'test') payload.iat = Date.now()
-  const secret: string = String(process.env.REFRESH_TOKEN_SECRET)
+  const secret: string = String(await getSecretValue('REFRESH_TOKEN_SECRET'))
   const token: string = jwt.sign(payload, secret, { expiresIn: '1y' })
   return token
 }
@@ -29,9 +29,9 @@ export const setAccessToken = (res: Response, token: string) => {
     domain:
       process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
         ? ''
-        : '.boremine.com',
+        : 'boremine.com',
     sameSite: 'strict',
-    maxAge: 1000 * 60 * 5
+    maxAge: 1000 * 60 * 2
   })
 }
 
@@ -43,8 +43,13 @@ export const setRefreshToken = (res: Response, token: string) => {
     domain:
       process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
         ? ''
-        : '.boremine.com',
+        : 'boremine.com',
     sameSite: 'strict',
     maxAge: 1000 * 60 * 60 * 24 * 365
   })
+}
+
+export const clearCookiesSettings = {
+  path: '/',
+  domain: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ? '' : 'boremine.com'
 }

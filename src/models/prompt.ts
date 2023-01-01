@@ -11,11 +11,11 @@ const PromptSchema = new Schema<Prompt>({
     title: {
         type: String,
         required: true,
-        maxlength: 500
+        maxlength: 200
     },
     text: {
         type: String,
-        maxlength: 2000
+        maxlength: 5000
     },
     user_id: {
         type: Schema.Types.ObjectId,

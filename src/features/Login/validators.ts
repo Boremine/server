@@ -6,13 +6,16 @@ import bcrypt from 'bcrypt'
 
 import User from '../../models/user'
 
-interface Body {
+interface TryBody {
     email: string,
     password: string,
 }
 
 export const loginTry = async (req: Request, res: Response, next: NextFunction) => {
-    const body: Body = req.body
+    const body: TryBody = req.body
+
+    if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
+    if (body.email.length > 254) return next(HandleError.NotAcceptable('Email must be less than 254 characters'))
 
     const user = await User.findOne({ email: body.email })
     if (!user) return next(HandleError.NotAcceptable('Email or Password is incorrect'))
@@ -23,8 +26,7 @@ export const loginTry = async (req: Request, res: Response, next: NextFunction) 
 
     res.locals = {
         user_id: user._id.toString(),
-        username: user.usernameDisplay
-
+        email: user.email
     }
 
     next()

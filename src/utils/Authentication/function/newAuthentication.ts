@@ -14,15 +14,14 @@ import { HandleSuccess } from '../../../responses/success/HandleSuccess'
 
 interface Body {
   user_id: string
-  username: string
   log_id: string
 }
 
 export const newAuthentication = async (body: Body, res: Response) => {
-  const { username, user_id, log_id } = body
+  const { user_id, log_id } = body
 
-  const accessToken = generateAccessToken({ username, user_id })
-  const refreshToken = generateRefreshToken({ username, user_id })
+  const accessToken = await generateAccessToken({ user_id })
+  const refreshToken = await generateRefreshToken({ user_id })
 
   const query = {
     token: crypto

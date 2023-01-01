@@ -1,4 +1,4 @@
-import { authorizeConnections } from '../../utils/Socket/function/validateConnection'
+import { authorizeConnections } from '../../utils/Socket/functions/validateConnection'
 
 interface Constructor {
     prompt_id: string
@@ -14,6 +14,7 @@ interface Constructor {
     }
     countDown: number
     barColor: string
+    fiveLatestPrompts: Array<string>
 }
 
 export class CurrentPrompt {
@@ -24,6 +25,7 @@ export class CurrentPrompt {
     countDown: number
     majorityConnections: number
     barColor: string
+    fixedConnections: number
     constructor ({
         prompt_id,
         user_id,
@@ -38,11 +40,12 @@ export class CurrentPrompt {
         this.voting = voting
         this.countDown = countDown
         this.barColor = barColor
+        this.fixedConnections = authorizeConnections.length
 
-        const fixedConnections = authorizeConnections.length
+        // const fixedConnections = authorizeConnections.length
         // let fixedConnections = 10
 
-        const halfConnections = fixedConnections / 2
+        const halfConnections = this.fixedConnections / 2
 
         if ((halfConnections) % 1 === 0) this.majorityConnections = halfConnections + 1
         else this.majorityConnections = Math.ceil(halfConnections)
@@ -52,7 +55,11 @@ export class CurrentPrompt {
         const prompt = {
             body: this.body,
             countDown: this.countDown,
-            voteScale: ((this.voting.pops - this.voting.drops) / this.majorityConnections) * 100,
+            voteScale: {
+                pops: (this.voting.pops / this.majorityConnections) * 100,
+                drops: (this.voting.drops / this.majorityConnections) * 100,
+                scale: ((this.voting.pops - this.voting.drops) / this.majorityConnections) * 100
+            },
             barColor: this.barColor
         }
         return prompt
@@ -82,6 +89,11 @@ export class CurrentPrompt {
     }
 
     public getVotingScale = () => {
-        return ((this.voting.pops - this.voting.drops) / this.majorityConnections) * 100
+        const voting = {
+            pops: (this.voting.pops / this.majorityConnections) * 100,
+            drops: (this.voting.drops / this.majorityConnections) * 100,
+            scale: ((this.voting.pops - this.voting.drops) / this.majorityConnections) * 100
+        }
+        return voting
     }
 }

@@ -1,17 +1,30 @@
 import { Schema, model } from 'mongoose'
 
 interface Mural {
+    title: string
     text: string
     user_id: Schema.Types.ObjectId | any
     pops: number
     drops: number
-    chattoes: Array<any>
+    commentary: Array<any>
+    chattoes_amount:number
+    comments_amount:number
+    likes: Array<any>
+    likes_amount:number
+    dislikes: Array<any>
+    dislikes_amount:number
 }
 
 const MuralSchema = new Schema<Mural>({
+    title: {
+        type: String,
+        required: true,
+        maxlength: 200
+    },
     text: {
         type: String,
-        required: true
+        required: false,
+        maxlength: 5000
     },
     user_id: {
         type: Schema.Types.ObjectId,
@@ -27,11 +40,37 @@ const MuralSchema = new Schema<Mural>({
         type: Number,
         required: true
     },
-    chattoes: [{
+    commentary: [{
         type: Schema.Types.ObjectId,
-        ref: 'Chatto'
-    }]
-
+        ref: 'Commentary'
+    }],
+    chattoes_amount: {
+        type: Number,
+        required: true
+    },
+    comments_amount: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    likes: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    dislikes: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    likes_amount: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    dislikes_amount: {
+        type: Number,
+        required: true,
+        default: 0
+    }
 }, { timestamps: true })
 
 export default model('Mural', MuralSchema)
