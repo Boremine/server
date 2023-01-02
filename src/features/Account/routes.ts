@@ -26,8 +26,6 @@ import {
 
 const router: Router = Router()
 
-// router.get('/info', authorize, accountInfo_CONTROLLER)
-
 router.post('/change/username', authorize, accountChangeUsername_SANITIZE, accountChangeUsername_VALIDATOR, accountChangeUsername_CONTROLLER)
 router.post('/change/email', authorize, accountChangeEmail_SANITIZE, accountChangeEmail_VALIDATOR, accountChangeEmailRequest_CONTROLLER)
 router.post('/change/password', authorize, accountChangePassword_SANITIZE, accountChangePassword_VALIDATOR, accountChangePassword_CONTROLLER)
