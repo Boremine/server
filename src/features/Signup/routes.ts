@@ -1,5 +1,4 @@
 import { Router } from 'express'
-// import rateLimit from 'express-rate-limit'
 
 import {
 	signupRequest as signupRequest_CONTROLLER
@@ -14,13 +13,6 @@ import {
 } from './sanitize'
 
 const router: Router = Router()
-
-// const limiter = rateLimit({
-// 	windowMs: 40000,
-// 	max: 30,
-// 	standardHeaders: true,
-// 	message: 'To many requests, wait a moment'
-// })
 
 router.post('/request', signup_SANITIZE, signupRequest_VALIDATOR, signupRequest_CONTROLLER)
 

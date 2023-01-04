@@ -45,7 +45,6 @@ export const signupVerified = async (req: Request, res: Response, next: NextFunc
         if (err) return next(HandleError.Internal(err))
 
         const addLogRes = await addLog(req, user_created._id.toString(), next)
-        // if (!addLogRes) return next(HandleError.BadRequest('There was a problem adding log'))
 
         const newAuth = {
             user_id: user_created._id.toString(),

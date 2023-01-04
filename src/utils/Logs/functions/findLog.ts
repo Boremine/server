@@ -30,7 +30,6 @@ export const findUserAgent = (testAgent: UserAgent | undefined, ownerAgents: Arr
 
         if (log.browser !== testAgent?.browser) tokenFound = false
         if (log.platform !== testAgent?.platform) tokenFound = false
-        // if (log.location !== testAgent?.location) tokenFound = false
         if (log.device !== testAgent?.device) tokenFound = false
         if (log.ip !== testAgent?.ip) tokenFound = false
 

@@ -20,9 +20,6 @@ export const addLog = async (req: Request, user_id: string, next: NextFunction, 
         location: userAgent?.location
     }
 
-    // const logFound = await Log.findOne(query)
-    // if (logFound) return false
-
     let machine: string
 
     if (userAgent?.isDesktop) machine = 'desktop'

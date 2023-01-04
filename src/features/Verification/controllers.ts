@@ -4,7 +4,6 @@ import Verification from '../../models/verification'
 import { HandleSuccess } from '../../responses/success/HandleSuccess'
 
 import crypto from 'crypto'
-// import nodemailer from 'nodemailer'
 import { sendEmail } from '../../utils/Nodemailer/functions/sendEmail'
 
 import { signupVerified } from '../Signup/controllers'

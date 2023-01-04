@@ -43,6 +43,4 @@ router.post('/vote', authorize, votePrompt_SANITIZE, votePrompt_VALIDATOR, voteP
 router.get('/latest', lastestPrompt_CONTROLLER)
 router.get('/line', getLine_CONTROLLER)
 
-// router.get('/info', authorize, getPromptInfo_CONTROLLER)
-
 export default router

@@ -159,6 +159,7 @@ const waitState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap,
     currentPrompt = undefined
 
     return setTimeout(() => {
+        clearChattoes()
         displayPrompt(io)
     }, 5000)
 }

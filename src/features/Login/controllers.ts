@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express'
-// import { HandleError } from '../../responses/error/HandleError'
 import { newAuthentication } from '../../utils/Authentication/function/newAuthentication'
 import { addLog } from '../../utils/Logs/functions/addLog'
 
@@ -13,7 +12,6 @@ export const loginVerified = async (req: Request, res: Response, next: NextFunct
     const { user_id } = res.locals.data
 
     const addLogRes = await addLog(req, user_id, next, 'login')
-    // if (!addLogRes) return next(HandleError.BadRequest('There was a problem authenticating'))
 
     const newAuth = {
         user_id,
