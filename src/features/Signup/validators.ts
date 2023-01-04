@@ -53,11 +53,8 @@ export const signupRequest = async (req: Request, res: Response, next: NextFunct
         headers: { 'Accept-Encoding': 'gzip,deflate,compress' },
         method: 'post'
     }).then((res) => {
-        // console.log('ffjfj')
-        // console.log(res)
         if (res.data.success) cftPass = true
     }).catch(() => {
-        // console.log(err)
         console.log('error')
     })
 

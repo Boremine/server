@@ -14,7 +14,7 @@ export let authorizeConnections: Array<Connection> = []
 
 export const validateConnections = (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
     io.on('connection', async (socket) => {
-        console.log('user connected', socket.id)
+        if (process.env.NODE_ENV === 'development') console.log('user connected', socket.id)
         let allCookies
         if (socket.handshake.headers.cookie) {
             allCookies = cookie.parse(socket.handshake.headers.cookie)
@@ -32,7 +32,7 @@ export const validateConnections = (io: socketIO.Server<DefaultEventsMap, Defaul
 
         socket.on('disconnect', () => {
             authorizeConnections = authorizeConnections.filter(e => e.socket_id !== socket.id)
-            console.log('user disconnected')
+            if (process.env.NODE_ENV === 'development') console.log('user disconnected')
             socket.removeAllListeners()
         })
     })
