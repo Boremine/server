@@ -118,8 +118,8 @@ const saveToMural = async () => {
     if (process.env.NODE_ENV !== 'development') {
         saveToReddit(currentPrompt?.body.username!, currentPrompt?.body.title!, currentPrompt?.body.text!, NewMural._id.toString())
         saveToTwitter(currentPrompt?.body.username!, currentPrompt?.body.title!, NewMural._id.toString())
-        saveToFacebook(currentPrompt?.body.username!, currentPrompt?.body.title!, NewMural._id.toString())
         saveToInstagram(currentPrompt?.body.username!, currentPrompt?.body.title!, currentPrompt?.body.text!, NewMural._id.toString())
+        saveToFacebook(currentPrompt?.body.username!, currentPrompt?.body.title!, currentPrompt?.body.text!, NewMural._id.toString())
     }
 
     const user = await User.findById(currentPrompt?.user_id)

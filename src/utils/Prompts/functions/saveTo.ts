@@ -41,11 +41,11 @@ export const saveToTwitter = async (username: string, title: string, id: string)
     }
 }
 
-export const saveToFacebook = async (username: string, title: string, id: string) => {
+export const saveToFacebook = async (username: string, title: string, text: string, id: string) => {
     await axios({
         url: `https://graph.facebook.com/105203525773591/feed`,
         params: { access_token: await getSecretValue('FACEBOOK_ACCESS_TOKEN') },
-        data: { message: `By: ${username}\n\n${title}\n\nSee more details here https://boremine.com/mural/${id}` },
+        data: { message: `By: ${username}\n\n${title}\n\n${text.length > 500 ? `${text.substring(0, 500)}...` : `${text.substring(0, 500)}`}\n\nSee more details here https://boremine.com/mural/${id}` },
         method: 'post'
     }).then((res) => {
         // console.log(res)
@@ -126,7 +126,7 @@ export const saveToInstagram = async (username: string, title: string, text: str
             }).then(async (res) => {
                 await axios({
                     url: `https://graph.facebook.com/v15.0/17841454619841492/media`,
-                    params: { image_url: res.data.data.link, caption: `${text.length > 500 ? `${text.substring(0, 500)}...` : `${text.substring(0, 500)}`}\nPiece ID: ${id}\n\nWant to know more about boremine? Click the link in this profile!`, access_token: await getSecretValue('INSTAGRAM_ACCESS_TOKEN') },
+                    params: { image_url: res.data.data.link, caption: `${text.length > 500 ? `${text.substring(0, 500)}...` : `${text.substring(0, 500)}`}\n\nPiece ID: ${id}\n\nWant to know more about boremine? Click the link in this profile!`, access_token: await getSecretValue('INSTAGRAM_ACCESS_TOKEN') },
                     method: 'post'
                 }).then(async (res) => {
                     await axios({
