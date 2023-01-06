@@ -105,7 +105,7 @@ const startServer = async () => {
 
   mongoose
     .connect(`${await getSecretValue('DATABASE')}`)
-    .then(async () => console.log(`Database connected! ${await getSecretValue('DATABASE')}`))
+    .then(async () => console.log(`Database connected!`))
     .catch(err => console.log(`Failed to connect to database: ${err.message}`))
 
   app.set('socketio', io)
