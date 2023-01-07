@@ -21,7 +21,7 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
   res.clearCookie('refresh_token', clearCookiesSettings)
   res.clearCookie('access_token', clearCookiesSettings)
 
-  if (!tokenOwner) return next(HandleSuccess.Ok(res, 'Logout Successful'))
+  if (!tokenOwner) return HandleSuccess.Ok(res, 'Logout Successful')
 
   await RefreshToken.findById(tokenOwner._id).deleteOne()
 
