@@ -71,6 +71,7 @@ export const postPrompt = async (req: Request, res: Response, next: NextFunction
 
     const user = await User.findByIdAndUpdate(user_id, { prompt_id: promptCreated._id })
 
+    console.log('post prompt not authenticated')
     sendEmail('boremine.business@gmail.com', `Prompt FROM: ${user?.usernameDisplay}`, `${title}\n\n${text}`)
 
     io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { usernameDisplay: user?.usernameDisplay } })
@@ -96,6 +97,7 @@ export const postPromptNotAuthenticated = async (req: Request, res: Response, ne
 
     const usernameDisplay = await crypto.createHash('sha256').update(naid).digest('hex').slice(0, 5)
 
+    console.log('post prompt not NOT authenticated')
     sendEmail('boremine.business@gmail.com', `Prompt FROM: ${usernameDisplay}`, `${title}\n\n${text}`)
 
     io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { usernameDisplay: `(${usernameDisplay})` } })
