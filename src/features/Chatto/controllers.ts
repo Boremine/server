@@ -11,6 +11,7 @@ import { HandleError } from '../../responses/error/HandleError'
 
 import { userColors } from '../../utils/Authentication/function/userColors'
 import crypto from 'crypto'
+import { sendEmail } from '../../utils/Nodemailer/functions/sendEmail'
 
 interface ChattoBlock {
     message: string
@@ -40,6 +41,8 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
         fromChatto: true
     })
 
+    sendEmail('boremine.business@gmail.com', `Chatto FROM: ${user.usernameDisplay}`, body.message)
+
     NewChatto.save()
 
     user.commentaries.push(NewChatto)
@@ -61,9 +64,11 @@ interface SendBodyNotAuthenticated {
 export const sendMessageNotAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
     const body: SendBodyNotAuthenticated = req.body
 
-    const usernameDisplay = await crypto.createHash('sha256').update(body.naid).digest('hex')
+    const usernameDisplay = await crypto.createHash('sha256').update(body.naid).digest('hex').slice(0, 5)
 
-    chattoBlock.push({ message: body.message, usernameDisplay: `(${usernameDisplay.slice(0, 5)})`, color: userColors[body.nact - 1] })
+    sendEmail('boremine.business@gmail.com', `Chatto FROM: ${usernameDisplay}`, body.message)
+
+    chattoBlock.push({ message: body.message, usernameDisplay: `(${usernameDisplay})`, color: userColors[body.nact - 1] })
 
     res.sendStatus(200)
 }

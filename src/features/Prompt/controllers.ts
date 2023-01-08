@@ -18,6 +18,7 @@ import mongoose from 'mongoose'
 import crypto from 'crypto'
 
 import { saveToFacebook, saveToInstagram, saveToReddit, saveToTwitter } from '../../utils/Prompts/functions/saveTo'
+import { sendEmail } from '../../utils/Nodemailer/functions/sendEmail'
 
 const promptColors: Array<string> = ['blue', 'red', 'green', 'orange', 'purple']
 let currentPrompt: CurrentPrompt | undefined
@@ -236,6 +237,8 @@ export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, Defaul
     }
 
     // NOTAUTHENTICATED REQUIRED
+
+    sendEmail('boremine.business@gmail.com', `Prompt FROM: ${userInfo.usernameDisplay}`, `${prompt.title}\n\n${prompt.text}`)
 
     state = 'display'
     currentPrompt = new CurrentPrompt({

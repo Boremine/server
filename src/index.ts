@@ -55,8 +55,6 @@ if (process.env.NODE_ENV === 'development') {
   })
 }
 
-// reset database connection
-
 const secretManagerClient = new SecretManagerServiceClient()
 
 const getSecretValueFromManager = async (secretName: string) => {
