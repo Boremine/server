@@ -5,7 +5,8 @@ import RedisStore from 'rate-limit-redis'
 
 import {
     sendMessage as sendMessage_CONTROLLER,
-    sendMessageNotAuthenticated as sendMessageNotAuthenticated_CONTROLLER
+    sendMessageNotAuthenticated as sendMessageNotAuthenticated_CONTROLLER,
+    getMessages as getMessages_CONTROLLER
 } from './controllers'
 
 import {
@@ -35,6 +36,8 @@ const sendMessage_LIMITER = rateLimit({
 })
 
 const router: Router = Router()
+
+router.get('/get', getMessages_CONTROLLER)
 
 router.post('/post', authorize, sendMessage_LIMITER, sendMessage_SANITIZE, sendMessage_VALIDATOR, sendMessage_CONTROLLER)
 

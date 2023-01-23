@@ -54,7 +54,7 @@ export const getMural = async (req: Request, res: Response, next: NextFunction) 
     ])
 
     const muralHold = mural.slice(limit - 12, limit)
-
+    // const muralHold = mural
     HandleSuccess.Ok(res, muralHold)
 }
 

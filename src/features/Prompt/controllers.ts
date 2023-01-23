@@ -71,8 +71,7 @@ export const postPrompt = async (req: Request, res: Response, next: NextFunction
 
     const user = await User.findByIdAndUpdate(user_id, { prompt_id: promptCreated._id })
 
-    console.log('post prompt not authenticated')
-    sendEmail('boremine.business@gmail.com', `Prompt FROM: ${user?.usernameDisplay}`, `${title}\n\n${text}`)
+    if (process.env.NODE_ENV !== 'development') sendEmail('boremine.business@gmail.com', `Prompt FROM: ${user?.usernameDisplay}`, `${title}\n\n${text}`)
 
     io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { usernameDisplay: user?.usernameDisplay } })
 
@@ -97,10 +96,9 @@ export const postPromptNotAuthenticated = async (req: Request, res: Response, ne
 
     const usernameDisplay = await crypto.createHash('sha256').update(naid).digest('hex').slice(0, 5)
 
-    console.log('post prompt not NOT authenticated')
-    sendEmail('boremine.business@gmail.com', `Prompt FROM: ${usernameDisplay}`, `${title}\n\n${text}`)
+    if (process.env.NODE_ENV !== 'development') sendEmail('boremine.business@gmail.com', `Prompt FROM: ${usernameDisplay}`, `${title}\n\n${text}`)
 
-    io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { usernameDisplay: `(${usernameDisplay})` } })
+    io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { usernameDisplay: `(unauthenticated)` } })
 
     HandleSuccess.Created(res, { _id: NewPrompt._id, title: NewPrompt.title, text: NewPrompt.text })
 }
@@ -216,6 +214,62 @@ export const votePrompt = async (req: Request, res: Response, next: NextFunction
     io.emit('votingScale', currentPrompt?.getVotingScale())
 
     HandleSuccess.Ok(res, 'Vote successful')
+}
+
+const botPrompts = [
+    {
+        title: 'what am i suppose to do here?',
+        text: ''
+    },
+    {
+        title: `Just type whatever you want here! `,
+        text: 'And people can either POP to save what you wrote in the mural, or DROP to make it vanish forever (or until you show up here again)'
+    },
+    {
+        title: 'POP ME POP ME, PLEASE POP MEEEEEEEE!!',
+        text: ''
+    },
+    {
+        title: 'what the hell!!?? someone drop me!! how dare youu!',
+        text: 'how do i get people to pop me?????'
+    },
+    {
+        title: 'Well...',
+        text: 'If you want the get POP, you have to type something interesting.'
+    },
+    {
+        title: `the first message sent over the internet was "lo" because they f*ck3d up the word "login"`,
+        text: ''
+    },
+    {
+        title: `Good job! keep showing such interesting stuff and you will own the mural!`,
+        text: ''
+    }
+]
+
+let botPromptIteration = 0
+
+export const postPromptBot = (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
+    // const randomTimeout = (Math.floor(Math.random() * (70 - 20 + 1) + 20))
+    // console.log(randomTimeout)
+
+    setTimeout(async () => {
+        const NewPrompt = new Prompt({
+            user_id: new mongoose.Types.ObjectId('111111111111111111111111'),
+            text: botPrompts[botPromptIteration].text,
+            title: botPrompts[botPromptIteration].title,
+            color: promptColors[Math.floor(Math.random() * promptColors.length)]
+        })
+
+        NewPrompt.save()
+
+        io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { usernameDisplay: `(unauthenticated)` } })
+
+        if (botPromptIteration === botPrompts.length - 1) botPromptIteration = 0
+        else botPromptIteration++
+
+        postPromptBot(io)
+    }, 40000)
 }
 
 export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {

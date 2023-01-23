@@ -14,8 +14,11 @@ interface Commentary {
 
     fromChatto: boolean
 
+    usernameDisplayNOTAUTH: string
+    colorNOTAUTH: string
+
     updatedAt?: Date
-    createdAt:Date
+    createdAt: Date
 }
 
 const CommentarySchema = new Schema<Commentary>({
@@ -64,6 +67,12 @@ const CommentarySchema = new Schema<Commentary>({
         type: Boolean,
         required: true,
         default: false
+    },
+    usernameDisplayNOTAUTH: {
+        type: String
+    },
+    colorNOTAUTH: {
+        type: String
     }
 
 }, { timestamps: true })

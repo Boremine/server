@@ -12,6 +12,8 @@ import { HandleError } from '../../responses/error/HandleError'
 import { userColors } from '../../utils/Authentication/function/userColors'
 import crypto from 'crypto'
 import { sendEmail } from '../../utils/Nodemailer/functions/sendEmail'
+import mongoose from 'mongoose'
+import { HandleSuccess } from '../../responses/success/HandleSuccess'
 
 interface ChattoBlock {
     message: string
@@ -25,6 +27,17 @@ let chattoBlock: Array<ChattoBlock> = []
 interface SendBody {
     message: string
 }
+
+// NOT FINAL
+export const getMessages = async (req: Request, res: Response) => {
+    const chatto = await Commentary.find({ fromChatto: true }).lean().populate({
+        path: 'user_id',
+        select: 'usernameDisplay -_id color'
+    }).select('user_id message usernameDisplayNOTAUTH colorNOTAUTH -_id').limit(70).sort({ createdAt: -1 })
+
+    HandleSuccess.Ok(res, chatto)
+}
+// NOT FINAL
 
 export const clearChattoes = () => { currentChattoes = [] }
 
@@ -41,7 +54,7 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
         fromChatto: true
     })
 
-    sendEmail('boremine.business@gmail.com', `Chatto FROM: ${user.usernameDisplay}`, body.message)
+    if (process.env.NODE_ENV !== 'development') sendEmail('boremine.business@gmail.com', `Chatto FROM: ${user.usernameDisplay}`, body.message)
 
     NewChatto.save()
 
@@ -52,7 +65,7 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
 
     chattoBlock.push({ message: body.message, usernameDisplay: user.usernameDisplay, color: user.color })
 
-    res.sendStatus(200)
+    HandleSuccess.Ok(res, 'Message Posted')
 }
 
 interface SendBodyNotAuthenticated {
@@ -66,11 +79,21 @@ export const sendMessageNotAuthenticated = async (req: Request, res: Response, n
 
     const usernameDisplay = await crypto.createHash('sha256').update(body.naid).digest('hex').slice(0, 5)
 
-    sendEmail('boremine.business@gmail.com', `Chatto FROM: ${usernameDisplay}`, body.message)
+    const NewChatto = new Commentary({
+        user_id: new mongoose.Types.ObjectId('111111111111111111111111'),
+        usernameDisplayNOTAUTH: `(${usernameDisplay})`,
+        colorNOTAUTH: userColors[body.nact - 1],
+        message: body.message,
+        fromChatto: true
+    })
+
+    if (process.env.NODE_ENV !== 'development') sendEmail('boremine.business@gmail.com', `Chatto FROM: ${usernameDisplay}`, body.message)
+
+    NewChatto.save()
 
     chattoBlock.push({ message: body.message, usernameDisplay: `(${usernameDisplay})`, color: userColors[body.nact - 1] })
 
-    res.sendStatus(200)
+    HandleSuccess.Ok(res, 'Message Posted')
 }
 
 export const displayChatto = (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
