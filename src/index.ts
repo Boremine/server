@@ -125,6 +125,7 @@ const startServer = async () => {
 
   app.use(error_handler)
 
+  // postPromptBot(io)
   displayChatto(io)
   displayPrompt(io)
   validateConnections(io)
