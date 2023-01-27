@@ -10,7 +10,7 @@ interface User {
     mural: Array<any>,
     prompt_id: Schema.Types.ObjectId | any
     color: string
-    alreadyVoted: 'false' | 'drop' | 'pop'
+    alreadyVoted: 'none' | 'drop' | 'pop'
     lastUsernameUpdate: Date
 }
 

@@ -151,13 +151,14 @@ const waitState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap,
             scale: 0
         },
         state,
-        nextPrompt: true
+        nextPrompt: true,
+        barColor: 'none'
     })
 
     // NOTAUTHENTICATED REQUIRED
     if (promptGoTo === 'Pass' && currentPrompt?.body.username !== '(unauthenticated)') saveToMural()
 
-    await User.updateMany({ $or: [{ alreadyVoted: 'pop' }, { alreadyVoted: 'drop' }] }, { alreadyVoted: false })
+    await User.updateMany({ $or: [{ alreadyVoted: 'pop' }, { alreadyVoted: 'drop' }] }, { alreadyVoted: 'none' })
 
     await Prompt.findByIdAndDelete(currentPrompt?.prompt_id)
 
