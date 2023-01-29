@@ -39,7 +39,7 @@ export const signupVerified = async (req: Request, res: Response, next: NextFunc
         email,
         password,
         color: userColors[Math.floor(Math.random() * userColors.length)],
-        alreadyVoted: false
+        alreadyVoted: 'none'
     })
     await NewUser.save(async (err, user_created) => {
         if (err) return next(HandleError.Internal(err))

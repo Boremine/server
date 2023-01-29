@@ -35,7 +35,7 @@ export const getMessages = async (req: Request, res: Response) => {
         select: 'usernameDisplay -_id color'
     }).select('user_id message usernameDisplayNOTAUTH colorNOTAUTH -_id').limit(70).sort({ createdAt: -1 })
 
-    HandleSuccess.Ok(res, chatto)
+    HandleSuccess.Ok(res, chatto.reverse())
 }
 // NOT FINAL
 
