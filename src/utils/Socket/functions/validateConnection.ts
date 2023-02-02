@@ -3,7 +3,8 @@ import socketIO from 'socket.io'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import cookie from 'cookie'
 import cookieParser from 'cookie-parser'
-import { getSecretValue } from '../../..'
+import { getSecretValue } from '../../SecretManager/getSecretValue'
+// import { getSecretValue } from '../../..'
 
 interface Connection {
     socket_id: string

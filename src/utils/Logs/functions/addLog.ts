@@ -55,3 +55,31 @@ export const addLog = async (req: Request, user_id: string, next: NextFunction, 
 
     return log._id.toString()
 }
+
+export const addLogGoogle = async (req: Request, user_id: string, next: NextFunction, detectionType: 'login' | 'forgotPassword' | false = false) => {
+    const userAgent = req.useragent
+
+    const query = {
+        user_id,
+        browser: userAgent?.browser,
+        platform: userAgent?.platform,
+        device: userAgent?.device,
+        ip: userAgent?.ip,
+        location: userAgent?.location
+    }
+
+    let machine: string
+
+    if (userAgent?.isDesktop) machine = 'desktop'
+    else if (userAgent?.isMobile) machine = 'mobile'
+
+    const NewLog = new Log({ ...query, machine })
+
+    const log = await NewLog.save()
+
+    const user = await User.findById(user_id)
+    user?.logs.push(NewLog)
+    await user?.save()
+
+    return log._id.toString()
+}

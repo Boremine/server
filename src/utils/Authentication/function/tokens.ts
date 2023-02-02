@@ -1,6 +1,6 @@
 import { Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { getSecretValue } from '../../..'
+import { getSecretValue } from '../../SecretManager/getSecretValue'
 
 interface Payload {
   user_id: string

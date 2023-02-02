@@ -35,8 +35,10 @@ export const compareLogs = async (req: Request, res: Response, next: NextFunctio
 
     const user = await User.findById(user_id).populate({ path: 'logs', model: Log }).select('logs username email')
     const logs: Array<UserAgent & LogType> | any = user?.logs
+
     const log_id: boolean | string = checkLogs(logs, userAgent)
     if (!logs.length || !log_id) return verificationGenerate_G(res, { ...res.locals }, 'new_auth')
+
     res.locals.log_id = log_id.toString()
 
     next()
