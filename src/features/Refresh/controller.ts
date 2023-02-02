@@ -52,7 +52,7 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
       path: 'prompt_id',
       select: '_id title text'
     }
-  ]).select('usernameDisplay email alreadyVoted lastUsernameUpdate prompt_id _id')
+  ]).select('usernameDisplay email alreadyVoted lastUsernameUpdate prompt_id googleId _id')
 
   if (!user) return next(HandleError.Unauthorized('User not found'))
 

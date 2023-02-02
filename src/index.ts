@@ -43,8 +43,9 @@ import refreshRoute from './features/Refresh/routes'
 import logoutRoute from './features/Logout/routes'
 import accountRoute from './features/Account/routes'
 import supportRoute from './features/Support/routes'
+import { getSecretValue } from './utils/SecretManager/getSecretValue'
 
-import { SecretManagerServiceClient } from '@google-cloud/secret-manager'
+// import { SecretManagerServiceClient } from '@google-cloud/secret-manager'
 
 export const app: Application = express()
 
@@ -55,23 +56,23 @@ if (process.env.NODE_ENV === 'development') {
   })
 }
 
-const secretManagerClient = new SecretManagerServiceClient()
+// const secretManagerClient = new SecretManagerServiceClient()
 
-const getSecretValueFromManager = async (secretName: string) => {
-  const path = `projects/boremine/secrets/${secretName}/versions/latest`
-  try {
-    const [secret] = await secretManagerClient.accessSecretVersion({
-      name: path
-    })
-    return secret.payload?.data?.toString()
-  } catch {
-    return undefined
-  }
-}
+// const getSecretValueFromManager = async (secretName: string) => {
+//   const path = `projects/boremine/secrets/${secretName}/versions/latest`
+//   try {
+//     const [secret] = await secretManagerClient.accessSecretVersion({
+//       name: path
+//     })
+//     return secret.payload?.data?.toString()
+//   } catch {
+//     return undefined
+//   }
+// }
 
-export const getSecretValue = async (secretName: string): Promise<string | undefined> => {
-  return process.env[secretName] || await getSecretValueFromManager(secretName)
-}
+// export const getSecretValue = async (secretName: string): Promise<string | undefined> => {
+//   return process.env[secretName] || await getSecretValueFromManager(secretName)
+// }
 
 const server = http.createServer(app)
 
@@ -101,6 +102,7 @@ const startServer = async () => {
 
   app.use(cookieParser(await getSecretValue('COOKIE_PARSER_SECRET')))
 
+  mongoose.set('strictQuery', false)
   mongoose
     .connect(`${await getSecretValue('DATABASE')}`)
     .then(async () => console.log(`Database connected!`))

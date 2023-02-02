@@ -5,7 +5,8 @@ import User from '../../models/user'
 import ForgotPassword from '../../models/forgotPassword'
 
 import jwt, { VerifyErrors } from 'jsonwebtoken'
-import { getSecretValue } from '../..'
+import { getSecretValue } from '../../utils/SecretManager/getSecretValue'
+// import { getSecretValue } from '../..'
 
 interface RequestBody {
     email: string

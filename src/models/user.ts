@@ -12,6 +12,7 @@ interface User {
     color: string
     alreadyVoted: 'none' | 'drop' | 'pop'
     lastUsernameUpdate: Date
+    googleId: string
 }
 
 const UserSchema = new Schema<User>({
@@ -19,7 +20,7 @@ const UserSchema = new Schema<User>({
         type: String,
         trim: true,
         required: true,
-        maxlength: 50,
+        maxlength: 20,
         unique: true,
         index: true,
         lowercase: true
@@ -28,11 +29,10 @@ const UserSchema = new Schema<User>({
         type: String,
         trim: true,
         required: true,
-        maxlength: 50
+        maxlength: 20
     },
     email: {
         type: String,
-        required: true,
         maxlength: 254,
         index: true,
         unique: true,
@@ -40,7 +40,6 @@ const UserSchema = new Schema<User>({
     },
     password: {
         type: String,
-        required: true,
         maxlength: 256
     },
     color: {
@@ -70,6 +69,9 @@ const UserSchema = new Schema<User>({
     lastUsernameUpdate: {
         type: Date,
         default: Date.now
+    },
+    googleId: {
+        type: String
     }
 
 }, { timestamps: true })
