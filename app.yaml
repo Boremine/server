@@ -6,5 +6,3 @@ handlers:
   secure: always
   redirect_http_response_code: 301
   script: auto
-vpc_access_connector:
-  name: projects/boremine/locations/global/connectors/boremine-mongo-vpc
