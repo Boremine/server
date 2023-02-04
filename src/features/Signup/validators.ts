@@ -33,7 +33,7 @@ export const signupRequest = async (req: Request, res: Response, next: NextFunct
 
     if (!/^[^\s@]+@[^\s@]+$/.test(body.email)) val.email = 'Enter a valid email address'
     if (body.email.length > 254) return next(HandleError.NotAcceptable('Email must be less than 254 characters'))
-    await User.findOne({ email: body.email }).then(user => { if (user) val.email = 'Email is taken' })
+    await User.findOne({ email: body.email, googleId: { $exists: false } }).then(user => { if (user) val.email = 'Email is taken' })
 
     if (body.password !== body.passwordConfirm) val.passwordConfirm = `Passwords don't match`
     if (body.password.length < 8) { val.password = 'Password must be at least 8 characters long'; delete val.passwordConfirm }

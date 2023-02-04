@@ -35,7 +35,6 @@ const UserSchema = new Schema<User>({
         type: String,
         maxlength: 254,
         index: true,
-        unique: true,
         lowercase: true
     },
     password: {
@@ -67,8 +66,7 @@ const UserSchema = new Schema<User>({
         required: true
     },
     lastUsernameUpdate: {
-        type: Date,
-        default: Date.now
+        type: Date
     },
     googleId: {
         type: String

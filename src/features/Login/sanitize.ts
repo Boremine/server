@@ -15,13 +15,13 @@ export const loginTry = (req: Request, res: Response, next: NextFunction) => {
 }
 
 interface GoogleBody{
-    access_token:string
+    code:string
 }
 
 export const loginGoogle = (req: Request, res: Response, next: NextFunction) => {
     const body:GoogleBody = req.body
 
-    body.access_token = String(body.access_token)
+    body.code = String(body.code)
 
     next()
 }

@@ -28,10 +28,6 @@ export const usernameGenerator = () => {
     finalName = nameList[Math.floor(Math.random() * nameList.length)]
     finalName += nameList[Math.floor(Math.random() * nameList.length)]
 
-    if (Math.random() > 0.5) {
-        finalName += nameList[Math.floor(Math.random() * nameList.length)]
-    }
-
     if (finalName.length > 17) finalName = finalName.substring(0, finalName.length - (finalName.length - 17))
 
     const randomNumber = Math.floor((Math.random() * 999) + 1)

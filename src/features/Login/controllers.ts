@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express'
 import { HandleError } from '../../responses/error/HandleError'
-// import { HandleSuccess } from '../../responses/success/HandleSuccess'
+
 import { newAuthentication } from '../../utils/Authentication/function/newAuthentication'
 import { userColors } from '../../utils/Authentication/function/userColors'
 import { addLog, addLogGoogle } from '../../utils/Logs/functions/addLog'
 import User from '../../models/user'
 import { usernameGenerator } from '../../utils/Scripts/usernameGenerator'
-// import { findUserAgent, TokenFound } from '../../utils/Logs/functions/findLog'
+
 import { UserAgent } from '../../types/express-useragent-interface'
 
 export const loginTry = async (req: Request, res: Response, next: NextFunction) => {
@@ -51,7 +51,6 @@ const checkLogs = (logs: Array<UserAgent & LogType>, userAgent: UserAgent | unde
 }
 
 export const loginGoogle = async (req: Request, res: Response, next: NextFunction) => {
-    // console.log(res.locals)
     const { googleEmail, googleId, alreadyUser, user_id, logs } = res.locals
 
     const username = usernameGenerator()
@@ -80,7 +79,6 @@ export const loginGoogle = async (req: Request, res: Response, next: NextFunctio
     } else {
         let log_id: boolean | string = checkLogs(logs, req.useragent)
         if (!log_id) log_id = await addLogGoogle(req, user_id.toString(), next)
-        // if (!tokenOwner) return next(HandleError.Unauthorized('Invalid Refresh Token'))
 
         const newAuth = {
             log_id,
@@ -89,8 +87,4 @@ export const loginGoogle = async (req: Request, res: Response, next: NextFunctio
 
         newAuthentication(newAuth, res)
     }
-
-    // const addLogRes = await addLogGoogle(req, user_id, next, 'login')
-
-    // HandleSuccess.Ok(res, 'Yess')
 }

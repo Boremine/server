@@ -32,9 +32,11 @@ export const accountChangeUsername = async (req: Request, res: Response, next: N
     const user = await User.findById(user_id)
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
 
-    if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
-    const matchPassword: boolean = await validatePassword(body.password, user.password)
-    if (!matchPassword) val.password = 'Incorrect Password'
+    if (!user.googleId) {
+        if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
+        const matchPassword: boolean = await validatePassword(body.password, user.password)
+        if (!matchPassword) val.password = 'Incorrect Password'
+    }
 
     if (!body.username.match('^[A-Za-z0-9-_]+$')) val.username = 'Letters, numbers, dashes, and underscores only'
     if (body.username.length < 3) val.username = 'Username must be between 3 and 20 characters'
@@ -44,13 +46,15 @@ export const accountChangeUsername = async (req: Request, res: Response, next: N
     })
     if (user.username === body.username) val.username = 'This is your current username'
 
-    const changeDate = new Date(user.lastUsernameUpdate.setDate(user.lastUsernameUpdate.getDate() + 30))
-    const currentDate = new Date()
+    if (user.lastUsernameUpdate) {
+        const changeDate = new Date(user.lastUsernameUpdate.setDate(user.lastUsernameUpdate.getDate() + 10))
+        const currentDate = new Date()
 
-    const diffMiliseconds = changeDate.valueOf() - currentDate.valueOf()
-    const diffDays = Math.ceil(diffMiliseconds / (1000 * 60 * 60 * 24))
+        const diffMiliseconds = changeDate.valueOf() - currentDate.valueOf()
+        const diffDays = Math.ceil(diffMiliseconds / (1000 * 60 * 60 * 24))
 
-    if (diffMiliseconds > 0) val.username = `${diffDays} day${diffDays > 1 ? 's' : ''} remaining before you can change your username`
+        if (diffMiliseconds > 0) val.username = `${diffDays} day${diffDays > 1 ? 's' : ''} remaining before you can change your username`
+    }
 
     if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
 
@@ -79,7 +83,6 @@ export const accountChangeEmail = async (req: Request, res: Response, next: Next
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
     if (user.googleId) return next(HandleError.BadRequest("Can't change your email address"))
 
-    if (!body.password) return next(HandleError.NotAcceptable('Password is required'))
     if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
     const matchPassword: boolean = await validatePassword(body.password, user.password)
     if (!matchPassword) val.password = 'Incorrect Password'
@@ -114,9 +117,8 @@ export const accountChangePassword = async (req: Request, res: Response, next: N
 
     const user = await User.findById(user_id).populate({ path: 'logs', populate: { path: 'refreshToken_id' } })
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
-    if (user.googleId) return next(HandleError.BadRequest("Can't change your email address"))
+    if (user.googleId) return next(HandleError.BadRequest("Can't change your password"))
 
-    if (!body.currentPassword) return next(HandleError.NotAcceptable('Password is required'))
     if (body.currentPassword.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
     const matchPassword: boolean = await validatePassword(body.currentPassword, user.password)
     if (!matchPassword) val.currentPassword = 'Incorrect Password'
