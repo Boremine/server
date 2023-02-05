@@ -45,8 +45,6 @@ import accountRoute from './features/Account/routes'
 import supportRoute from './features/Support/routes'
 import { getSecretValue } from './utils/SecretManager/getSecretValue'
 
-// import { SecretManagerServiceClient } from '@google-cloud/secret-manager'
-
 export const app: Application = express()
 
 if (process.env.NODE_ENV === 'development') {
@@ -55,24 +53,6 @@ if (process.env.NODE_ENV === 'development') {
     allowEmptyValues: false
   })
 }
-
-// const secretManagerClient = new SecretManagerServiceClient()
-
-// const getSecretValueFromManager = async (secretName: string) => {
-//   const path = `projects/boremine/secrets/${secretName}/versions/latest`
-//   try {
-//     const [secret] = await secretManagerClient.accessSecretVersion({
-//       name: path
-//     })
-//     return secret.payload?.data?.toString()
-//   } catch {
-//     return undefined
-//   }
-// }
-
-// export const getSecretValue = async (secretName: string): Promise<string | undefined> => {
-//   return process.env[secretName] || await getSecretValueFromManager(secretName)
-// }
 
 const server = http.createServer(app)
 
@@ -127,7 +107,6 @@ const startServer = async () => {
 
   app.use(error_handler)
 
-  // postPromptBot(io)
   displayChatto(io)
   displayPrompt(io)
   validateConnections(io)

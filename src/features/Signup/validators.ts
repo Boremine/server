@@ -5,7 +5,6 @@ import User from '../../models/user'
 
 import axios from 'axios'
 import { getSecretValue } from '../../utils/SecretManager/getSecretValue'
-// import { getSecretValue } from '../..'
 
 interface RequestBody {
     username: string
@@ -37,7 +36,7 @@ export const signupRequest = async (req: Request, res: Response, next: NextFunct
 
     if (body.password !== body.passwordConfirm) val.passwordConfirm = `Passwords don't match`
     if (body.password.length < 8) { val.password = 'Password must be at least 8 characters long'; delete val.passwordConfirm }
-    if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
+    if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characters long'))
 
     if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
 

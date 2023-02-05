@@ -3,7 +3,6 @@ import Client from 'twitter-api-v2'
 import axios from 'axios'
 import { createCanvas, loadImage } from 'canvas'
 import { getSecretValue } from '../../SecretManager/getSecretValue'
-// import { getSecretValue } from '../../..'
 
 export const saveToReddit = async (username: string, title: string, text: string, id: string) => {
     const r = new Snoowrap({

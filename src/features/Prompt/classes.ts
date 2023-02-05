@@ -42,9 +42,6 @@ export class CurrentPrompt {
         this.barColor = barColor
         this.fixedConnections = authorizeConnections.length
 
-        // const fixedConnections = authorizeConnections.length
-        // let fixedConnections = 10
-
         const halfConnections = this.fixedConnections / 2
 
         if ((halfConnections) % 1 === 0) this.majorityConnections = halfConnections + 1

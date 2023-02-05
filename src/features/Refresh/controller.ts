@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { Request, Response, NextFunction } from 'express'
 import User from '../../models/user'
 import { findUserAgent, TokenFound } from '../../utils/Logs/functions/findLog'
@@ -93,7 +93,7 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
   setAccessToken(res, newAccessToken)
   setRefreshToken(res, newRefreshToken)
 
-  user.logs.forEach(v => {
+  user.logs.forEach((v: any) => {
     delete v.refreshToken_id
   })
 

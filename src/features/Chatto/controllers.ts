@@ -7,7 +7,6 @@ import Commentary from '../../models/commentary'
 
 import { state } from '../Prompt/controllers'
 import { HandleError } from '../../responses/error/HandleError'
-// import mongoose from 'mongoose'
 
 import { userColors } from '../../utils/Authentication/function/userColors'
 import crypto from 'crypto'

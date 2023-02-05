@@ -1,6 +1,5 @@
 import nodemailer from 'nodemailer'
 import { getSecretValue } from '../../SecretManager/getSecretValue'
-// import { getSecretValue } from '../../..'
 
 export const sendEmail = async (to: string, subject: string, html: string) => {
     const transporter = nodemailer.createTransport({

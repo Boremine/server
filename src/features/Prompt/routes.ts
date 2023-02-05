@@ -2,7 +2,7 @@ import { Router } from 'express'
 
 import {
     postPrompt as postPrompt_CONTROLLER,
-    latestPrompt as lastestPrompt_CONTROLLER,
+    latestPrompt as latestPrompt_CONTROLLER,
     votePrompt as votePrompt_CONTROLLER,
     getLine as getLine_CONTROLLER,
     updatePrompt as updatePrompt_CONTROLLER,
@@ -40,7 +40,7 @@ router.post('/post/notAuthenticated', postPromptNotAuthenticate_SANITIZE, postPr
 router.put('/update', authorize, updatePrompt_SANITIZE, updatePrompt_VALIDATOR, updatePrompt_CONTROLLER)
 router.delete('/delete', authorize, deletePrompt_VALIDATOR, deletePrompt_CONTROLLER)
 router.post('/vote', authorize, votePrompt_SANITIZE, votePrompt_VALIDATOR, votePrompt_CONTROLLER)
-router.get('/latest', lastestPrompt_CONTROLLER)
+router.get('/latest', latestPrompt_CONTROLLER)
 router.get('/line', getLine_CONTROLLER)
 
 export default router

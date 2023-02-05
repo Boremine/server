@@ -6,7 +6,6 @@ import ForgotPassword from '../../models/forgotPassword'
 
 import jwt, { VerifyErrors } from 'jsonwebtoken'
 import { getSecretValue } from '../../utils/SecretManager/getSecretValue'
-// import { getSecretValue } from '../..'
 
 interface RequestBody {
     email: string
@@ -65,7 +64,7 @@ export const forgotConfirm = async (req: Request, res: Response, next: NextFunct
 
     if (body.password !== body.passwordConfirm) val.passwordConfirm = `Passwords don't match`
     if (body.password.length < 8) { val.password = 'Password must be at least 8 characters long'; delete val.passwordConfirm }
-    if (body.password.length > 256) val.password = 'Password must be less than 256 characteres long'
+    if (body.password.length > 256) val.password = 'Password must be less than 256 characters long'
 
     if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
 

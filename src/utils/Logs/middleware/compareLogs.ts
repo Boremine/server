@@ -4,7 +4,7 @@ import Log from '../../../models/log'
 import User from '../../../models/user'
 
 import { verificationGenerate_G } from '../../../features/Verification/controllers'
-// import { Details } from 'express-useragent'
+
 import { UserAgent } from '../../../types/express-useragent-interface'
 
 interface LogType {

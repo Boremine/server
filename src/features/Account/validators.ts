@@ -33,7 +33,7 @@ export const accountChangeUsername = async (req: Request, res: Response, next: N
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
 
     if (!user.googleId) {
-        if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
+        if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characters long'))
         const matchPassword: boolean = await validatePassword(body.password, user.password)
         if (!matchPassword) val.password = 'Incorrect Password'
     }
@@ -50,10 +50,10 @@ export const accountChangeUsername = async (req: Request, res: Response, next: N
         const changeDate = new Date(user.lastUsernameUpdate.setDate(user.lastUsernameUpdate.getDate() + 10))
         const currentDate = new Date()
 
-        const diffMiliseconds = changeDate.valueOf() - currentDate.valueOf()
-        const diffDays = Math.ceil(diffMiliseconds / (1000 * 60 * 60 * 24))
+        const diffMilliseconds = changeDate.valueOf() - currentDate.valueOf()
+        const diffDays = Math.ceil(diffMilliseconds / (1000 * 60 * 60 * 24))
 
-        if (diffMiliseconds > 0) val.username = `${diffDays} day${diffDays > 1 ? 's' : ''} remaining before you can change your username`
+        if (diffMilliseconds > 0) val.username = `${diffDays} day${diffDays > 1 ? 's' : ''} remaining before you can change your username`
     }
 
     if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
@@ -83,13 +83,13 @@ export const accountChangeEmail = async (req: Request, res: Response, next: Next
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
     if (user.googleId) return next(HandleError.BadRequest("Can't change your email address"))
 
-    if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
+    if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characters long'))
     const matchPassword: boolean = await validatePassword(body.password, user.password)
     if (!matchPassword) val.password = 'Incorrect Password'
 
     if (!/^[^\s@]+@[^\s@]+$/.test(body.email)) val.email = 'Enter a valid email address'
     if (body.email.length > 254) return next(HandleError.NotAcceptable('Email must be less than 254 characters'))
-    await User.findOne({ email: body.email }).then(user => { if (user) val.email = 'Email is taken' })
+    await User.findOne({ email: body.email, googleId: { $exists: false } }).then(user => { if (user) val.email = 'Email is taken' })
     if (user.email === body.email) val.email = 'This is your current email'
 
     if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
@@ -119,13 +119,13 @@ export const accountChangePassword = async (req: Request, res: Response, next: N
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
     if (user.googleId) return next(HandleError.BadRequest("Can't change your password"))
 
-    if (body.currentPassword.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
+    if (body.currentPassword.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characters long'))
     const matchPassword: boolean = await validatePassword(body.currentPassword, user.password)
     if (!matchPassword) val.currentPassword = 'Incorrect Password'
 
     if (body.newPassword !== body.newPasswordConfirm) val.newPasswordConfirm = `Passwords don't match`
     if (body.newPassword.length < 8) { val.newPassword = 'Password must be at least 8 characters long'; delete val.newPasswordConfirm }
-    if (body.newPassword.length > 256) val.newPassword = 'Password must be less than 256 characteres long'
+    if (body.newPassword.length > 256) val.newPassword = 'Password must be less than 256 characters long'
 
     if (Object.keys(val).length) return next(HandleError.NotAcceptable(val))
 
@@ -152,7 +152,7 @@ export const deleteAccount = async (req: Request, res: Response, next: NextFunct
     if (user.googleId) return next()
 
     if (!body.password) return next(HandleError.NotAcceptable('Password is required'))
-    if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characteres long'))
+    if (body.password.length > 256) return next(HandleError.NotAcceptable('Password must be less than 256 characters long'))
     const matchPassword: boolean = await validatePassword(body.password, user.password)
     if (!matchPassword) return next(HandleError.NotAcceptable('Incorrect Password'))
 
