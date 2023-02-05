@@ -19,6 +19,7 @@ export const loginVerified = async (req: Request, res: Response, next: NextFunct
     const { user_id } = res.locals.data
 
     const addLogRes = await addLog(req, user_id, next, 'login')
+    if (addLogRes === 'noUser') return next(HandleError.BadRequest(`User doesn't exist`))
 
     const newAuth = {
         user_id,
@@ -68,6 +69,7 @@ export const loginGoogle = async (req: Request, res: Response, next: NextFunctio
             if (err) return next(HandleError.Internal(err))
 
             const addLogRes = await addLogGoogle(req, user_created._id.toString(), next)
+            if (addLogRes === 'noUser') return next(HandleError.BadRequest(`User doesn't exist`))
 
             const newAuth = {
                 log_id: addLogRes,
@@ -79,6 +81,7 @@ export const loginGoogle = async (req: Request, res: Response, next: NextFunctio
     } else {
         let log_id: boolean | string = checkLogs(logs, req.useragent)
         if (!log_id) log_id = await addLogGoogle(req, user_id.toString(), next)
+        if (log_id === 'noUser') return next(HandleError.BadRequest(`User doesn't exist`))
 
         const newAuth = {
             log_id,

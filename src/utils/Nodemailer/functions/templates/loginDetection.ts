@@ -1,9 +1,9 @@
 interface Body {
     text: string
-    browser: string
-    platform: string
-    location: string
-    ip: string
+    browser?: string
+    platform?: string
+    location?: string
+    ip?: string
 }
 
 export const loginDetection = (title: string, body: Body) => {

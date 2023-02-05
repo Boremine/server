@@ -17,7 +17,7 @@ export const getAuth = async (req: Request, res: Response, next: NextFunction) =
         select: '_id title text'
     }
     ]).select('usernameDisplay email alreadyVoted lastUsernameUpdate prompt_id googleId _id')
-    // console.log(user)
+
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
 
     if (user.prompt_id) {

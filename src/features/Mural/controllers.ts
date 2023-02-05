@@ -54,7 +54,6 @@ export const getMural = async (req: Request, res: Response, next: NextFunction) 
     ])
 
     const muralHold = mural.slice(limit - 12, limit)
-    // const muralHold = mural
     HandleSuccess.Ok(res, muralHold)
 }
 
@@ -286,7 +285,7 @@ export const markPiece = async (req: Request, res: Response, next: NextFunction)
         updateMarks('dislikes', 'likes')
     }
 
-    HandleSuccess.Ok(res, 'tete')
+    HandleSuccess.Ok(res, 'Piece marked')
 }
 
 export const addComment = async (req: Request, res: Response, next: NextFunction) => {
@@ -365,5 +364,5 @@ export const markComment = async (req: Request, res: Response, next: NextFunctio
         updateMarks('dislikes', 'likes')
     }
 
-    HandleSuccess.Ok(res, 'sefse')
+    HandleSuccess.Ok(res, 'Comment marked')
 }

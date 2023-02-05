@@ -84,8 +84,6 @@ export const accountDeleteDevice = async (req: Request, res: Response, next: Nex
         await RefreshToken.findByIdAndDelete(log.refreshToken_id).lean()
     }
 
-    // if (!log) return next(HandleError.BadRequest(`Device doesn't exist`))
-
     HandleSuccess.Ok(res, 'Device deleted')
 }
 
@@ -94,18 +92,15 @@ export const deleteAccount = async (req: Request, res: Response, next: NextFunct
 
     const user = await User.findById(user_id).populate({ path: 'logs', select: '_id refreshToken_id' }).select('_id')
     if (!user) return next(HandleError.Unauthorized("User doesn't exist"))
-    // console.log(user)
+
     const refreshTokensIds: Array<string> = []
     const logsIds: Array<string> = []
 
-    // console.log('----------------------')
     for (let i = 0; i < user.logs.length; i++) {
         const id = user.logs[i]
         refreshTokensIds.push(id.refreshToken_id)
         logsIds.push(id._id)
     }
-    // console.log(refreshTokensIds)
-    // console.log(logsIds)
 
     await RefreshToken.deleteMany({ _id: { $in: refreshTokensIds } })
     await Log.deleteMany({ _id: { $in: logsIds } })

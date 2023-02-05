@@ -14,7 +14,6 @@ import ForgotPassword from '../../models/forgotPassword'
 import { addLog } from '../../utils/Logs/functions/addLog'
 import { newAuthentication } from '../../utils/Authentication/function/newAuthentication'
 import { getSecretValue } from '../../utils/SecretManager/getSecretValue'
-// import { getSecretValue } from '../..'
 
 export const forgotRequest = async (req: Request, res: Response, next: NextFunction) => {
     const { email, user_id, fakeVerification } = res.locals

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Request, NextFunction } from 'express'
 
 import User from '../../../models/user'
@@ -22,16 +21,17 @@ export const addLog = async (req: Request, user_id: string, next: NextFunction, 
 
     let machine: string
 
-    if (userAgent?.isDesktop) machine = 'desktop'
-    else if (userAgent?.isMobile) machine = 'mobile'
+    if (userAgent?.isMobile) machine = 'mobile'
+    else machine = 'desktop'
 
     const NewLog = new Log({ ...query, machine })
 
     const log = await NewLog.save()
 
     const user = await User.findById(user_id)
-    user?.logs.push(NewLog)
-    await user?.save()
+    if (!user) return 'noUser'
+    user.logs.push(NewLog)
+    await user.save()
 
     const loginDetectedBody = {
         text: '',
@@ -45,12 +45,12 @@ export const addLog = async (req: Request, user_id: string, next: NextFunction, 
         const emailSubject = 'New Login Detected'
         loginDetectedBody.text = 'There is a new login detected on your account from:'
         const emailHtml = loginDetection(emailSubject, loginDetectedBody)
-        sendEmail(user?.email, emailSubject, emailHtml)
+        sendEmail(user.email, emailSubject, emailHtml)
     } else if (detectionType === 'forgotPassword') {
         const emailSubject = 'Password Reset Successful'
         loginDetectedBody.text = 'Your password was successfully changed, and it was from:'
         const emailHtml = loginDetection(emailSubject, loginDetectedBody)
-        sendEmail(user?.email, emailSubject, emailHtml)
+        sendEmail(user.email, emailSubject, emailHtml)
     }
 
     return log._id.toString()
@@ -70,16 +70,17 @@ export const addLogGoogle = async (req: Request, user_id: string, next: NextFunc
 
     let machine: string
 
-    if (userAgent?.isDesktop) machine = 'desktop'
-    else if (userAgent?.isMobile) machine = 'mobile'
+    if (userAgent?.isMobile) machine = 'mobile'
+    else machine = 'desktop'
 
     const NewLog = new Log({ ...query, machine })
 
     const log = await NewLog.save()
 
     const user = await User.findById(user_id)
-    user?.logs.push(NewLog)
-    await user?.save()
+    if (!user) return 'noUser'
+    user.logs.push(NewLog)
+    await user.save()
 
     return log._id.toString()
 }

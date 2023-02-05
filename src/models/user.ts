@@ -5,7 +5,7 @@ interface User {
     usernameDisplay: string,
     email: string,
     password: string,
-    logs: Array<any>
+    logs: any
     commentaries: Array<any>,
     mural: Array<any>,
     prompt_id: Schema.Types.ObjectId | any
