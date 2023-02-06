@@ -18,7 +18,7 @@ export const forgotRequest = async (req: Request, res: Response, next: NextFunct
     if (body.email.length > 254) return next(HandleError.NotAcceptable('Email must be less than 254 characters'))
     if (!/^[^\s@]+@[^\s@]+$/.test(body.email)) return next(HandleError.NotAcceptable('Enter a valid email address'))
 
-    const user = await User.findOne({ email: body.email })
+    const user = await User.findOne({ email: body.email, googleId: { $exists: false } })
     if (!user) {
         res.locals = {
             email: body.email,
