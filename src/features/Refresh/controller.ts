@@ -63,17 +63,12 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
   const tokenOwner: TokenFound | boolean = findUserAgent(req.useragent, user.logs)
   if (!tokenOwner) return next(HandleError.Unauthorized('Invalid Refresh Token'))
 
-  console.log(tokenOwner)
-  console.log(tokenSender)
-
   if (tokenOwner.token !== tokenSender) {
     switch (checkForHistory(tokenOwner.history, tokenSender)) {
       case 'inHistory':
-        console.log('inHIstory')
         await RefreshToken.findByIdAndDelete(tokenOwner._id)
         return next(HandleError.Unauthorized('Invalid Refresh Token 2'))
       case 'notInHistory':
-        console.log('NotInHistory')
         return next(HandleError.Unauthorized('Invalid Refresh Token 3'))
     }
   }
