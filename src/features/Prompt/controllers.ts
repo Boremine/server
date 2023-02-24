@@ -20,8 +20,9 @@ import crypto from 'crypto'
 import { saveToFacebook, saveToInstagram, saveToReddit, saveToTwitter } from '../../utils/Prompts/functions/saveTo'
 import { sendEmail } from '../../utils/Nodemailer/functions/sendEmail'
 
-import fs from 'fs'
-import path from 'path'
+// import fs from 'fs'
+// import path from 'path'
+import { opinions } from './opinions'
 import { HandleError } from '../../responses/error/HandleError'
 
 const promptColors: Array<string> = ['blue', 'red', 'green', 'orange', 'purple']
@@ -249,13 +250,13 @@ export const votePromptNotAuthenticated = async (req: Request, res: Response, ne
 
 let botIteration = 0
 export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
-    const jsonData = fs.readFileSync(path.join(__dirname, '/opinions.json'))
-    const data = JSON.parse(jsonData.toString())
+    // const jsonData = fs.readFileSync(path.join(__dirname, '/opinions.json'))
+    // const data = JSON.parse(jsonData.toString())
 
     const NewPrompt = new Prompt({
         user_id: new mongoose.Types.ObjectId('111111111111111111111111'),
         text: '',
-        title: data.opinions[botIteration],
+        title: opinions[botIteration],
         color: promptColors[Math.floor(Math.random() * promptColors.length)]
     })
 
@@ -265,7 +266,7 @@ export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, Def
 
     botIteration = botIteration + 1
 
-    if (botIteration > data.opinions.length) botIteration = 0
+    if (botIteration > opinions.length) botIteration = 0
 
     setTimeout(() => {
         displayBotPrompt(io)
