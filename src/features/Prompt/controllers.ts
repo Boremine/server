@@ -20,6 +20,10 @@ import crypto from 'crypto'
 import { saveToFacebook, saveToInstagram, saveToReddit, saveToTwitter } from '../../utils/Prompts/functions/saveTo'
 import { sendEmail } from '../../utils/Nodemailer/functions/sendEmail'
 
+import fs from 'fs'
+import path from 'path'
+import { HandleError } from '../../responses/error/HandleError'
+
 const promptColors: Array<string> = ['blue', 'red', 'green', 'orange', 'purple']
 let currentPrompt: CurrentPrompt | undefined
 export let state: 'display' | 'end_fail' | 'end_pass' | 'wait' = 'wait'
@@ -213,6 +217,59 @@ export const votePrompt = async (req: Request, res: Response, next: NextFunction
     io.emit('votingScale', currentPrompt?.getVotingScale())
 
     HandleSuccess.Ok(res, 'Vote successful')
+}
+
+export const votePromptNotAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
+    const { option } = res.locals
+
+    const io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> = req.app.get('socketio')
+
+    if (currentPrompt?.getPrompt().body.username !== '(unauthenticated)') return next(HandleError.NotAcceptable(`You need to login to vote on this prompt`))
+
+    switch (option) {
+        case 'pop':
+            currentPrompt?.increasePops()
+            if (currentPrompt!.voting.pops >= currentPrompt!.majorityConnections) {
+                state = 'end_pass'
+                io.emit('prompt', { ...currentPrompt?.getPromptEmit(), state })
+            }
+            break
+        case 'drop':
+            currentPrompt?.increaseDrops()
+            if (currentPrompt!.voting.drops >= currentPrompt!.majorityConnections) {
+                endState(io, 'end_fail')
+            }
+            break
+    }
+
+    io.emit('votingScale', currentPrompt?.getVotingScale())
+
+    HandleSuccess.Ok(res, 'Vote successful')
+}
+
+let botIteration = 0
+export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
+    const jsonData = fs.readFileSync(path.join(__dirname, '/opinions.json'))
+    const data = JSON.parse(jsonData.toString())
+
+    const NewPrompt = new Prompt({
+        user_id: new mongoose.Types.ObjectId('111111111111111111111111'),
+        text: '',
+        title: data.opinions[botIteration],
+        color: promptColors[Math.floor(Math.random() * promptColors.length)]
+    })
+
+    NewPrompt.save()
+
+    io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { usernameDisplay: `(BoremineBot)` } })
+
+    botIteration = botIteration + 1
+
+    if (botIteration > data.opinions.length) botIteration = 0
+
+    setTimeout(() => {
+        displayBotPrompt(io)
+    }, 42000)
 }
 
 export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {

@@ -8,7 +8,8 @@ import {
     updatePrompt as updatePrompt_CONTROLLER,
     deletePrompt as deletePrompt_CONTROLLER,
 
-    postPromptNotAuthenticated as postPromptNotAuthenticated_CONTROLLER
+    postPromptNotAuthenticated as postPromptNotAuthenticated_CONTROLLER,
+    votePromptNotAuthenticated as votePromptNotAuthenticated_CONTROLLER
 } from './controllers'
 
 import {
@@ -17,7 +18,8 @@ import {
     updatePrompt as updatePrompt_VALIDATOR,
     deletePrompt as deletePrompt_VALIDATOR,
 
-    postPromptNotAuthenticated as postPromptNotAuthenticated_VALIDATOR
+    postPromptNotAuthenticated as postPromptNotAuthenticated_VALIDATOR,
+    votePromptNotAuthenticated as votePromptNotAuthenticated_VALIDATOR
 } from './validators'
 
 import {
@@ -39,7 +41,10 @@ router.post('/post/notAuthenticated', postPromptNotAuthenticate_SANITIZE, postPr
 
 router.put('/update', authorize, updatePrompt_SANITIZE, updatePrompt_VALIDATOR, updatePrompt_CONTROLLER)
 router.delete('/delete', authorize, deletePrompt_VALIDATOR, deletePrompt_CONTROLLER)
+
 router.post('/vote', authorize, votePrompt_SANITIZE, votePrompt_VALIDATOR, votePrompt_CONTROLLER)
+router.post('/vote/notAuthenticated', votePrompt_SANITIZE, votePromptNotAuthenticated_VALIDATOR, votePromptNotAuthenticated_CONTROLLER)
+
 router.get('/latest', latestPrompt_CONTROLLER)
 router.get('/line', getLine_CONTROLLER)
 
