@@ -75,6 +75,22 @@ export const votePrompt = async (req: Request, res: Response, next: NextFunction
     next()
 }
 
+export const votePromptNotAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
+    const body: VoteBody = req.body
+
+    if (state === 'wait' || state === 'end_fail' || state === 'end_pass') return next(HandleError.BadRequest('Prompt not ready'))
+
+    if (body.option === 'drop') {
+        res.locals.option = 'drop'
+    } else if (body.option === 'pop') {
+        res.locals.option = 'pop'
+    } else {
+        return next(HandleError.BadRequest('Invalid option'))
+    }
+
+    next()
+}
+
 interface UpdateBody {
     title: string
     text: string
