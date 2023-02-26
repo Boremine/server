@@ -272,7 +272,7 @@ export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, Def
 
     botTimeout = setTimeout(() => {
         displayBotPrompt(io)
-    }, 65000)
+    }, 50000)
 }
 
 export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
