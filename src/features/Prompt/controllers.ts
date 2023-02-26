@@ -171,7 +171,6 @@ const waitState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap,
 
     return setTimeout(() => {
         clearChattoes()
-        displayBotPrompt(io)
         displayPrompt(io)
     }, 5000)
 }
@@ -250,11 +249,11 @@ export const votePromptNotAuthenticated = async (req: Request, res: Response, ne
 }
 
 let botIteration = 0
-// let botTimeout: NodeJS.Timer
+let botTimeout: NodeJS.Timer
 export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
     // const jsonData = fs.readFileSync(path.join(__dirname, '/opinions.json'))
     // const data = JSON.parse(jsonData.toString())
-    // clearTimeout(botTimeout)
+    clearTimeout(botTimeout)
 
     const NewPrompt = new Prompt({
         user_id: new mongoose.Types.ObjectId('111111111111111111111111'),
@@ -271,9 +270,9 @@ export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, Def
 
     if (botIteration > opinions.length) botIteration = 0
 
-    // botTimeout = setTimeout(() => {
-    //     displayBotPrompt(io)
-    // }, 65000)
+    botTimeout = setTimeout(() => {
+        displayBotPrompt(io)
+    }, 50000)
 }
 
 export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
