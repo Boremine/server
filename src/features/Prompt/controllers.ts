@@ -187,8 +187,6 @@ const endState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, 
     }
     io.emit('prompt', { ...currentPrompt?.getPromptEmit(), state })
 
-    displayBotPrompt(io)
-
     clearInterval(interval)
 
     return setTimeout(() => {
@@ -235,12 +233,14 @@ export const votePromptNotAuthenticated = async (req: Request, res: Response, ne
             if (currentPrompt!.voting.pops >= currentPrompt!.majorityConnections) {
                 state = 'end_pass'
                 io.emit('prompt', { ...currentPrompt?.getPromptEmit(), state })
+                displayBotPrompt(io)
             }
             break
         case 'drop':
             currentPrompt?.increaseDrops()
             if (currentPrompt!.voting.drops >= currentPrompt!.majorityConnections) {
                 endState(io, 'end_fail')
+                displayBotPrompt(io)
             }
             break
     }
@@ -258,7 +258,7 @@ export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, Def
     // clearTimeout(botTimeout)
 
     const promptsLength = await Prompt.count()
-    console.log(promptsLength)
+    // console.log(promptsLength)
     if (promptsLength > 1) return
 
     const NewPrompt = new Prompt({
@@ -331,9 +331,11 @@ export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, Defaul
         currentPrompt?.updateCountDown()
         if (currentPrompt!.getCountDown() < 0) {
             if (state === 'end_pass' || currentPrompt!.voting.pops > currentPrompt!.voting.drops) {
-                return endState(io, 'end_pass')
+                displayBotPrompt(io)
+                endState(io, 'end_pass')
             } else {
-                return endState(io, 'end_fail')
+                displayBotPrompt(io)
+                endState(io, 'end_fail')
             }
         }
 
