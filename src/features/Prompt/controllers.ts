@@ -187,11 +187,12 @@ const endState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, 
     }
     io.emit('prompt', { ...currentPrompt?.getPromptEmit(), state })
 
+    displayBotPrompt(io)
+
     clearInterval(interval)
 
     return setTimeout(() => {
         waitState(io)
-        displayBotPrompt(io)
     }, 3000)
 }
 
