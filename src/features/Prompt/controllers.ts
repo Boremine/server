@@ -233,14 +233,12 @@ export const votePromptNotAuthenticated = async (req: Request, res: Response, ne
             if (currentPrompt!.voting.pops >= currentPrompt!.majorityConnections) {
                 state = 'end_pass'
                 io.emit('prompt', { ...currentPrompt?.getPromptEmit(), state })
-                displayBotPrompt(io)
             }
             break
         case 'drop':
             currentPrompt?.increaseDrops()
             if (currentPrompt!.voting.drops >= currentPrompt!.majorityConnections) {
                 endState(io, 'end_fail')
-                displayBotPrompt(io)
             }
             break
     }
@@ -257,9 +255,9 @@ export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, Def
     // const data = JSON.parse(jsonData.toString())
     // clearTimeout(botTimeout)
 
-    const promptsLength = await Prompt.count()
+    // const promptsLength = await Prompt.count()
     // console.log(promptsLength)
-    if (promptsLength > 1) return
+    // if (promptsLength > 1) return
 
     const NewPrompt = new Prompt({
         user_id: new mongoose.Types.ObjectId('111111111111111111111111'),
@@ -276,6 +274,10 @@ export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, Def
 
     if (botIteration > opinions.length) botIteration = 0
 
+    const tete = await NewPrompt.populate('user_id', 'usernameDisplay email')
+
+    return tete
+
     // botTimeout = setTimeout(() => {
     //     displayBotPrompt(io)
     // }, 50000)
@@ -284,13 +286,17 @@ export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, Def
 export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
     const prompt_ids: Array<string> = []
 
-    const prompt = await Prompt.findOne().populate('user_id', 'usernameDisplay email').select('text color title')
-
+    let prompt = await Prompt.findOne().populate('user_id', 'usernameDisplay email').select('text color title')
+    console.log(prompt, 'clean')
     if (!prompt) {
-        setTimeout(() => {
-            displayPrompt(io)
-        }, 10000)
-        return
+        prompt = await displayBotPrompt(io)
+        console.log(prompt, 'bot')
+        // prompt.user_id = null
+        // return
+        // setTimeout(() => {
+        //     displayPrompt(io)
+        // }, 10000)
+        // return
     }
 
     // NOTAUTHENTICATED REQUIRED
@@ -331,13 +337,9 @@ export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, Defaul
         currentPrompt?.updateCountDown()
         if (currentPrompt!.getCountDown() < 0) {
             if (state === 'end_pass' || currentPrompt!.voting.pops > currentPrompt!.voting.drops) {
-                displayBotPrompt(io)
-                endState(io, 'end_pass')
-                return
+                return endState(io, 'end_pass')
             } else {
-                displayBotPrompt(io)
-                endState(io, 'end_fail')
-                return
+                return endState(io, 'end_fail')
             }
         }
 

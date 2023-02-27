@@ -9,7 +9,7 @@ import useragent from 'express-useragent'
 import socketIO from 'socket.io'
 import http from 'http'
 
-import { displayBotPrompt, displayPrompt } from './features/Prompt/controllers'
+import { displayPrompt } from './features/Prompt/controllers'
 import { displayChatto } from './features/Chatto/controllers'
 
 import { validateConnections } from './utils/Socket/functions/validateConnection'
@@ -109,7 +109,7 @@ const startServer = async () => {
 
   displayChatto(io)
   displayPrompt(io)
-  displayBotPrompt(io)
+  // displayBotPrompt(io)
   validateConnections(io)
 
   const port: any = process.env.PORT || 3001
