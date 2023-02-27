@@ -333,9 +333,11 @@ export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, Defaul
             if (state === 'end_pass' || currentPrompt!.voting.pops > currentPrompt!.voting.drops) {
                 displayBotPrompt(io)
                 endState(io, 'end_pass')
+                return
             } else {
                 displayBotPrompt(io)
                 endState(io, 'end_fail')
+                return
             }
         }
 
