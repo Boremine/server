@@ -109,7 +109,6 @@ const startServer = async () => {
 
   displayChatto(io)
   displayPrompt(io)
-  // displayBotPrompt(io)
   validateConnections(io)
 
   const port: any = process.env.PORT || 3001
