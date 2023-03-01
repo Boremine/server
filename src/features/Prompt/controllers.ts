@@ -215,6 +215,8 @@ export const votePrompt = async (req: Request, res: Response, next: NextFunction
             break
     }
 
+    if (process.env.NODE_ENV !== 'development') sendEmail('boremine.business@gmail.com', `Voted: ${option}`, `${currentPrompt?.body.title}`)
+
     io.emit('votingScale', currentPrompt?.getVotingScale())
 
     HandleSuccess.Ok(res, 'Vote successful')
@@ -242,6 +244,8 @@ export const votePromptNotAuthenticated = async (req: Request, res: Response, ne
             }
             break
     }
+
+    if (process.env.NODE_ENV !== 'development') sendEmail('boremine.business@gmail.com', `Voted: ${option}`, `${currentPrompt?.body.title}`)
 
     io.emit('votingScale', currentPrompt?.getVotingScale())
 
