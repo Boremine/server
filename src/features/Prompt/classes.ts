@@ -3,6 +3,7 @@ import { authorizeConnections } from '../../utils/Socket/functions/validateConne
 interface Constructor {
     prompt_id: string
     user_id: string
+    verified: boolean
     body: {
         text: string
         username: string
@@ -20,6 +21,7 @@ interface Constructor {
 export class CurrentPrompt {
     prompt_id: string
     user_id: string
+    verified: boolean
     body: { text: string; username: string, title: string }
     voting: { pops: number; drops: number }
     countDown: number
@@ -29,6 +31,7 @@ export class CurrentPrompt {
     constructor ({
         prompt_id,
         user_id,
+        verified,
         body,
         voting,
         countDown,
@@ -36,6 +39,7 @@ export class CurrentPrompt {
     }: Constructor) {
         this.prompt_id = prompt_id
         this.user_id = user_id
+        this.verified = verified
         this.body = body
         this.voting = voting
         this.countDown = countDown
@@ -52,6 +56,7 @@ export class CurrentPrompt {
         const prompt = {
             body: this.body,
             countDown: this.countDown,
+            verified: this.verified,
             voteScale: {
                 pops: (this.voting.pops / this.majorityConnections) * 100,
                 drops: (this.voting.drops / this.majorityConnections) * 100,
