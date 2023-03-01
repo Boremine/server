@@ -4,6 +4,7 @@ interface Prompt {
     title: string
     text: string
     user_id: Schema.Types.ObjectId | any
+    usernameDisplayNOTAUTH: string
     color: string
 }
 
@@ -22,6 +23,9 @@ const PromptSchema = new Schema<Prompt>({
         ref: 'User',
         required: true,
         index: true
+    },
+    usernameDisplayNOTAUTH: {
+        type: String
     },
     color: {
         type: String,

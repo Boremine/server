@@ -20,8 +20,6 @@ import crypto from 'crypto'
 import { saveToFacebook, saveToInstagram, saveToReddit, saveToTwitter } from '../../utils/Prompts/functions/saveTo'
 import { sendEmail } from '../../utils/Nodemailer/functions/sendEmail'
 
-// import fs from 'fs'
-// import path from 'path'
 import { opinions } from './opinions'
 import { HandleError } from '../../responses/error/HandleError'
 
@@ -33,7 +31,7 @@ let promptGoTo: 'notPass' | 'Pass'
 let interval: NodeJS.Timer
 
 export const getLine = async (req: Request, res: Response, next: NextFunction) => {
-    const line = await Prompt.find({}).lean().populate('user_id', 'usernameDisplay -_id').select('color')
+    const line = await Prompt.find({}).lean().populate('user_id', 'usernameDisplay -_id').select('color usernameDisplayNOTAUTH')
 
     HandleSuccess.Ok(res, line)
 }
@@ -90,8 +88,11 @@ export const postPromptNotAuthenticated = async (req: Request, res: Response, ne
 
     const io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> = req.app.get('socketio')
 
+    const usernameDisplay = await crypto.createHash('sha256').update(naid).digest('hex').slice(0, 5)
+
     const NewPrompt = new Prompt({
         user_id: new mongoose.Types.ObjectId('111111111111111111111111'),
+        usernameDisplayNOTAUTH: usernameDisplay,
         text,
         title,
         color: promptColors[Math.floor(Math.random() * promptColors.length)]
@@ -99,11 +100,9 @@ export const postPromptNotAuthenticated = async (req: Request, res: Response, ne
 
     NewPrompt.save()
 
-    const usernameDisplay = await crypto.createHash('sha256').update(naid).digest('hex').slice(0, 5)
-
     if (process.env.NODE_ENV !== 'development') sendEmail('boremine.business@gmail.com', `Prompt FROM: ${usernameDisplay}`, `${title}\n\n${text}`)
 
-    io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { usernameDisplay: `(unauthenticated)` } })
+    io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { usernameDisplay }, usernameDisplayNOTAUTH: usernameDisplay })
 
     HandleSuccess.Created(res, { _id: NewPrompt._id, title: NewPrompt.title, text: NewPrompt.text })
 }
@@ -157,11 +156,12 @@ const waitState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap,
         },
         state,
         nextPrompt: true,
+        verified: false,
         barColor: 'none'
     })
 
     // NOTAUTHENTICATED REQUIRED
-    if (promptGoTo === 'Pass' && currentPrompt?.body.username !== '(unauthenticated)') saveToMural()
+    if (promptGoTo === 'Pass' && currentPrompt?.verified) saveToMural()
 
     await User.updateMany({ $or: [{ alreadyVoted: 'pop' }, { alreadyVoted: 'drop' }] }, { alreadyVoted: 'none' })
 
@@ -169,7 +169,7 @@ const waitState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap,
 
     currentPrompt = undefined
 
-    return setTimeout(() => {
+    setTimeout(() => {
         clearChattoes()
         displayPrompt(io)
     }, 5000)
@@ -189,7 +189,7 @@ const endState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, 
 
     clearInterval(interval)
 
-    return setTimeout(() => {
+    setTimeout(() => {
         waitState(io)
     }, 3000)
 }
@@ -225,7 +225,7 @@ export const votePromptNotAuthenticated = async (req: Request, res: Response, ne
 
     const io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> = req.app.get('socketio')
 
-    if (currentPrompt?.getPrompt().body.username !== '(unauthenticated)') return next(HandleError.NotAcceptable(`You need to login to vote on this prompt`))
+    if (currentPrompt?.verified) return next(HandleError.NotAcceptable(`You need to login to vote on this prompt`))
 
     switch (option) {
         case 'pop':
@@ -249,18 +249,12 @@ export const votePromptNotAuthenticated = async (req: Request, res: Response, ne
 }
 
 let botIteration = 0
-// let botTimeout: NodeJS.Timer
+
 export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
-    // const jsonData = fs.readFileSync(path.join(__dirname, '/opinions.json'))
-    // const data = JSON.parse(jsonData.toString())
-    // clearTimeout(botTimeout)
-
-    // const promptsLength = await Prompt.count()
-    // console.log(promptsLength)
-    // if (promptsLength > 1) return
-
+    const botUsername = 'BoremineBot'
     const NewPrompt = new Prompt({
         user_id: new mongoose.Types.ObjectId('111111111111111111111111'),
+        usernameDisplayNOTAUTH: botUsername,
         text: '',
         title: opinions[botIteration],
         color: promptColors[Math.floor(Math.random() * promptColors.length)]
@@ -268,31 +262,24 @@ export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, Def
 
     NewPrompt.save()
 
-    io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { usernameDisplay: `(BoremineBot)` } })
+    io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { usernameDisplay: botUsername } })
 
     botIteration = botIteration + 1
 
     if (botIteration > opinions.length) botIteration = 0
 
-    const tete = await NewPrompt.populate('user_id', 'usernameDisplay email')
+    const prompt = await NewPrompt.populate('user_id', 'usernameDisplay email')
 
-    return tete
-
-    // botTimeout = setTimeout(() => {
-    //     displayBotPrompt(io)
-    // }, 50000)
+    return prompt
 }
 
 export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
     const prompt_ids: Array<string> = []
 
-    let prompt = await Prompt.findOne().populate('user_id', 'usernameDisplay email').select('text color title')
-    console.log(prompt, 'clean')
+    let prompt = await Prompt.findOne().populate('user_id', 'usernameDisplay email').select('text color title usernameDisplayNOTAUTH')
+
     if (!prompt) {
         prompt = await displayBotPrompt(io)
-        console.log(prompt, 'bot')
-        // prompt.user_id = null
-        // return
         // setTimeout(() => {
         //     displayPrompt(io)
         // }, 10000)
@@ -301,14 +288,15 @@ export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, Defaul
 
     // NOTAUTHENTICATED REQUIRED
 
-    const userInfo: { id: string, usernameDisplay: string } = { id: '', usernameDisplay: '' }
+    const userInfo: { id: string, usernameDisplay: string, verified: boolean } = { id: '', usernameDisplay: '', verified: true }
 
     if (prompt.user_id) {
         userInfo.id = prompt.user_id._id
         userInfo.usernameDisplay = prompt.user_id.usernameDisplay
     } else {
         userInfo.id = '111111111111111111111111'
-        userInfo.usernameDisplay = '(unauthenticated)'
+        userInfo.usernameDisplay = `(${prompt.usernameDisplayNOTAUTH})`
+        userInfo.verified = false
     }
 
     // NOTAUTHENTICATED REQUIRED
@@ -317,6 +305,7 @@ export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, Defaul
     currentPrompt = new CurrentPrompt({
         prompt_id: prompt._id.toString(),
         user_id: userInfo.id,
+        verified: userInfo.verified,
         body: {
             title: prompt.title,
             username: userInfo.usernameDisplay,
