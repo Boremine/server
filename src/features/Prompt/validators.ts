@@ -22,8 +22,8 @@ export const postPrompt = async (req: Request, res: Response, next: NextFunction
 
     if (!body.title) return next(HandleError.NotAcceptable('Title is required'))
 
-    if (body.title.length > 200) return next(HandleError.NotAcceptable('Title must be less than 200 characteres long'))
-    if (body.text.length > 5000) return next(HandleError.NotAcceptable('Text must be less than 5000 characteres long'))
+    if (body.title.length > 200) return next(HandleError.NotAcceptable('Title must be less than 200 characters long'))
+    if (body.text.length > 5000) return next(HandleError.NotAcceptable('Text must be less than 5000 characters long'))
 
     next()
 }
@@ -42,8 +42,8 @@ export const postPromptNotAuthenticated = async (req: Request, res: Response, ne
 
     if (!body.title) return next(HandleError.NotAcceptable('Title is required'))
 
-    if (body.title.length > 200) return next(HandleError.NotAcceptable('Title must be less than 200 characteres long'))
-    if (body.text.length > 5000) return next(HandleError.NotAcceptable('Text must be less than 5000 characteres long'))
+    if (body.title.length > 200) return next(HandleError.NotAcceptable('Title must be less than 200 characters long'))
+    if (body.text.length > 5000) return next(HandleError.NotAcceptable('Text must be less than 5000 characters long'))
 
     next()
 }
@@ -109,8 +109,8 @@ export const updatePrompt = async (req: Request, res: Response, next: NextFuncti
 
     if (!body.title) return next(HandleError.NotAcceptable('Title is required'))
 
-    if (body.title.length > 200) return next(HandleError.NotAcceptable('Title must be less than 200 characteres long'))
-    if (body.text.length > 5000) return next(HandleError.NotAcceptable('Text must be less than 5000 characteres long'))
+    if (body.title.length > 200) return next(HandleError.NotAcceptable('Title must be less than 200 characters long'))
+    if (body.text.length > 5000) return next(HandleError.NotAcceptable('Text must be less than 5000 characters long'))
 
     res.locals.prompt_id = user.prompt_id._id
 

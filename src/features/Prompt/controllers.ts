@@ -280,10 +280,6 @@ export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, Defaul
 
     if (!prompt) {
         prompt = await displayBotPrompt(io)
-        // setTimeout(() => {
-        //     displayPrompt(io)
-        // }, 10000)
-        // return
     }
 
     // NOTAUTHENTICATED REQUIRED
