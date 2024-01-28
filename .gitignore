@@ -2,7 +2,7 @@
 .env
 /dist
 package-lock.json
-.rest
+/.rest
 .cloudbuild.yaml
 .app.yaml
 .gcloudignore
