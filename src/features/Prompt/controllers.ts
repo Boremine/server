@@ -28,7 +28,7 @@ let currentPrompt: CurrentPrompt | undefined
 export let state: 'display' | 'end_fail' | 'end_pass' | 'wait' = 'wait'
 let promptGoTo: 'notPass' | 'Pass'
 
-let interval: NodeJS.Timer
+let interval: NodeJS.Timeout
 
 export const getLine = async (req: Request, res: Response, next: NextFunction) => {
     const line = await Prompt.find({}).lean().populate('user_id', 'usernameDisplay -_id').select('color usernameDisplayNOTAUTH')
@@ -187,7 +187,7 @@ const endState = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, 
     }
     io.emit('prompt', { ...currentPrompt?.getPromptEmit(), state })
 
-    clearInterval(interval)
+    clearInterval(interval as NodeJS.Timeout)
 
     setTimeout(() => {
         waitState(io)
