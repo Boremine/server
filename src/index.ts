@@ -111,7 +111,7 @@ const startServer = async () => {
   displayPrompt(io)
   validateConnections(io)
 
-  const port: any = await getSecretValue('PORT') 
+  const port: any = await getSecretValue('PORT')
   if (port !== 'test') {
     server.listen(port, () => console.log(`server running on port ${port}`))
   }
