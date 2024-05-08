@@ -1,4 +1,5 @@
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager'
+require('dotenv').config()
 
 const secretManagerClient = new SecretManagerServiceClient()
 
