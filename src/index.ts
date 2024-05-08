@@ -50,7 +50,7 @@ export const app: Application = express()
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
   dotenvSafe.config({
-    allowEmptyValues: false
+    allowEmptyValues: true
   })
 }
 
