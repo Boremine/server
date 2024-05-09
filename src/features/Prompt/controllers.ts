@@ -264,6 +264,8 @@ export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, Def
         color: promptColors[Math.floor(Math.random() * promptColors.length)]
     })
 
+    console.log(NewPrompt)
+
     NewPrompt.save()
 
     io.emit('line', { _id: NewPrompt._id, color: NewPrompt.color, user_id: { usernameDisplay: botUsername } })
@@ -311,7 +313,7 @@ export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, Defaul
             username: userInfo.usernameDisplay,
             text: prompt.text
         },
-        countDown: 30,
+        countDown: 3,
         voting: {
             pops: 0,
             drops: 0
