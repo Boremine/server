@@ -62,7 +62,7 @@ const startServer = async () => {
   })
 
   const io = new socketIO.Server(server, {
-    path: '/api',
+    path: '/socket.io',
     cors: {
       origin: [String(await getSecretValue('CLIENT_DOMAIN2')), String(await getSecretValue('CLIENT_DOMAIN'))],
       credentials: true
