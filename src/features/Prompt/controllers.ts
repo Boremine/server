@@ -264,7 +264,7 @@ export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, Def
         color: promptColors[Math.floor(Math.random() * promptColors.length)]
     })
 
-    console.log(NewPrompt)
+    // console.log(NewPrompt)
 
     NewPrompt.save()
 
@@ -282,10 +282,12 @@ export const displayBotPrompt = async (io: socketIO.Server<DefaultEventsMap, Def
 export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
     const prompt_ids: Array<string> = []
 
-    let prompt = await Prompt.findOne().populate('user_id', 'usernameDisplay email').select('text color title usernameDisplayNOTAUTH')
+    const prompt = await Prompt.findOne().populate('user_id', 'usernameDisplay email').select('text color title usernameDisplayNOTAUTH')
 
     if (!prompt) {
-        prompt = await displayBotPrompt(io)
+        return setTimeout(() => {
+            displayPrompt(io)
+        }, 5000)
     }
 
     // NOTAUTHENTICATED REQUIRED
@@ -313,7 +315,7 @@ export const displayPrompt = async (io: socketIO.Server<DefaultEventsMap, Defaul
             username: userInfo.usernameDisplay,
             text: prompt.text
         },
-        countDown: 3,
+        countDown: 30,
         voting: {
             pops: 0,
             drops: 0

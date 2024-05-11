@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import sanitize from 'mongo-sanitize'
 import crypto from 'crypto'
+import geoip from 'geoip-lite'
 
 const getIp = (req: Request) => {
     let ip: string | undefined
@@ -8,7 +9,6 @@ const getIp = (req: Request) => {
     if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') ip = '1.1.1.1.1'
     else ip = req.header('x-forwarded-for')?.split(',')[0]
 
-    console.log(ip)
     return ip
 }
 
@@ -20,13 +20,20 @@ export const global_sanitize = async (req: Request, res: Response, next: NextFun
         req.useragent.device = req.cookies.device ? crypto.createHash('sha256').update(req.cookies.device).digest('hex').slice(0, 20) : 'global'
         req.useragent.ip = getIp(req)
 
-        // let locationHeaders: Array<string | undefined>
-        const locationHeaders = ['Kendall', 'FL', 'US']
-        // if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
-        //     locationHeaders = ['Kendall', 'FL', 'US']
-        // } else {
-        //     locationHeaders = [req.header('X-AppEngine-City'), req.header('X-AppEngine-Region')?.toUpperCase(), req.header('X-AppEngine-Country')]
-        // }
+        let geo
+        if (req.useragent.ip) {
+            geo = geoip.lookup('73.138.87.140')
+        }
+        // console.log(req.useragent.ip)
+        // console.log(geo)
+
+        let locationHeaders: Array<string | undefined>
+        // const locationHeaders = ['Kendall', 'FL', 'US']
+        if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development' || !geo) {
+            locationHeaders = ['Unknown', '', '']
+        } else {
+            locationHeaders = [geo.city, geo.region, geo.country]
+        }
 
         req.useragent.location = ''
 
