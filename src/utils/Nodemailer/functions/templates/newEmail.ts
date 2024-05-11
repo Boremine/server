@@ -54,7 +54,7 @@ export const newEmail = (title:string, username:string, email:string) => {
     <table class="logo">
         <tr>
             <th>
-            <img class="logo_img" src="https://storage.googleapis.com/boremine.com/BoremineLogo.png" width="60"/>
+            <img class="logo_img" src="https://www.boremine.com/BoremineLogo.png" width="60"/>
         </th>
         <th>
             <h1 class="logo_text">Boremine</h1>
